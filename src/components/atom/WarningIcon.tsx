@@ -37,7 +37,7 @@ const styles = () =>
   StyleSheet.create({
     excla: { fontWeight: "800", color: "#FFF" },
     container: {
-      backgroundColor: cp.yellow1,
+      backgroundColor: cp.red1,
       width: 24,
       height: 24,
       borderRadius: 24,

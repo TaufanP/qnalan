@@ -92,7 +92,7 @@ const styles = ({ sideIcon, isError }: StyleProps) =>
   StyleSheet.create({
     warningText: {
       marginLeft: 4,
-      color: cp.yellow1,
+      color: cp.red1,
       fontSize: 12,
       fontWeight: "bold",
     },

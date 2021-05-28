@@ -3,6 +3,7 @@ const colorsPalette = {
   secondary: "#FFDEDE",
   blue1: "#48A1D9",
   blue2: "#5B8FF0",
+  red1: "#DB3C36",
   white: "#FFFFFF",
   white0: "#f4f4f4",
   white1: "#FAFAFA",
