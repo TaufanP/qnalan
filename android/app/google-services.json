@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "72284186344",
+    "firebase_url": "https://sbhumanbank-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "sbhumanbank",
+    "storage_bucket": "sbhumanbank.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:72284186344:android:f6ff7ba084641f152bcb5d",
+        "android_client_info": {
+          "package_name": "com.sbhumanbank"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "72284186344-v354t1ruh2lcq0e8qd1atnkadu4t2ltb.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC_fvAs-gkFfvdNEg2Jww2vO5bCmCBdcio"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "72284186344-v354t1ruh2lcq0e8qd1atnkadu4t2ltb.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
