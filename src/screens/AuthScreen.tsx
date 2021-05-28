@@ -6,11 +6,17 @@ import { heightAdapt, widthPercent } from "../config";
 import { spacing as sp } from "../constants";
 import auth from "@react-native-firebase/auth";
 import { FieldErrorProps } from "../config/types";
+import { loggingIn } from "../redux/actions";
+import { useDispatch, useSelector } from "react-redux";
+import AppState from "../redux";
 
 interface AuthProps {
   navigation: CompositeNavigationProp<any, any>;
 }
 const AuthScreen: FC<AuthProps> = ({ navigation }) => {
+  const dispatch = useDispatch();
+  const { sessionReducer } = useSelector((state: AppState) => state);
+
   const [formError, setFormError] = useState<FieldErrorProps[]>([]);
 
   const [isLogin, setIsLogin] = useState<boolean>(true);
@@ -76,9 +82,12 @@ const AuthScreen: FC<AuthProps> = ({ navigation }) => {
   };
 
   const onAuthStateChanged = (user: any) => {
-    console.log({ user });
     setUser(user);
     if (initializing) setInitializing(false);
+    if (user !== null) {
+      const { uid, displayName, email } = user;
+      dispatch(loggingIn({ uid, displayName, email }));
+    }
   };
 
   useEffect(() => {
