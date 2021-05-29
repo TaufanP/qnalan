@@ -9,6 +9,7 @@ import { FieldErrorProps } from "../config/types";
 import { loggingIn } from "../redux/actions";
 import { useDispatch, useSelector } from "react-redux";
 import AppState from "../redux";
+import SplashScreen from "react-native-splash-screen";
 
 interface AuthProps {
   navigation: CompositeNavigationProp<any, any>;
@@ -88,6 +89,7 @@ const AuthScreen: FC<AuthProps> = ({ navigation }) => {
       const { uid, displayName, email } = user;
       dispatch(loggingIn({ uid, displayName, email }));
     }
+    SplashScreen.hide();
   };
 
   useEffect(() => {
