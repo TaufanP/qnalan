@@ -1,3 +1,4 @@
+import AuthRoute from "./AuthRoute";
 import MainRoute from "./MainRoute";
 
-export { MainRoute };
+export { AuthRoute, MainRoute };
