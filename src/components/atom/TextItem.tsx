@@ -54,6 +54,7 @@ const styles = () =>
     defaultWhite: { color: cp.white },
     defaultMain: { color: cp.main },
 
+    header: { fontWeight: "bold", fontSize: 20, color: cp.white },
     logo: { color: cp.main, fontSize: 24 },
     container: { flexDirection: "row", alignItems: "flex-end" },
     unitText: {

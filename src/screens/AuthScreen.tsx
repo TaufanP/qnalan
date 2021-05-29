@@ -10,6 +10,7 @@ import { loggingIn } from "../redux/actions";
 import { useDispatch, useSelector } from "react-redux";
 import AppState from "../redux";
 import SplashScreen from "react-native-splash-screen";
+import { db } from "../config/firebase";
 
 interface AuthProps {
   navigation: CompositeNavigationProp<any, any>;
@@ -29,9 +30,6 @@ const AuthScreen: FC<AuthProps> = ({ navigation }) => {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
 
-  const [initializing, setInitializing] = useState(true);
-  const [user, setUser] = useState();
-
   const changeAuth = () => {
     setFormError([]);
     setIsLogin((current) => !current);
@@ -43,7 +41,18 @@ const AuthScreen: FC<AuthProps> = ({ navigation }) => {
         ? await auth().signInWithEmailAndPassword(email, password)
         : await auth().createUserWithEmailAndPassword(email, password);
 
+      setIsLoading(false);
+      setEmail("");
+      setPassword("");
       if (data?.user) {
+        if (!isLogin && data?.additionalUserInfo?.isNewUser) {
+          db.ref(`users/${data?.user?.uid}`).set({
+            displayName: data?.user?.displayName || "",
+            photoURL: data?.user?.photoURL || "",
+            messages: {},
+            email: data?.user?.email,
+          });
+        }
         const { uid, displayName, email } = data?.user;
         dispatch(
           loggingIn({ uid, displayName: displayName || "", email: email || "" })
@@ -57,9 +66,6 @@ const AuthScreen: FC<AuthProps> = ({ navigation }) => {
         type: fancyType.failed,
         msg: "Telah terjadi kesalahan, coba beberapa saat lagi",
       });
-      setIsLoading(false);
-      setEmail("");
-      setPassword("");
     } catch (error) {
       setIsLoading(false);
       if (error.code == "auth/wrong-password") {
@@ -123,13 +129,20 @@ const AuthScreen: FC<AuthProps> = ({ navigation }) => {
   };
 
   const onAuthStateChanged = (user: any) => {
-    setUser(user);
-    if (initializing) setInitializing(false);
     if (user !== null) {
       const { uid, displayName, email } = user;
       dispatch(loggingIn({ uid, displayName, email }));
     }
     SplashScreen.hide();
+  };
+
+  const test = () => {
+    db.ref(`users/${sessionReducer.uid}`).set({
+      displayName: sessionReducer.displayName || "",
+      photoProfile: "",
+      messages: {},
+      email: sessionReducer.email,
+    });
   };
 
   useEffect(() => {
@@ -171,6 +184,7 @@ const AuthScreen: FC<AuthProps> = ({ navigation }) => {
             {isLogin ? "Masuk" : "Daftar"}
           </TextItem>
         </Button>
+        {/* <Button onPress={test} disabled={isLoading}> */}
         <Button onPress={changeAuth} disabled={isLoading}>
           <TextItem type="normal12Main">
             {isLogin ? "Belum punya akun?" : "Sudah punya akun?"}
