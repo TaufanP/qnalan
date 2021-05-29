@@ -3,9 +3,9 @@ import React, { FC, useEffect, useState } from "react";
 import { Keyboard, View } from "react-native";
 import { AppCanvas, Button, TextItem, TextField } from "../components";
 import { heightAdapt, widthPercent } from "../config";
-import { pages as p, spacing as sp } from "../constants";
+import { pages as p, spacing as sp, fancyStates as fan } from "../constants";
 import auth from "@react-native-firebase/auth";
-import { FieldErrorProps } from "../config/types";
+import { FieldErrorProps, FancyTypes } from "../config/types";
 import { loggingIn } from "../redux/actions";
 import { useDispatch, useSelector } from "react-redux";
 import AppState from "../redux";
@@ -15,8 +15,11 @@ interface AuthProps {
   navigation: CompositeNavigationProp<any, any>;
 }
 const AuthScreen: FC<AuthProps> = ({ navigation }) => {
+  const { defaultState, fancyType } = fan;
   const dispatch = useDispatch();
   const { sessionReducer } = useSelector((state: AppState) => state);
+
+  const [fancyBarState, setFancyBarState] = useState<FancyTypes>(defaultState);
 
   const [formError, setFormError] = useState<FieldErrorProps[]>([]);
 
@@ -49,6 +52,11 @@ const AuthScreen: FC<AuthProps> = ({ navigation }) => {
         return;
       }
       // CONDITION IF FALSE
+      setFancyBarState({
+        visible: true,
+        type: fancyType.failed,
+        msg: "Telah terjadi kesalahan, coba beberapa saat lagi",
+      });
       setIsLoading(false);
       setEmail("");
       setPassword("");
@@ -130,7 +138,7 @@ const AuthScreen: FC<AuthProps> = ({ navigation }) => {
   }, []);
 
   return (
-    <AppCanvas>
+    <AppCanvas {...{ fancyBarState, setFancyBarState }}>
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
         <TextItem type="logo" style={{ marginBottom: heightAdapt(24) }}>
           SCHumanBank
