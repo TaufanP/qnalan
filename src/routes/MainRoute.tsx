@@ -4,7 +4,7 @@ import {
 } from "@react-navigation/stack";
 import React from "react";
 import { pages as p } from "../constants";
-import { HomeScreen } from "../screens";
+import { HomeScreen, ContactListScreen } from "../screens";
 
 const Stack = createStackNavigator();
 
@@ -26,6 +26,7 @@ const MainRoute = () => {
       mode="card"
     >
       <Stack.Screen name={p.HomeScreen} component={HomeScreen} />
+      <Stack.Screen name={p.ContactListScreen} component={ContactListScreen} />
     </Stack.Navigator>
   );
 };

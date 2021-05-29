@@ -1,3 +1,4 @@
+import Contact from "./Contact";
 import HomeHeader from "./HomeHeader";
 
-export { HomeHeader };
+export { Contact, HomeHeader };

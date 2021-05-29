@@ -16,9 +16,10 @@ const ButtonHeader: FC<PropsWithChildren<ButtonHeaderProps>> = ({
 const styles = () =>
   StyleSheet.create({
     container: {
-      backgroundColor: cp.red1,
       height: 54,
       width: 54,
+      justifyContent: "center",
+      alignItems: "center",
     },
   });
 

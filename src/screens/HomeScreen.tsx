@@ -1,8 +1,10 @@
 import { CompositeNavigationProp } from "@react-navigation/core";
 import React, { FC, useEffect } from "react";
-import { AppCanvas, HomeHeader } from "../components";
+import { AppCanvas, ButtonFloat, EmptyState, HomeHeader } from "../components";
 import SplashScreen from "react-native-splash-screen";
 import auth from "@react-native-firebase/auth";
+import { pages as p } from "../constants";
+import { Plus } from "../../assets";
 
 interface HomeScreenProps {
   navigation: CompositeNavigationProp<any, any>;
@@ -19,7 +21,14 @@ const HomeScreen: FC<HomeScreenProps> = ({ navigation }) => {
     return subscriber; // unsubscribe on unmount
   }, []);
 
-  return <AppCanvas header={() => <HomeHeader />}></AppCanvas>;
+  return (
+    <AppCanvas header={() => <HomeHeader />}>
+      <EmptyState />
+      <ButtonFloat onPress={() => navigation.navigate(p.ContactListScreen)}>
+        <Plus />
+      </ButtonFloat>
+    </AppCanvas>
+  );
 };
 
 export default HomeScreen;
