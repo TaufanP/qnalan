@@ -20,10 +20,7 @@ const ContactListScreen: FC<ContactListScreenProps> = ({ navigation }) => {
 
   const keyExtractor = (item: UsersProps) => `${item.uid}`;
   const renderItem = ({ item }: { item: UsersProps }) => (
-    <Contact
-      user={item}
-      onPress={() => navigation.navigate(p.RoomChatScreen)}
-    />
+    <Contact user={item} onPress={() => navigation.replace(p.RoomChatScreen)} />
   );
 
   return (
