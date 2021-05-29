@@ -1,6 +1,8 @@
 const pages = {
   AuthScreen: "AuthScreen",
 
+  ContactListScreen: "ContactListScreen",
+
   HomeScreen: "HomeScreen",
 };
 

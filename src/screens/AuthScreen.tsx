@@ -1,15 +1,21 @@
+import auth from "@react-native-firebase/auth";
 import { CompositeNavigationProp } from "@react-navigation/core";
 import React, { FC, useEffect, useState } from "react";
 import { Keyboard, View } from "react-native";
-import { AppCanvas, Button, TextItem, TextField } from "../components";
-import { heightAdapt, widthPercent } from "../config";
-import { pages as p, spacing as sp, fancyStates as fan } from "../constants";
-import auth from "@react-native-firebase/auth";
-import { FieldErrorProps, FancyTypes } from "../config/types";
-import { loggingIn } from "../redux/actions";
-import { useDispatch, useSelector } from "react-redux";
-import AppState from "../redux";
 import SplashScreen from "react-native-splash-screen";
+import { useDispatch, useSelector } from "react-redux";
+import { AppCanvas, Button, TextField, TextItem } from "../components";
+import { heightAdapt, widthPercent } from "../config";
+import { db } from "../config/firebase";
+import { FancyTypes, FieldErrorProps } from "../config/types";
+import {
+  fancyStates as fan,
+  pages as p,
+  spacing as sp,
+  strings as str,
+} from "../constants";
+import AppState from "../redux";
+import { loggingIn } from "../redux/actions";
 
 interface AuthProps {
   navigation: CompositeNavigationProp<any, any>;
@@ -29,9 +35,6 @@ const AuthScreen: FC<AuthProps> = ({ navigation }) => {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
 
-  const [initializing, setInitializing] = useState(true);
-  const [user, setUser] = useState();
-
   const changeAuth = () => {
     setFormError([]);
     setIsLogin((current) => !current);
@@ -43,7 +46,18 @@ const AuthScreen: FC<AuthProps> = ({ navigation }) => {
         ? await auth().signInWithEmailAndPassword(email, password)
         : await auth().createUserWithEmailAndPassword(email, password);
 
+      setIsLoading(false);
+      setEmail("");
+      setPassword("");
       if (data?.user) {
+        if (!isLogin && data?.additionalUserInfo?.isNewUser) {
+          db.ref(`users/${data?.user?.uid}`).set({
+            displayName: data?.user?.displayName || "",
+            photoURL: data?.user?.photoURL || "",
+            messages: {},
+            email: data?.user?.email,
+          });
+        }
         const { uid, displayName, email } = data?.user;
         dispatch(
           loggingIn({ uid, displayName: displayName || "", email: email || "" })
@@ -55,29 +69,26 @@ const AuthScreen: FC<AuthProps> = ({ navigation }) => {
       setFancyBarState({
         visible: true,
         type: fancyType.failed,
-        msg: "Telah terjadi kesalahan, coba beberapa saat lagi",
+        msg: str.failedHappen,
       });
-      setIsLoading(false);
-      setEmail("");
-      setPassword("");
     } catch (error) {
       setIsLoading(false);
       if (error.code == "auth/wrong-password") {
         return setFormError((current) => [
           ...current,
-          { param: "password", msg: "Kata sandi tidak cocok", value: password },
+          { param: "password", msg: str.passwordInvalid, value: password },
         ]);
       }
       if (error.code == "auth/user-not-found") {
         return setFormError((current) => [
           ...current,
-          { param: "email", msg: "Alamat email belum terdaftar", value: email },
+          { param: "email", msg: str.emailNotExist, value: email },
         ]);
       }
       if (error.code == "auth/email-already-in-use") {
         return setFormError((current) => [
           ...current,
-          { param: "email", msg: "Alamat email tidak tersedia", value: email },
+          { param: "email", msg: str.emailTaken, value: email },
         ]);
       }
     }
@@ -87,7 +98,7 @@ const AuthScreen: FC<AuthProps> = ({ navigation }) => {
     if (email == "") {
       setFormError((current) => [
         ...current,
-        { param: "email", msg: "Harap isi alamat email", value: email },
+        { param: "email", msg: str.fillEmail, value: email },
       ]);
       setIsLoading(false);
       return;
@@ -95,7 +106,7 @@ const AuthScreen: FC<AuthProps> = ({ navigation }) => {
     if (password == "") {
       setFormError((current) => [
         ...current,
-        { param: "password", msg: "Harap isi kata sandi", value: password },
+        { param: "password", msg: str.fillPassword, value: password },
       ]);
       setIsLoading(false);
       return;
@@ -123,13 +134,20 @@ const AuthScreen: FC<AuthProps> = ({ navigation }) => {
   };
 
   const onAuthStateChanged = (user: any) => {
-    setUser(user);
-    if (initializing) setInitializing(false);
     if (user !== null) {
       const { uid, displayName, email } = user;
       dispatch(loggingIn({ uid, displayName, email }));
     }
     SplashScreen.hide();
+  };
+
+  const test = () => {
+    db.ref(`users/${sessionReducer.uid}`).set({
+      displayName: sessionReducer.displayName || "",
+      photoProfile: "",
+      messages: {},
+      email: sessionReducer.email,
+    });
   };
 
   useEffect(() => {
@@ -144,7 +162,7 @@ const AuthScreen: FC<AuthProps> = ({ navigation }) => {
           SCHumanBank
         </TextItem>
         <TextField
-          placeholder="email"
+          placeholder={str.email}
           containerStyle={{ width: widthPercent(80), marginBottom: sp.sm }}
           onChangeText={(e) => setEmail(e)}
           defaultValue={email}
@@ -152,7 +170,7 @@ const AuthScreen: FC<AuthProps> = ({ navigation }) => {
           isError={testError("email")}
         />
         <TextField
-          placeholder="kata sandi"
+          placeholder={str.password}
           secureTextEntry
           containerStyle={{ width: widthPercent(80), marginBottom: sp.sm }}
           onChangeText={(e) => setPassword(e)}
@@ -168,12 +186,13 @@ const AuthScreen: FC<AuthProps> = ({ navigation }) => {
           isLoading={isLoading}
         >
           <TextItem type="normal20White">
-            {isLogin ? "Masuk" : "Daftar"}
+            {isLogin ? str.login : str.register}
           </TextItem>
         </Button>
+        {/* <Button onPress={test} disabled={isLoading}> */}
         <Button onPress={changeAuth} disabled={isLoading}>
           <TextItem type="normal12Main">
-            {isLogin ? "Belum punya akun?" : "Sudah punya akun?"}
+            {isLogin ? str.notHaveAcc : str.haveAcc}
           </TextItem>
         </Button>
       </View>

@@ -4,6 +4,7 @@ import pages from "./pages";
 import spacing from "./spacing";
 import textSize from "./textSize";
 import globalConstants from "./globalConstants";
+import strings from "./strings";
 
 export {
   colorsPalette,
@@ -12,4 +13,5 @@ export {
   spacing,
   pages,
   globalConstants,
+  strings,
 };
