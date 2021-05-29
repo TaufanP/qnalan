@@ -3,19 +3,23 @@ import React, { FC, useEffect, useState } from "react";
 import { Keyboard, View } from "react-native";
 import { AppCanvas, Button, TextItem, TextField } from "../components";
 import { heightAdapt, widthPercent } from "../config";
-import { spacing as sp } from "../constants";
+import { pages as p, spacing as sp, fancyStates as fan } from "../constants";
 import auth from "@react-native-firebase/auth";
-import { FieldErrorProps } from "../config/types";
+import { FieldErrorProps, FancyTypes } from "../config/types";
 import { loggingIn } from "../redux/actions";
 import { useDispatch, useSelector } from "react-redux";
 import AppState from "../redux";
+import SplashScreen from "react-native-splash-screen";
 
 interface AuthProps {
   navigation: CompositeNavigationProp<any, any>;
 }
 const AuthScreen: FC<AuthProps> = ({ navigation }) => {
+  const { defaultState, fancyType } = fan;
   const dispatch = useDispatch();
   const { sessionReducer } = useSelector((state: AppState) => state);
+
+  const [fancyBarState, setFancyBarState] = useState<FancyTypes>(defaultState);
 
   const [formError, setFormError] = useState<FieldErrorProps[]>([]);
 
@@ -33,20 +37,30 @@ const AuthScreen: FC<AuthProps> = ({ navigation }) => {
     setIsLogin((current) => !current);
   };
 
-  const processing = async () => {
-    Keyboard.dismiss();
-    setIsLoading(true);
-    setFormError([]);
+  const firebaseLogin = async () => {
     try {
       const data = isLogin
         ? await auth().signInWithEmailAndPassword(email, password)
         : await auth().createUserWithEmailAndPassword(email, password);
-      console.log({ data });
+
+      if (data?.user) {
+        const { uid, displayName, email } = data?.user;
+        dispatch(
+          loggingIn({ uid, displayName: displayName || "", email: email || "" })
+        );
+        navigation.navigate(p.HomeScreen);
+        return;
+      }
+      // CONDITION IF FALSE
+      setFancyBarState({
+        visible: true,
+        type: fancyType.failed,
+        msg: "Telah terjadi kesalahan, coba beberapa saat lagi",
+      });
       setIsLoading(false);
       setEmail("");
       setPassword("");
     } catch (error) {
-      console.log(error.code);
       setIsLoading(false);
       if (error.code == "auth/wrong-password") {
         return setFormError((current) => [
@@ -69,6 +83,33 @@ const AuthScreen: FC<AuthProps> = ({ navigation }) => {
     }
   };
 
+  const checkForm = () => {
+    if (email == "") {
+      setFormError((current) => [
+        ...current,
+        { param: "email", msg: "Harap isi alamat email", value: email },
+      ]);
+      setIsLoading(false);
+      return;
+    }
+    if (password == "") {
+      setFormError((current) => [
+        ...current,
+        { param: "password", msg: "Harap isi kata sandi", value: password },
+      ]);
+      setIsLoading(false);
+      return;
+    }
+    firebaseLogin();
+  };
+
+  const processing = async () => {
+    Keyboard.dismiss();
+    setIsLoading(true);
+    setFormError([]);
+    checkForm();
+  };
+
   const testError = (field: string) => {
     if (!formError) return false;
 
@@ -88,6 +129,7 @@ const AuthScreen: FC<AuthProps> = ({ navigation }) => {
       const { uid, displayName, email } = user;
       dispatch(loggingIn({ uid, displayName, email }));
     }
+    SplashScreen.hide();
   };
 
   useEffect(() => {
@@ -96,7 +138,7 @@ const AuthScreen: FC<AuthProps> = ({ navigation }) => {
   }, []);
 
   return (
-    <AppCanvas>
+    <AppCanvas {...{ fancyBarState, setFancyBarState }}>
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
         <TextItem type="logo" style={{ marginBottom: heightAdapt(24) }}>
           SCHumanBank
