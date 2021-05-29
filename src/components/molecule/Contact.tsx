@@ -11,13 +11,14 @@ import { Button, ButtonHeader, TextItem } from "../atom";
 import { PlaceholderUser } from "../../../assets";
 interface ContactProps {
   user: UsersProps;
+  onPress?: any;
 }
 
-const Contact: FC<ContactProps> = ({ user }) => {
+const Contact: FC<ContactProps> = ({ user, onPress }) => {
   const s = styles();
   const source = user?.photoURL ? { uri: user.photoURL } : PlaceholderUser;
   return (
-    <Button style={s.container}>
+    <Button style={s.container} onPress={onPress}>
       <View style={s.photoCont}>
         <Image source={source} style={s.photo} />
       </View>
