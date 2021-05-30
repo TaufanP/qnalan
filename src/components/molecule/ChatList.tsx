@@ -22,7 +22,7 @@ const ChatList: FC<ChatListProps> = ({ roomId, onPress, partnerId }) => {
 
   const buttonOnPress = useCallback(
     () => onPress({ messageId: room.messageId, roomId, partnerId }),
-    [roomId, partnerId]
+    [roomId, partnerId, room]
   );
 
   useEffect(() => {
