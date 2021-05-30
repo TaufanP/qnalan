@@ -1,11 +1,11 @@
 import { CompositeNavigationProp } from "@react-navigation/core";
-import React, { FC, useEffect, useState } from "react";
+import React, { FC, useCallback, useEffect, useState } from "react";
 import { FlatList } from "react-native";
-import { AppCanvas, Button, Contact } from "../components";
+import { useSelector } from "react-redux";
+import { AppCanvas, Contact } from "../components";
 import { db } from "../config";
 import { UsersProps } from "../config/types";
-import { pages as p, spacing as sp } from "../constants";
-import { useSelector } from "react-redux";
+import { node as n, pages as p, spacing as sp } from "../constants";
 import AppState from "../redux";
 
 interface ContactListScreenProps {
@@ -15,41 +15,56 @@ const ContactListScreen: FC<ContactListScreenProps> = ({ navigation }) => {
   const { sessionReducer } = useSelector((state: AppState) => state);
   const [users, setUsers] = useState<UsersProps[]>([]);
 
-  const getUsers = async () => {
-    const data = await db.ref("users").once("value");
-    const dataArray = Object.entries(data.val());
-    setUsers(
-      dataArray
-        .filter((user: any) => user[0] !== sessionReducer.uid)
-        .map((item: any) => ({ uid: item[0], ...item[1] }))
-    );
-  };
-  // () => navigation.replace(p.RoomChatScreen)
-
   const createChatRoom = async (partnerId: string) => {
-    const roomId = db.ref(`room_chats/`).push().key;
-    await db.ref(`room_chats/${roomId}`).set({
+    const roomId = db.ref(n.room_chats).push().key;
+    const messageId = db.ref(n.messages).push().key;
+    await db.ref(`${n.room_chats}/${roomId}`).set({
       lastMessage: "",
       participants: {
         [sessionReducer.uid]: { isTyping: false },
         [partnerId]: { isTyping: false },
       },
-      messageId: db.ref("messages").push().key,
+      messageId,
     });
-    db.ref(`users/${sessionReducer.uid}/roomChats`).push({
+    db.ref(`${n.users}/${sessionReducer.uid}/${n.roomChats}`).push({
       roomId,
       partnerId,
     });
-    db.ref(`users/${partnerId}/roomChats`).push({
+    db.ref(`${n.users}/${partnerId}/${n.roomChats}`).push({
       roomId,
       partnerId: sessionReducer.uid,
     });
+    () =>
+      navigation.replace(p.RoomChatScreen, { partnerId, roomId, messageId });
   };
 
   const keyExtractor = (item: UsersProps) => `${item.uid}`;
-  const renderItem = ({ item }: { item: UsersProps }) => (
-    <Contact user={item} onPress={() => createChatRoom(item.uid)} />
+
+  const renderItem = useCallback(
+    ({ item }: { item: UsersProps }) => (
+      <Contact user={item} onPress={() => createChatRoom(item.uid)} />
+    ),
+    []
   );
+
+  useEffect(() => {
+    let isMounted = true;
+    const getUsers = async () => {
+      const data = await db.ref(n.users).once("value");
+      const dataArray = Object.entries(data.val());
+      if (isMounted)
+        setUsers(
+          dataArray
+            .filter((user: any) => user[0] !== sessionReducer.uid)
+            .map((item: any) => ({ uid: item[0], ...item[1] }))
+        );
+    };
+    getUsers();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   return (
     <AppCanvas>
@@ -58,10 +73,6 @@ const ContactListScreen: FC<ContactListScreenProps> = ({ navigation }) => {
         renderItem={renderItem}
         keyExtractor={keyExtractor}
         contentContainerStyle={{ marginTop: sp.sm }}
-      />
-      <Button
-        style={{ width: 40, height: 40, backgroundColor: "red" }}
-        onPress={getUsers}
       />
     </AppCanvas>
   );

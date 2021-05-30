@@ -1,5 +1,5 @@
 import { CompositeNavigationProp } from "@react-navigation/core";
-import React, { FC, PropsWithChildren } from "react";
+import React, { FC, memo, PropsWithChildren } from "react";
 import { Image, StyleSheet, View } from "react-native";
 import { UsersProps } from "../../config/types";
 import {
@@ -49,4 +49,4 @@ const styles = () =>
     },
   });
 
-export default Contact;
+export default memo(Contact);

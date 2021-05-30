@@ -4,11 +4,13 @@ import {
   useRoute,
 } from "@react-navigation/core";
 import React, { FC, useCallback, useEffect, useState } from "react";
-import { AppCanvas, DefaultHeader, HomeHeader } from "../components";
-import { GiftedChat } from "react-native-gifted-chat";
-import StackParamsList from "../constants/screenParams";
-import { db } from "../config";
+import { GiftedChat, IMessage } from "react-native-gifted-chat";
 import { useSelector } from "react-redux";
+import { AppCanvas, DefaultHeader } from "../components";
+import { db } from "../config";
+import { UsersProps } from "../config/types";
+import { node as n } from "../constants";
+import StackParamsList from "../constants/screenParams";
 import AppState from "../redux";
 
 interface RoomChatScreenProps {
@@ -18,35 +20,47 @@ const RoomChatScreen: FC<RoomChatScreenProps> = ({ navigation }) => {
   const { sessionReducer } = useSelector((state: AppState) => state);
   const route = useRoute<RouteProp<StackParamsList, "ROOM_CHAT_SCREEN">>();
   const { messageId, partnerId, roomId } = route.params;
-  const [partner, setPartner] = useState<any>();
-  const [messages, setMessages] = useState<any[]>([]);
+  const [partner, setPartner] = useState<UsersProps>();
+  const [messages, setMessages] = useState<IMessage[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
-  const findPartner = async () => {
-    const dataUser = await db.ref(`users/${partnerId}`).once("value");
-    const user = dataUser.val();
-    setPartner(user);
-  };
+  const user = { _id: sessionReducer.uid };
 
-  const onSend = useCallback((messageGift: any) => {
+  const onSend = useCallback((messageGift: IMessage[]) => {
     const createdAt = new Date().getTime();
     const { _id, ...finalMsg } = messageGift[0];
-    db.ref(`room_chats/${roomId}`).update({ lastMessage: messageGift[0].text });
-    db.ref(`messages/${messageId}/${messageGift[0]._id}`).update({
+    db.ref(`${n.room_chats}/${roomId}`).update({
+      lastMessage: messageGift[0].text,
+    });
+    db.ref(`${n.messages}/${messageId}/${messageGift[0]._id}`).update({
       ...finalMsg,
       createdAt,
     });
   }, []);
 
+  const header = useCallback(
+    () => <DefaultHeader title={partner?.displayName || "Username"} />,
+    [partner]
+  );
+
   useEffect(() => {
+    let isMounted = true;
+    const findPartner = async () => {
+      const dataUser = await db.ref(`${n.users}/${partnerId}`).once("value");
+      const user = dataUser.val();
+      if (isMounted) setPartner(user);
+    };
     findPartner();
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   useEffect(() => {
     setIsLoading(true);
     const onValuChange = async () => {
       const data = await db
-        .ref(`messages/${messageId}`)
+        .ref(`${n.messages}/${messageId}`)
         .orderByChild("createdAt")
         .once("value");
       setMessages(
@@ -58,12 +72,13 @@ const RoomChatScreen: FC<RoomChatScreenProps> = ({ navigation }) => {
       setIsLoading(false);
     };
     onValuChange();
-    return () => db.ref(`messages/${messageId}`).off("value");
+    return () =>
+      db.ref(`${n.messages}/${messageId}`).off("value", onValuChange);
   }, []);
 
   useEffect(() => {
     const onValueChange = db
-      .ref(`messages/${messageId}`)
+      .ref(`${n.messages}/${messageId}`)
       .orderByChild("createdAt")
       .on("child_added", (snapshot) => {
         let chats = [...messages];
@@ -83,22 +98,12 @@ const RoomChatScreen: FC<RoomChatScreenProps> = ({ navigation }) => {
       });
 
     return () =>
-      db.ref(`messages/${messageId}`).off("child_added", onValueChange);
+      db.ref(`${n.messages}/${messageId}`).off("child_added", onValueChange);
   }, [isLoading]);
 
   return (
-    <AppCanvas
-      header={() => (
-        <DefaultHeader title={partner?.displayName || "Username"} />
-      )}
-    >
-      <GiftedChat
-        messages={messages}
-        onSend={onSend}
-        user={{
-          _id: sessionReducer.uid,
-        }}
-      />
+    <AppCanvas header={header}>
+      <GiftedChat messages={messages} onSend={onSend} user={user} />
     </AppCanvas>
   );
 };
