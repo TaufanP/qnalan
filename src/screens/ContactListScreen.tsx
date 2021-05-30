@@ -19,7 +19,7 @@ const ContactListScreen: FC<ContactListScreenProps> = ({ navigation }) => {
     const roomId = db.ref(n.room_chats).push().key;
     const messageId = db.ref(n.messages).push().key;
     await db.ref(`${n.room_chats}/${roomId}`).set({
-      lastMessage: "",
+      lastMessage: { text: "", createdAt: "" },
       participants: {
         [sessionReducer.uid]: { isTyping: false },
         [partnerId]: { isTyping: false },

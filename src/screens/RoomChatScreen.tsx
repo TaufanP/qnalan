@@ -30,7 +30,10 @@ const RoomChatScreen: FC<RoomChatScreenProps> = ({ navigation }) => {
     const createdAt = new Date().getTime();
     const { _id, ...finalMsg } = messageGift[0];
     db.ref(`${n.room_chats}/${roomId}`).update({
-      lastMessage: messageGift[0].text,
+      lastMessage: {
+        text: messageGift[0].text,
+        createdAt: messageGift[0].createdAt,
+      },
     });
     db.ref(`${n.messages}/${messageId}/${messageGift[0]._id}`).update({
       ...finalMsg,
