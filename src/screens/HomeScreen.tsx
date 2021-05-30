@@ -47,12 +47,15 @@ const HomeScreen: FC<HomeScreenProps> = ({ navigation }) => {
 
   const keyExtractor = (item: RoomChatProps) => `${item.roomId}`;
 
-  const renderItem = ({ item }: { item: RoomChatProps }) => (
-    <ChatList
-      roomId={item.roomId}
-      partnerId={item.partnerId}
-      onPress={onPress}
-    />
+  const renderItem = useCallback(
+    ({ item }: { item: RoomChatProps }) => (
+      <ChatList
+        roomId={item.roomId}
+        partnerId={item.partnerId}
+        onPress={onPress}
+      />
+    ),
+    []
   );
 
   const ListEmptyComponent = () => <EmptyState />;

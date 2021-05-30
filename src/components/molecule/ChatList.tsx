@@ -1,4 +1,4 @@
-import React, { FC, useCallback, useEffect, useState } from "react";
+import React, { FC, memo, useCallback, useEffect, useState } from "react";
 import { Image, StyleSheet, View } from "react-native";
 import { PlaceholderUser } from "../../../assets";
 import { db } from "../../config";
@@ -85,4 +85,4 @@ const styles = () =>
     },
   });
 
-export default ChatList;
+export default memo(ChatList);
