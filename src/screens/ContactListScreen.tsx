@@ -1,11 +1,11 @@
 import { CompositeNavigationProp } from "@react-navigation/core";
 import React, { FC, useCallback, useEffect, useState } from "react";
 import { FlatList } from "react-native";
-import { AppCanvas, Button, Contact } from "../components";
+import { useSelector } from "react-redux";
+import { AppCanvas, Contact } from "../components";
 import { db } from "../config";
 import { UsersProps } from "../config/types";
-import { pages as p, spacing as sp } from "../constants";
-import { useSelector } from "react-redux";
+import { node as n, pages as p, spacing as sp } from "../constants";
 import AppState from "../redux";
 
 interface ContactListScreenProps {
@@ -16,9 +16,9 @@ const ContactListScreen: FC<ContactListScreenProps> = ({ navigation }) => {
   const [users, setUsers] = useState<UsersProps[]>([]);
 
   const createChatRoom = async (partnerId: string) => {
-    const roomId = db.ref(`room_chats/`).push().key;
-    const messageId = db.ref("messages").push().key;
-    await db.ref(`room_chats/${roomId}`).set({
+    const roomId = db.ref(n.room_chats).push().key;
+    const messageId = db.ref(n.messages).push().key;
+    await db.ref(`${n.room_chats}/${roomId}`).set({
       lastMessage: "",
       participants: {
         [sessionReducer.uid]: { isTyping: false },
@@ -26,11 +26,11 @@ const ContactListScreen: FC<ContactListScreenProps> = ({ navigation }) => {
       },
       messageId,
     });
-    db.ref(`users/${sessionReducer.uid}/roomChats`).push({
+    db.ref(`${n.users}/${sessionReducer.uid}/${n.roomChats}`).push({
       roomId,
       partnerId,
     });
-    db.ref(`users/${partnerId}/roomChats`).push({
+    db.ref(`${n.users}/${partnerId}/${n.roomChats}`).push({
       roomId,
       partnerId: sessionReducer.uid,
     });
@@ -50,7 +50,7 @@ const ContactListScreen: FC<ContactListScreenProps> = ({ navigation }) => {
   useEffect(() => {
     let isMounted = true;
     const getUsers = async () => {
-      const data = await db.ref("users").once("value");
+      const data = await db.ref(n.users).once("value");
       const dataArray = Object.entries(data.val());
       if (isMounted)
         setUsers(
@@ -59,7 +59,6 @@ const ContactListScreen: FC<ContactListScreenProps> = ({ navigation }) => {
             .map((item: any) => ({ uid: item[0], ...item[1] }))
         );
     };
-
     getUsers();
 
     return () => {

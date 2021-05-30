@@ -14,7 +14,7 @@ import {
 } from "../components";
 import { db } from "../config";
 import { RoomChatParams, RoomChatProps } from "../config/types";
-import { pages as p, spacing as sp } from "../constants";
+import { node as n, pages as p, spacing as sp } from "../constants";
 import AppState from "../redux";
 
 interface HomeScreenProps {
@@ -69,7 +69,7 @@ const HomeScreen: FC<HomeScreenProps> = ({ navigation }) => {
     let isMounted = true;
     const getUsers = async () => {
       const data = await db
-        .ref(`users/${sessionReducer.uid}/roomChats`)
+        .ref(`${n.users}/${sessionReducer.uid}/${n.roomChats}`)
         .once("value");
       if (isMounted) setUsers(Object.values(data.val()));
     };

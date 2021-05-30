@@ -9,6 +9,7 @@ import { useSelector } from "react-redux";
 import { AppCanvas, DefaultHeader } from "../components";
 import { db } from "../config";
 import { UsersProps } from "../config/types";
+import { node as n } from "../constants";
 import StackParamsList from "../constants/screenParams";
 import AppState from "../redux";
 
@@ -28,8 +29,10 @@ const RoomChatScreen: FC<RoomChatScreenProps> = ({ navigation }) => {
   const onSend = useCallback((messageGift: IMessage[]) => {
     const createdAt = new Date().getTime();
     const { _id, ...finalMsg } = messageGift[0];
-    db.ref(`room_chats/${roomId}`).update({ lastMessage: messageGift[0].text });
-    db.ref(`messages/${messageId}/${messageGift[0]._id}`).update({
+    db.ref(`${n.room_chats}/${roomId}`).update({
+      lastMessage: messageGift[0].text,
+    });
+    db.ref(`${n.messages}/${messageId}/${messageGift[0]._id}`).update({
       ...finalMsg,
       createdAt,
     });
@@ -43,7 +46,7 @@ const RoomChatScreen: FC<RoomChatScreenProps> = ({ navigation }) => {
   useEffect(() => {
     let isMounted = true;
     const findPartner = async () => {
-      const dataUser = await db.ref(`users/${partnerId}`).once("value");
+      const dataUser = await db.ref(`${n.users}/${partnerId}`).once("value");
       const user = dataUser.val();
       if (isMounted) setPartner(user);
     };
@@ -57,7 +60,7 @@ const RoomChatScreen: FC<RoomChatScreenProps> = ({ navigation }) => {
     setIsLoading(true);
     const onValuChange = async () => {
       const data = await db
-        .ref(`messages/${messageId}`)
+        .ref(`${n.messages}/${messageId}`)
         .orderByChild("createdAt")
         .once("value");
       setMessages(
@@ -69,12 +72,13 @@ const RoomChatScreen: FC<RoomChatScreenProps> = ({ navigation }) => {
       setIsLoading(false);
     };
     onValuChange();
-    return () => db.ref(`messages/${messageId}`).off("value", onValuChange);
+    return () =>
+      db.ref(`${n.messages}/${messageId}`).off("value", onValuChange);
   }, []);
 
   useEffect(() => {
     const onValueChange = db
-      .ref(`messages/${messageId}`)
+      .ref(`${n.messages}/${messageId}`)
       .orderByChild("createdAt")
       .on("child_added", (snapshot) => {
         let chats = [...messages];
@@ -94,7 +98,7 @@ const RoomChatScreen: FC<RoomChatScreenProps> = ({ navigation }) => {
       });
 
     return () =>
-      db.ref(`messages/${messageId}`).off("child_added", onValueChange);
+      db.ref(`${n.messages}/${messageId}`).off("child_added", onValueChange);
   }, [isLoading]);
 
   return (
