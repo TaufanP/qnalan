@@ -1,50 +1,38 @@
-import { CompositeNavigationProp } from "@react-navigation/core";
-import React, { FC, useState, useEffect } from "react";
+import React, { FC, useEffect, useState } from "react";
 import { Image, StyleSheet, View } from "react-native";
-import { UsersProps } from "../../config/types";
-import {
-  strings as str,
-  spacing as sp,
-  colorsPalette as cp,
-} from "../../constants";
-import { Button, ButtonHeader, TextItem } from "../atom";
 import { PlaceholderUser } from "../../../assets";
 import { db } from "../../config";
-import { useSelector } from "react-redux";
-import AppState from "../../redux";
+import { colorsPalette as cp, spacing as sp } from "../../constants";
+import { Button, TextItem } from "../atom";
 
 interface ChatListProps {
   roomId: any;
+  partnerId: any;
   onPress: any;
 }
 
-const ChatList: FC<ChatListProps> = ({ roomId, onPress }) => {
-  const { sessionReducer } = useSelector((state: AppState) => state);
+const ChatList: FC<ChatListProps> = ({ roomId, onPress, partnerId }) => {
   const [detail, setDetail] = useState<any>({});
-  const [partnerId, setPartnerId] = useState<any>({});
   const [room, setRoom] = useState<any>({});
   const s = styles();
   const getDetail = async () => {
-    const data = await db.ref(`room_chats/${roomId}`).once("value");
-    const roomDetail = data.val();
-    setRoom(roomDetail);
-    const ids = Object.keys(roomDetail.participants);
-    const currentPartnerId =
-      ids[ids.findIndex((uid) => uid !== sessionReducer.uid)];
-    setPartnerId(currentPartnerId);
-    const partnerDetail = await db
-      .ref(`users/${currentPartnerId}`)
-      .once("value");
-    // const partner = await db.ref(`users/${partnerId}`)
+    const partnerDetail = await db.ref(`users/${partnerId}`).once("value");
     setDetail(partnerDetail.val());
   };
   useEffect(() => {
     getDetail();
   }, []);
+  useEffect(() => {
+    const onValuChange = db
+      .ref(`room_chats/${roomId}`)
+      .on("value", (snapshot) => setRoom(snapshot.val()));
+
+    return () => db.ref(`room_chats/${roomId}`).off("value", onValuChange);
+  }, []);
   return (
     <Button
       style={s.container}
-      onPress={() => onPress({ partnerId, messageId: room.messageId, roomId })}
+      onPress={() => onPress({ messageId: room.messageId })}
     >
       <View style={s.photoCont}>
         <Image source={PlaceholderUser} style={s.photo} />

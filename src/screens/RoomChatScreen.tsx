@@ -19,31 +19,18 @@ const RoomChatScreen: FC<RoomChatScreenProps> = ({ navigation }) => {
   const route = useRoute<RouteProp<StackParamsList, "ROOM_CHAT_SCREEN">>();
   const { messageId, partnerId, roomId } = route.params;
   const [partner, setPartner] = useState<any>();
-  const [messages, setMessages] = useState<any>();
+  const [messages, setMessages] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+
   const findPartner = async () => {
     const dataUser = await db.ref(`users/${partnerId}`).once("value");
     const user = dataUser.val();
     setPartner(user);
-    const dataMessages = await db.ref(`messages/${messageId}`).once("value");
-    const msgs = dataMessages.val();
-    if (msgs == null) {
-      setMessages([]);
-    } else {
-      const msgArray = Object.entries(msgs);
-      const finalMessages = msgArray.map((chat: any) => ({
-        _id: chat[0],
-        ...chat[1],
-      }));
-      setMessages(finalMessages);
-    }
   };
 
   const onSend = useCallback((messageGift: any) => {
     const createdAt = new Date().getTime();
     const { _id, ...finalMsg } = messageGift[0];
-    setMessages((previousMessages: any) =>
-      GiftedChat.append(previousMessages, { ...messageGift[0], createdAt })
-    );
     db.ref(`room_chats/${roomId}`).update({ lastMessage: messageGift[0].text });
     db.ref(`messages/${messageId}/${messageGift[0]._id}`).update({
       ...finalMsg,
@@ -54,6 +41,50 @@ const RoomChatScreen: FC<RoomChatScreenProps> = ({ navigation }) => {
   useEffect(() => {
     findPartner();
   }, []);
+
+  useEffect(() => {
+    setIsLoading(true);
+    const onValuChange = async () => {
+      const data = await db
+        .ref(`messages/${messageId}`)
+        .orderByChild("createdAt")
+        .once("value");
+      setMessages(
+        Object.values(data.val()).map((chat: any) => ({
+          _id: chat.createdAt,
+          ...chat,
+        }))
+      );
+      setIsLoading(false);
+    };
+    onValuChange();
+    return () => db.ref(`messages/${messageId}`).off("value");
+  }, []);
+
+  useEffect(() => {
+    const onValueChange = db
+      .ref(`messages/${messageId}`)
+      .orderByChild("createdAt")
+      .on("child_added", (snapshot) => {
+        let chats = [...messages];
+        const result = snapshot.val();
+        const finalMessages = { ...result, _id: result.createdAt };
+        chats.push(finalMessages);
+        if (!isLoading)
+          setMessages((current) => {
+            const isExist = current.findIndex(
+              (chat) => chat._id == finalMessages._id
+            );
+            if (isExist == -1) {
+              return [finalMessages, ...current];
+            }
+            return current;
+          });
+      });
+
+    return () =>
+      db.ref(`messages/${messageId}`).off("child_added", onValueChange);
+  }, [isLoading]);
 
   return (
     <AppCanvas

@@ -11,7 +11,7 @@ import {
 } from "../components";
 import SplashScreen from "react-native-splash-screen";
 import auth from "@react-native-firebase/auth";
-import { pages as p } from "../constants";
+import { pages as p, spacing as sp } from "../constants";
 import { Plus } from "../../assets";
 import { UsersProps } from "../config/types";
 import { useSelector } from "react-redux";
@@ -31,19 +31,16 @@ const HomeScreen: FC<HomeScreenProps> = ({ navigation }) => {
   };
 
   const keyExtractor = (item: UsersProps) => `${item.uid}`;
-  const renderItem = ({ item }: { item: UsersProps }) => (
+  const renderItem = ({ item }: any) => (
     <ChatList
-      roomId={item}
-      onPress={({
-        partnerId,
-        messageId,
-        roomId,
-      }: {
-        partnerId: string;
-        messageId: string;
-        roomId: string;
-      }) =>
-        navigation.navigate(p.RoomChatScreen, { partnerId, messageId, roomId })
+      roomId={item.roomId}
+      partnerId={item.partnerId}
+      onPress={({ messageId }: { messageId: string }) =>
+        navigation.navigate(p.RoomChatScreen, {
+          partnerId: item.partnerId,
+          roomId: item.roomId,
+          messageId,
+        })
       }
     />
   );
@@ -65,6 +62,7 @@ const HomeScreen: FC<HomeScreenProps> = ({ navigation }) => {
         data={users}
         renderItem={renderItem}
         keyExtractor={keyExtractor}
+        contentContainerStyle={{ marginTop: sp.sm }}
       />
       <Button
         style={{ width: 40, height: 40, backgroundColor: "red" }}

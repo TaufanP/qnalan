@@ -26,18 +26,24 @@ const ContactListScreen: FC<ContactListScreenProps> = ({ navigation }) => {
   };
   // () => navigation.replace(p.RoomChatScreen)
 
-  const createChatRoom = async (id: string) => {
-    const roomKey = db.ref(`room_chats/`).push().key;
-    await db.ref(`room_chats/${roomKey}`).set({
+  const createChatRoom = async (partnerId: string) => {
+    const roomId = db.ref(`room_chats/`).push().key;
+    await db.ref(`room_chats/${roomId}`).set({
       lastMessage: "",
       participants: {
         [sessionReducer.uid]: { isTyping: false },
-        [id]: { isTyping: false },
+        [partnerId]: { isTyping: false },
       },
       messageId: db.ref("messages").push().key,
     });
-    db.ref(`users/${sessionReducer.uid}/roomChats`).push(roomKey);
-    db.ref(`users/${id}/roomChats`).push(roomKey);
+    db.ref(`users/${sessionReducer.uid}/roomChats`).push({
+      roomId,
+      partnerId,
+    });
+    db.ref(`users/${partnerId}/roomChats`).push({
+      roomId,
+      partnerId: sessionReducer.uid,
+    });
   };
 
   const keyExtractor = (item: UsersProps) => `${item.uid}`;
