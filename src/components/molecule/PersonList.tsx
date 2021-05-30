@@ -10,7 +10,6 @@ interface PersonListProps {
   subtitle?: string;
   time?: string;
   onPress?: any;
-  type?: string;
 }
 
 const PersonList: FC<PersonListProps> = ({
@@ -19,7 +18,6 @@ const PersonList: FC<PersonListProps> = ({
   title,
   time,
   subtitle,
-  type,
 }) => {
   const source = uri ? { uri } : PlaceholderUser;
   const s = styles();
@@ -31,14 +29,12 @@ const PersonList: FC<PersonListProps> = ({
       </View>
       <View style={{ flex: 1 }}>
         <View style={s.titleCont}>
-          <TextItem style={{ fontWeight: "bold" }}>
-            {title || "Username"}
-          </TextItem>
-          {type !== "contact" && (
-            <TextItem type="normal12Text3">{time || "00:00"}</TextItem>
+          <TextItem style={{ fontWeight: "bold" }}>{title || "title"}</TextItem>
+          {time !== undefined && (
+            <TextItem type="normal12Text3">{time}</TextItem>
           )}
         </View>
-        {type !== "contact" && (
+        {subtitle !== undefined && (
           <TextItem>{subtitle || "Ayo mulai chat"}</TextItem>
         )}
       </View>

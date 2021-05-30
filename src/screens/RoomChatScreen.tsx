@@ -29,11 +29,9 @@ const RoomChatScreen: FC<RoomChatScreenProps> = ({ navigation }) => {
   const onSend = useCallback((messageGift: IMessage[]) => {
     const createdAt = new Date().getTime();
     const { _id, ...finalMsg } = messageGift[0];
-    db.ref(`${n.room_chats}/${roomId}`).update({
-      lastMessage: {
-        text: messageGift[0].text,
-        createdAt: messageGift[0].createdAt,
-      },
+    db.ref(`${n.room_chats}/${roomId}/${n.lastMessage}`).update({
+      text: messageGift[0].text,
+      createdAt,
     });
     db.ref(`${n.messages}/${messageId}/${messageGift[0]._id}`).update({
       ...finalMsg,

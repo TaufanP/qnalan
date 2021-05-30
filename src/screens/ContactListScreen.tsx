@@ -2,7 +2,7 @@ import { CompositeNavigationProp } from "@react-navigation/core";
 import React, { FC, useCallback, useEffect, useState } from "react";
 import { FlatList } from "react-native";
 import { useSelector } from "react-redux";
-import { AppCanvas, Contact, PersonList } from "../components";
+import { AppCanvas, PersonList } from "../components";
 import { db } from "../config";
 import { RoomChatProps, UsersProps } from "../config/types";
 import { node as n, pages as p, spacing as sp } from "../constants";
@@ -61,7 +61,6 @@ const ContactListScreen: FC<ContactListScreenProps> = ({ navigation }) => {
     const props = {
       title: item.displayName,
       uri: item.photoURL,
-      type: "contact",
       onPress: () => createChatRoom(item.uid),
     };
     return <PersonList {...props} />;
