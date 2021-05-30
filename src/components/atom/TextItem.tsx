@@ -49,6 +49,7 @@ const styles = () =>
     bold20Text1: { fontWeight: "bold", fontSize: 20, color: cp.text1 },
 
     normal12Main: { fontWeight: "normal", fontSize: 12, color: cp.main },
+    normal12Text3: { fontWeight: "normal", fontSize: 14, color: cp.text3 },
     normal20White: { fontWeight: "normal", fontSize: 20, color: cp.white },
 
     // COLOR

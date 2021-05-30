@@ -7,6 +7,7 @@ import { RoomDetailProps } from "../../config/types/firebase/roomDetail";
 import { colorsPalette as cp, spacing as sp } from "../../constants";
 import { RoomDetailValue, UsersValue } from "../../constants/defaultValue";
 import { Button, TextItem } from "../atom";
+import moment from "moment";
 
 interface ChatListProps {
   roomId: string;
@@ -53,16 +54,14 @@ const ChatList: FC<ChatListProps> = ({ roomId, onPress, partnerId }) => {
       </View>
       <View style={{ flex: 1 }}>
         <View style={s.titleCont}>
-          <TextItem style={{ fontSize: 14, fontWeight: "bold" }}>
+          <TextItem style={{ fontWeight: "bold" }}>
             {detail.displayName || "Username"}
           </TextItem>
-          <TextItem style={{ fontSize: 14 }}>
-            {room.lastMessage.createdAt || "10"}
+          <TextItem type="normal12Text3">
+            {moment(room.lastMessage.createdAt).format("HH:MM") || "10"}
           </TextItem>
         </View>
-        <TextItem style={{ fontSize: 14 }}>
-          {room.lastMessage.text || "Ayo mulai chat"}
-        </TextItem>
+        <TextItem>{room.lastMessage.text || "Ayo mulai chat"}</TextItem>
       </View>
     </Button>
   );

@@ -141,15 +141,6 @@ const AuthScreen: FC<AuthProps> = ({ navigation }) => {
     SplashScreen.hide();
   };
 
-  const test = () => {
-    db.ref(`users/${sessionReducer.uid}`).set({
-      displayName: sessionReducer.displayName || "",
-      photoProfile: "",
-      messages: {},
-      email: sessionReducer.email,
-    });
-  };
-
   useEffect(() => {
     const subscriber = auth().onAuthStateChanged(onAuthStateChanged);
     return subscriber; // unsubscribe on unmount
@@ -168,6 +159,7 @@ const AuthScreen: FC<AuthProps> = ({ navigation }) => {
           defaultValue={email}
           warningText={testError("email")}
           isError={testError("email")}
+          autoCapitalize={"none"}
         />
         <TextField
           placeholder={str.password}
