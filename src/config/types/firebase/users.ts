@@ -5,4 +5,9 @@ interface UsersProps {
   email: string;
 }
 
-export type { UsersProps };
+interface RoomChatProps {
+  partnerId: string;
+  roomId: string;
+}
+
+export type { UsersProps, RoomChatProps };
