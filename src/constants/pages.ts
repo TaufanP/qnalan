@@ -4,6 +4,8 @@ const pages = {
   ContactListScreen: "ContactListScreen",
 
   HomeScreen: "HomeScreen",
+
+  RoomChatScreen: "RoomChatScreen",
 };
 
 export default pages;
