@@ -5,6 +5,7 @@ const initialState: ReduxSessionStateProps = {
   displayName: "",
   email: "",
   uid: "",
+  photoURL: "",
 };
 
 const sessionReducer = (

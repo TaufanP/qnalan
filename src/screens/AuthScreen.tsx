@@ -58,9 +58,14 @@ const AuthScreen: FC<AuthProps> = ({ navigation }) => {
             email: data?.user?.email,
           });
         }
-        const { uid, displayName, email } = data?.user;
+        const { uid, displayName, email, photoURL } = data?.user;
         dispatch(
-          loggingIn({ uid, displayName: displayName || "", email: email || "" })
+          loggingIn({
+            uid,
+            displayName: displayName || "",
+            email: email || "",
+            photoURL: photoURL || "",
+          })
         );
         navigation.navigate(p.HomeScreen);
         return;
@@ -135,8 +140,8 @@ const AuthScreen: FC<AuthProps> = ({ navigation }) => {
 
   const onAuthStateChanged = (user: any) => {
     if (user !== null) {
-      const { uid, displayName, email } = user;
-      dispatch(loggingIn({ uid, displayName, email }));
+      const { uid, displayName, email, photoURL } = user;
+      dispatch(loggingIn({ uid, displayName, email, photoURL }));
     }
     SplashScreen.hide();
   };

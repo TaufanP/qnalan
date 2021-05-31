@@ -6,13 +6,17 @@ import { strings as str } from "../../constants";
 import { ButtonHeader, TextItem } from "../atom";
 interface HomeHeader {
   navigation?: CompositeNavigationProp<any, any>;
+  onPress?: any;
 }
 
-const HomeHeader: FC<PropsWithChildren<HomeHeader>> = ({ children }) => {
+const HomeHeader: FC<PropsWithChildren<HomeHeader>> = ({
+  children,
+  onPress,
+}) => {
   const s = styles();
   return (
     <View style={s.container}>
-      <ButtonHeader>
+      <ButtonHeader onPress={onPress}>
         <HamburgerMenu width={24} height={24} stroke={"#FFF"} />
       </ButtonHeader>
       <View style={s.midContent}>

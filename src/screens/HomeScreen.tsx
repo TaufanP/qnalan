@@ -4,7 +4,7 @@ import React, { FC, useCallback, useEffect, useState } from "react";
 import { FlatList } from "react-native";
 import SplashScreen from "react-native-splash-screen";
 import { useSelector } from "react-redux";
-import { Plus } from "../../assets";
+import { Inbox } from "../../assets";
 import {
   AppCanvas,
   ButtonFloat,
@@ -14,12 +14,18 @@ import {
 } from "../components";
 import { db } from "../config";
 import { RoomChatParams, RoomChatProps } from "../config/types";
-import { node as n, pages as p, spacing as sp } from "../constants";
+import {
+  colorsPalette as cp,
+  node as n,
+  pages as p,
+  spacing as sp,
+} from "../constants";
 import AppState from "../redux";
 
 interface HomeScreenProps {
   navigation: CompositeNavigationProp<any, any>;
 }
+
 const HomeScreen: FC<HomeScreenProps> = ({ navigation }) => {
   const { sessionReducer } = useSelector((state: AppState) => state);
   const [users, setUsers] = useState<RoomChatProps[]>([]);
@@ -80,7 +86,9 @@ const HomeScreen: FC<HomeScreenProps> = ({ navigation }) => {
   }, []);
 
   return (
-    <AppCanvas header={() => <HomeHeader />}>
+    <AppCanvas
+      header={() => <HomeHeader onPress={() => navigation.toggleDrawer()} />}
+    >
       <FlatList
         data={users}
         renderItem={renderItem}
@@ -89,7 +97,7 @@ const HomeScreen: FC<HomeScreenProps> = ({ navigation }) => {
         ListEmptyComponent={ListEmptyComponent}
       />
       <ButtonFloat onPress={buttonPress}>
-        <Plus />
+        <Inbox stroke={cp.white} />
       </ButtonFloat>
     </AppCanvas>
   );
