@@ -21,7 +21,7 @@ const AppCanvas: FC<PropsWithChildren<AppCanvasProps>> = ({
   const s = styles();
   return (
     <View style={s.container}>
-      <StatusBar backgroundColor={cp.white} barStyle="dark-content" />
+      <StatusBar backgroundColor={"#449CDA"} barStyle="light-content" />
       {header && <AppHeader>{header()}</AppHeader>}
       {children}
       <FancyBar {...{ fancyBarState, setFancyBarState }} />

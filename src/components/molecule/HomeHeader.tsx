@@ -18,9 +18,9 @@ const HomeHeader: FC<PropsWithChildren<HomeHeader>> = ({ children }) => {
       <View style={s.midContent}>
         <TextItem type="header">{str.roomChat}</TextItem>
       </View>
-      <ButtonHeader>
-        <Search width={24} height={24} fill={"#FFF"} />
-      </ButtonHeader>
+      {/* <ButtonHeader>
+        <Search width={20} height={20} fill={"#FFF"} />
+      </ButtonHeader> */}
     </View>
   );
 };

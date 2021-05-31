@@ -4,8 +4,10 @@ import {
   useRoute,
 } from "@react-navigation/core";
 import React, { FC, useCallback, useEffect, useState } from "react";
+import { Image } from "react-native";
 import { GiftedChat, IMessage } from "react-native-gifted-chat";
 import { useSelector } from "react-redux";
+import { PlaceholderUser } from "../../assets";
 import { AppCanvas, DefaultHeader } from "../components";
 import { db } from "../config";
 import { UsersProps } from "../config/types";
@@ -29,8 +31,9 @@ const RoomChatScreen: FC<RoomChatScreenProps> = ({ navigation }) => {
   const onSend = useCallback((messageGift: IMessage[]) => {
     const createdAt = new Date().getTime();
     const { _id, ...finalMsg } = messageGift[0];
-    db.ref(`${n.room_chats}/${roomId}`).update({
-      lastMessage: messageGift[0].text,
+    db.ref(`${n.room_chats}/${roomId}/${n.lastMessage}`).update({
+      text: messageGift[0].text,
+      createdAt,
     });
     db.ref(`${n.messages}/${messageId}/${messageGift[0]._id}`).update({
       ...finalMsg,
@@ -39,8 +42,18 @@ const RoomChatScreen: FC<RoomChatScreenProps> = ({ navigation }) => {
   }, []);
 
   const header = useCallback(
-    () => <DefaultHeader title={partner?.displayName || "Username"} />,
+    () => (
+      <DefaultHeader
+        title={partner?.displayName || "Username"}
+        onPress={() => navigation.goBack()}
+      />
+    ),
     [partner]
+  );
+
+  const renderAvatar = useCallback(
+    () => <Image source={PlaceholderUser} style={{ width: 32, height: 32 }} />,
+    []
   );
 
   useEffect(() => {
@@ -103,7 +116,12 @@ const RoomChatScreen: FC<RoomChatScreenProps> = ({ navigation }) => {
 
   return (
     <AppCanvas header={header}>
-      <GiftedChat messages={messages} onSend={onSend} user={user} />
+      <GiftedChat
+        messages={messages}
+        onSend={onSend}
+        user={user}
+        renderAvatar={renderAvatar}
+      />
     </AppCanvas>
   );
 };

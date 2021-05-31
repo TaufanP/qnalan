@@ -2,9 +2,9 @@ import { CompositeNavigationProp } from "@react-navigation/core";
 import React, { FC, useCallback, useEffect, useState } from "react";
 import { FlatList } from "react-native";
 import { useSelector } from "react-redux";
-import { AppCanvas, Contact } from "../components";
+import { AppCanvas, DefaultHeader, PersonList } from "../components";
 import { db } from "../config";
-import { UsersProps } from "../config/types";
+import { RoomChatProps, UsersProps } from "../config/types";
 import { node as n, pages as p, spacing as sp } from "../constants";
 import AppState from "../redux";
 
@@ -16,10 +16,28 @@ const ContactListScreen: FC<ContactListScreenProps> = ({ navigation }) => {
   const [users, setUsers] = useState<UsersProps[]>([]);
 
   const createChatRoom = async (partnerId: string) => {
+    const chatList = await db
+      .ref(`${n.users}/${sessionReducer.uid}/${n.roomChats}`)
+      .once("value");
+    const chats: RoomChatProps[] = Object.values(chatList.val());
+    const isExist = chats.findIndex((chat) => chat.partnerId == partnerId);
+    if (isExist !== -1) {
+      const details = chats[isExist];
+      const msgId = await db
+        .ref(`${n.room_chats}/${details.roomId}/${n.messageId}`)
+        .once("value");
+      navigation.replace(p.RoomChatScreen, {
+        partnerId,
+        roomId: details.roomId,
+        messageId: msgId.val(),
+      });
+      return;
+    }
+
     const roomId = db.ref(n.room_chats).push().key;
     const messageId = db.ref(n.messages).push().key;
     await db.ref(`${n.room_chats}/${roomId}`).set({
-      lastMessage: "",
+      lastMessage: { text: "", createdAt: "" },
       participants: {
         [sessionReducer.uid]: { isTyping: false },
         [partnerId]: { isTyping: false },
@@ -34,15 +52,26 @@ const ContactListScreen: FC<ContactListScreenProps> = ({ navigation }) => {
       roomId,
       partnerId: sessionReducer.uid,
     });
-    () =>
-      navigation.replace(p.RoomChatScreen, { partnerId, roomId, messageId });
+    navigation.replace(p.RoomChatScreen, { partnerId, roomId, messageId });
   };
 
   const keyExtractor = (item: UsersProps) => `${item.uid}`;
 
-  const renderItem = useCallback(
-    ({ item }: { item: UsersProps }) => (
-      <Contact user={item} onPress={() => createChatRoom(item.uid)} />
+  const renderItem = useCallback(({ item }: { item: UsersProps }) => {
+    const props = {
+      title: item.displayName,
+      uri: item.photoURL,
+      onPress: () => createChatRoom(item.uid),
+    };
+    return <PersonList {...props} />;
+  }, []);
+
+  const header = useCallback(
+    () => (
+      <DefaultHeader
+        title="Teman Sekitar"
+        onPress={() => navigation.goBack()}
+      />
     ),
     []
   );
@@ -67,7 +96,7 @@ const ContactListScreen: FC<ContactListScreenProps> = ({ navigation }) => {
   }, []);
 
   return (
-    <AppCanvas>
+    <AppCanvas header={header}>
       <FlatList
         data={users}
         renderItem={renderItem}

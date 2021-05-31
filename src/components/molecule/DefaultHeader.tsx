@@ -4,22 +4,27 @@ import { ArrowBack } from "../../../assets";
 import { ButtonHeader, TextItem } from "../atom";
 interface DefaultHeaderProps {
   title: string;
+  onPress?: any;
+  onPressRight?: any;
+  rightComponent?: () => JSX.Element;
 }
 
-const DefaultHeader: FC<DefaultHeaderProps> = ({ title = "User name" }) => {
+const DefaultHeader: FC<DefaultHeaderProps> = ({
+  title = "User name",
+  onPress,
+  rightComponent = () => <></>,
+  onPressRight,
+}) => {
   const s = styles();
   return (
     <View style={s.container}>
-      <ButtonHeader>
-        <ArrowBack width={20} height={20} fill={"#FFF"} />
+      <ButtonHeader onPress={onPress}>
+        <ArrowBack width={16} height={16} fill={"#FFF"} />
       </ButtonHeader>
       <View style={s.midContent}>
         <TextItem type="header">{title}</TextItem>
       </View>
-      <ButtonHeader>
-        <></>
-        {/* <Search width={24} height={24} fill={"#FFF"} /> */}
-      </ButtonHeader>
+      <ButtonHeader onPress={onPressRight}>{rightComponent()}</ButtonHeader>
     </View>
   );
 };

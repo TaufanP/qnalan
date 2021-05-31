@@ -6,8 +6,13 @@ interface ParticipantProps {
   [key: string]: TypingProps;
 }
 
+interface LastMessageProps {
+  text: string;
+  createdAt: string | number;
+}
+
 interface RoomDetailProps {
-  lastMessage: string;
+  lastMessage: LastMessageProps;
   messageId: string;
   participants: ParticipantProps;
 }
