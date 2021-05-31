@@ -16,10 +16,10 @@ const HomeHeader: FC<PropsWithChildren<HomeHeader>> = ({ children }) => {
         <HamburgerMenu width={24} height={24} stroke={"#FFF"} />
       </ButtonHeader>
       <View style={s.midContent}>
-        <TextItem type="header">{str.roomChat}</TextItem>
+        <TextItem type="bold18White">{str.roomChat}</TextItem>
       </View>
       <ButtonHeader>
-        <Search width={24} height={24} fill={"#FFF"} />
+        <Search width={20} height={20} fill={"#FFF"} />
       </ButtonHeader>
     </View>
   );

@@ -11,10 +11,10 @@ const DefaultHeader: FC<DefaultHeaderProps> = ({ title = "User name" }) => {
   return (
     <View style={s.container}>
       <ButtonHeader>
-        <ArrowBack width={20} height={20} fill={"#FFF"} />
+        <ArrowBack width={16} height={16} fill={"#FFF"} />
       </ButtonHeader>
       <View style={s.midContent}>
-        <TextItem type="header">{title}</TextItem>
+        <TextItem type="bold18White">{title}</TextItem>
       </View>
       <ButtonHeader>
         <></>

@@ -2,7 +2,7 @@ import { CompositeNavigationProp } from "@react-navigation/core";
 import React, { FC, useCallback, useEffect, useState } from "react";
 import { FlatList } from "react-native";
 import { useSelector } from "react-redux";
-import { AppCanvas, PersonList } from "../components";
+import { AppCanvas, DefaultHeader, PersonList } from "../components";
 import { db } from "../config";
 import { RoomChatProps, UsersProps } from "../config/types";
 import { node as n, pages as p, spacing as sp } from "../constants";
@@ -66,6 +66,8 @@ const ContactListScreen: FC<ContactListScreenProps> = ({ navigation }) => {
     return <PersonList {...props} />;
   }, []);
 
+  const header = useCallback(() => <DefaultHeader title="Teman Sekitar" />, []);
+
   useEffect(() => {
     let isMounted = true;
     const getUsers = async () => {
@@ -86,7 +88,7 @@ const ContactListScreen: FC<ContactListScreenProps> = ({ navigation }) => {
   }, []);
 
   return (
-    <AppCanvas>
+    <AppCanvas header={header}>
       <FlatList
         data={users}
         renderItem={renderItem}
