@@ -42,7 +42,12 @@ const RoomChatScreen: FC<RoomChatScreenProps> = ({ navigation }) => {
   }, []);
 
   const header = useCallback(
-    () => <DefaultHeader title={partner?.displayName || "Username"} />,
+    () => (
+      <DefaultHeader
+        title={partner?.displayName || "Username"}
+        onPress={() => navigation.goBack()}
+      />
+    ),
     [partner]
   );
 

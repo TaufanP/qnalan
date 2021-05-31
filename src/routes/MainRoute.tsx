@@ -15,7 +15,7 @@ const MainRoute = () => {
       headerMode="none"
       screenOptions={({ route, navigation }) => ({
         headerShown: false,
-        gestureEnabled: true,
+        // gestureEnabled: true,
         cardOverlayEnabled: true,
         headerStatusBarHeight:
           navigation.dangerouslyGetState().routes.indexOf(route) > 0

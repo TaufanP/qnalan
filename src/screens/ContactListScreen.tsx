@@ -66,7 +66,15 @@ const ContactListScreen: FC<ContactListScreenProps> = ({ navigation }) => {
     return <PersonList {...props} />;
   }, []);
 
-  const header = useCallback(() => <DefaultHeader title="Teman Sekitar" />, []);
+  const header = useCallback(
+    () => (
+      <DefaultHeader
+        title="Teman Sekitar"
+        onPress={() => navigation.goBack()}
+      />
+    ),
+    []
+  );
 
   useEffect(() => {
     let isMounted = true;

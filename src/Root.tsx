@@ -11,7 +11,8 @@ const Root: FC = () => {
 
   return (
     <NavigationContainer>
-      {uid == "" ? <AuthRoute /> : <MainRoute />}
+      <MainRoute />
+      {/* {uid == "" ? <AuthRoute /> : <MainRoute />} */}
     </NavigationContainer>
   );
 };
