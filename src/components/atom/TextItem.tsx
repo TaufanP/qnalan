@@ -52,6 +52,7 @@ const styles = () =>
 
     normal12Main: { fontWeight: "normal", fontSize: 12, color: cp.main },
     normal12Text3: { fontWeight: "normal", fontSize: 14, color: cp.text3 },
+    normal14Red1: { fontWeight: "normal", fontSize: 14, color: cp.red1 },
     normal14White: { fontWeight: "normal", fontSize: 14, color: cp.white },
     normal20White: { fontWeight: "normal", fontSize: 20, color: cp.white },
 

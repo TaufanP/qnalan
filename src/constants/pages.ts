@@ -3,7 +3,11 @@ const pages = {
 
   ContactListScreen: "ContactListScreen",
 
+  DrawerRoute: "DrawerRoute",
+
   HomeScreen: "HomeScreen",
+
+  ProfileScreen: "ProfileScreen",
 
   RoomChatScreen: "RoomChatScreen",
 };
