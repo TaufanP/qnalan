@@ -3,7 +3,7 @@ import { CompositeNavigationProp } from "@react-navigation/core";
 import React, { FC, useCallback, useEffect, useState } from "react";
 import { FlatList } from "react-native";
 import SplashScreen from "react-native-splash-screen";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Inbox } from "../../assets";
 import {
   AppCanvas,
@@ -21,12 +21,14 @@ import {
   spacing as sp,
 } from "../constants";
 import AppState from "../redux";
+import { loggingOut } from "../redux/actions";
 
 interface HomeScreenProps {
   navigation: CompositeNavigationProp<any, any>;
 }
 
 const HomeScreen: FC<HomeScreenProps> = ({ navigation }) => {
+  const dispatch = useDispatch();
   const { sessionReducer } = useSelector((state: AppState) => state);
   const [users, setUsers] = useState<RoomChatProps[]>([]);
 
@@ -48,7 +50,13 @@ const HomeScreen: FC<HomeScreenProps> = ({ navigation }) => {
   const onAuthStateChanged = (user: any) => {
     if (user !== null) {
       SplashScreen.hide();
+      return;
     }
+    dispatch(loggingOut());
+    navigation.reset({
+      index: 0,
+      routes: [{ name: p.AuthScreen }],
+    });
   };
 
   const keyExtractor = (item: RoomChatProps) => `${item.roomId}`;
@@ -74,10 +82,18 @@ const HomeScreen: FC<HomeScreenProps> = ({ navigation }) => {
   useEffect(() => {
     let isMounted = true;
     const getUsers = async () => {
-      const data = await db
-        .ref(`${n.users}/${sessionReducer.uid}/${n.roomChats}`)
-        .once("value");
-      if (isMounted) setUsers(Object.values(data.val()));
+      try {
+        const data = await db
+          .ref(`${n.users}/${sessionReducer.uid}/${n.roomChats}`)
+          .once("value");
+        if (isMounted) setUsers(Object.values(data.val()));
+      } catch (error) {
+        dispatch(loggingOut());
+        navigation.reset({
+          index: 0,
+          routes: [{ name: p.AuthScreen }],
+        });
+      }
     };
     getUsers();
     return () => {

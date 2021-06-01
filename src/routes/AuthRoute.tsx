@@ -5,6 +5,7 @@ import {
 import React from "react";
 import { pages as p } from "../constants";
 import { AuthScreen, HomeScreen } from "../screens";
+import DrawerRoute from "./DrawerRoute";
 
 const Stack = createStackNavigator();
 
@@ -26,7 +27,7 @@ const AuthRoute = () => {
       mode="card"
     >
       <Stack.Screen name={p.AuthScreen} component={AuthScreen} />
-      <Stack.Screen name={p.HomeScreen} component={HomeScreen} />
+      <Stack.Screen name={p.DrawerRoute} component={DrawerRoute} />
     </Stack.Navigator>
   );
 };

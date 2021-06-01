@@ -8,11 +8,9 @@ const Root: FC = () => {
   const { sessionReducer } = useSelector((state: AppState) => state);
 
   const { uid } = sessionReducer;
-
   return (
     <NavigationContainer>
-      <MainRoute />
-      {/* {uid == "" ? <AuthRoute /> : <MainRoute />} */}
+      {uid == "" ? <AuthRoute /> : <MainRoute />}
     </NavigationContainer>
   );
 };

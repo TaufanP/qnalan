@@ -67,7 +67,7 @@ const AuthScreen: FC<AuthProps> = ({ navigation }) => {
             photoURL: photoURL || "",
           })
         );
-        navigation.navigate(p.HomeScreen);
+        navigation.navigate(p.DrawerRoute);
         return;
       }
       // CONDITION IF FALSE

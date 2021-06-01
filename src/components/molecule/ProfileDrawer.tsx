@@ -47,7 +47,9 @@ const ProfileDrawer: FC<ProfileDrawerProps> = ({ navigation }) => {
       </View>
       <View style={{ justifyContent: "center" }}>
         <TextItem>{displayName || "Username"}</TextItem>
-        {email && <TextItem style={{ fontSize: 12 }}>{email}</TextItem>}
+        {email?.length !== 0 && (
+          <TextItem style={{ fontSize: 12 }}>{email}</TextItem>
+        )}
       </View>
     </Button>
   );
