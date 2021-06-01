@@ -1,4 +1,4 @@
-import { LOGIN } from "../actionTypes";
+import { LOGIN, LOGOUT } from "../actionTypes";
 import { ReduxSessionStateProps } from "../../config/types";
 
 const loggingIn = (payload: ReduxSessionStateProps) => ({
@@ -6,4 +6,8 @@ const loggingIn = (payload: ReduxSessionStateProps) => ({
   payload,
 });
 
-export { loggingIn };
+const loggingOut = () => ({
+  type: LOGOUT,
+});
+
+export { loggingIn, loggingOut };
