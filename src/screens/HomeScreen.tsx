@@ -1,7 +1,7 @@
 import auth from "@react-native-firebase/auth";
 import { CompositeNavigationProp } from "@react-navigation/core";
-import React, { FC, useCallback, useEffect, useState } from "react";
-import { FlatList } from "react-native";
+import React, { FC, useCallback, useEffect, useRef, useState } from "react";
+import { FlatList, View } from "react-native";
 import SplashScreen from "react-native-splash-screen";
 import { useDispatch, useSelector } from "react-redux";
 import { Inbox } from "../../assets";
@@ -12,7 +12,7 @@ import {
   EmptyState,
   HomeHeader,
 } from "../components";
-import { db } from "../config";
+import { db, heightPercent } from "../config";
 import { RoomChatParams, RoomChatProps } from "../config/types";
 import {
   colorsPalette as cp,
@@ -30,7 +30,11 @@ interface HomeScreenProps {
 const HomeScreen: FC<HomeScreenProps> = ({ navigation }) => {
   const dispatch = useDispatch();
   const { sessionReducer } = useSelector((state: AppState) => state);
+
   const [users, setUsers] = useState<RoomChatProps[]>([]);
+  const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
+
+  const isMounted = useRef(true);
 
   const onPress = useCallback(
     (item: RoomChatParams) =>
@@ -72,7 +76,44 @@ const HomeScreen: FC<HomeScreenProps> = ({ navigation }) => {
     []
   );
 
-  const ListEmptyComponent = () => <EmptyState />;
+  const getUsers = async () => {
+    try {
+      db.ref(`${n.users}/${sessionReducer.uid}/${n.roomChats}`).on(
+        "value",
+        (snapshot) => {
+          if (!isMounted) {
+            return;
+          }
+          setUsers([]);
+          if (snapshot.val() == null) {
+            setUsers([]);
+            return;
+          }
+          const usersData: RoomChatProps[] = Object.values(snapshot.val());
+          setUsers(usersData);
+        }
+      );
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const refreshing = async () => {
+    setIsRefreshing(true);
+    await getUsers();
+    setIsRefreshing(false);
+  };
+
+  const ListEmptyComponent = () => (
+    <View style={{ height: heightPercent(60) }}>
+      <EmptyState />
+    </View>
+  );
+
+  const header = useCallback(
+    () => <HomeHeader onPress={() => navigation.toggleDrawer()} />,
+    []
+  );
 
   useEffect(() => {
     const subscriber = auth().onAuthStateChanged(onAuthStateChanged);
@@ -80,33 +121,18 @@ const HomeScreen: FC<HomeScreenProps> = ({ navigation }) => {
   }, []);
 
   useEffect(() => {
-    let isMounted = true;
-    const getUsers = async () => {
-      try {
-        const data = await db
-          .ref(`${n.users}/${sessionReducer.uid}/${n.roomChats}`)
-          .once("value");
-        if (isMounted) setUsers(Object.values(data.val()));
-      } catch (error) {
-        dispatch(loggingOut());
-        navigation.reset({
-          index: 0,
-          routes: [{ name: p.AuthScreen }],
-        });
-      }
-    };
     getUsers();
     return () => {
-      isMounted = false;
+      isMounted.current = false;
     };
   }, []);
 
   return (
-    <AppCanvas
-      header={() => <HomeHeader onPress={() => navigation.toggleDrawer()} />}
-    >
+    <AppCanvas header={header}>
       <FlatList
         data={users}
+        onRefresh={() => refreshing()}
+        refreshing={isRefreshing}
         renderItem={renderItem}
         keyExtractor={keyExtractor}
         contentContainerStyle={{ marginTop: sp.sm }}

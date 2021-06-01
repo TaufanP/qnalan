@@ -44,7 +44,7 @@ const RoomChatScreen: FC<RoomChatScreenProps> = ({ navigation }) => {
   const header = useCallback(
     () => (
       <DefaultHeader
-        title={partner?.displayName || "Username"}
+        title={partner?.email || "Username"}
         onPress={() => navigation.goBack()}
       />
     ),
@@ -76,6 +76,11 @@ const RoomChatScreen: FC<RoomChatScreenProps> = ({ navigation }) => {
         .ref(`${n.messages}/${messageId}`)
         .orderByChild("createdAt")
         .once("value");
+      if (data.val() == null) {
+        setMessages([]);
+        setIsLoading(false);
+        return;
+      }
       setMessages(
         Object.values(data.val()).map((chat: any) => ({
           _id: chat.createdAt,

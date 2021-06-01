@@ -1,5 +1,12 @@
 import moment from "moment";
-import React, { FC, memo, useCallback, useEffect, useState } from "react";
+import React, {
+  FC,
+  memo,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { db } from "../../config";
 import { UsersProps } from "../../config/types";
 import { RoomDetailProps } from "../../config/types/firebase/roomDetail";
@@ -27,8 +34,15 @@ const ChatList: FC<ChatListProps> = ({ roomId, onPress, partnerId }) => {
   date.setMinutes(0);
   date.setSeconds(0);
   date.setMilliseconds(0);
-  const isToday = date.getTime() < room?.lastMessage?.createdAt;
-  const timeFormat = isToday ? "hh:mm A" : "D MMM YYYY";
+
+  const finalTime = useMemo(() => {
+    const isToday = date.getTime() < room?.lastMessage?.createdAt;
+    const timeFormat = isToday ? "hh:mm A" : "D MMM YYYY";
+    const timeFinal = room?.lastMessage?.createdAt
+      ? moment(room.lastMessage.createdAt).format(timeFormat)
+      : "none";
+    return timeFinal;
+  }, [room]);
 
   useEffect(() => {
     let isMounted = true;
@@ -56,9 +70,9 @@ const ChatList: FC<ChatListProps> = ({ roomId, onPress, partnerId }) => {
     <PersonList
       {...{
         onPress: buttonOnPress,
-        title: detail.displayName || "Username",
+        title: detail.email || "Username",
         subtitle: room.lastMessage.text || "Ayo mulai chat",
-        time: moment(room.lastMessage.createdAt).format(timeFormat) || "00:00",
+        time: finalTime,
         uri: detail.photoURL,
       }}
     />

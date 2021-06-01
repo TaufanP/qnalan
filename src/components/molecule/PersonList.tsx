@@ -21,7 +21,6 @@ const PersonList: FC<PersonListProps> = ({
 }) => {
   const source = uri ? { uri } : PlaceholderUser;
   const s = styles();
-
   return (
     <Button style={s.container} onPress={onPress}>
       <View style={s.photoCont}>
@@ -31,7 +30,9 @@ const PersonList: FC<PersonListProps> = ({
         <View style={s.titleCont}>
           <TextItem style={{ fontWeight: "bold" }}>{title || "title"}</TextItem>
           {time !== undefined && (
-            <TextItem type="normal12Text3">{time}</TextItem>
+            <TextItem type="normal12Text3">
+              {time == "none" ? "" : time}
+            </TextItem>
           )}
         </View>
         {subtitle !== undefined && (

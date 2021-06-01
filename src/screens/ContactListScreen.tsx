@@ -19,6 +19,10 @@ const ContactListScreen: FC<ContactListScreenProps> = ({ navigation }) => {
     const chatList = await db
       .ref(`${n.users}/${sessionReducer.uid}/${n.roomChats}`)
       .once("value");
+    if (chatList.val() == null) {
+      addingChatRoom(partnerId);
+      return;
+    }
     const chats: RoomChatProps[] = Object.values(chatList.val());
     const isExist = chats.findIndex((chat) => chat.partnerId == partnerId);
     if (isExist !== -1) {
@@ -33,7 +37,10 @@ const ContactListScreen: FC<ContactListScreenProps> = ({ navigation }) => {
       });
       return;
     }
+    addingChatRoom(partnerId);
+  };
 
+  const addingChatRoom = async (partnerId: string) => {
     const roomId = db.ref(n.room_chats).push().key;
     const messageId = db.ref(n.messages).push().key;
     await db.ref(`${n.room_chats}/${roomId}`).set({
@@ -59,7 +66,7 @@ const ContactListScreen: FC<ContactListScreenProps> = ({ navigation }) => {
 
   const renderItem = useCallback(({ item }: { item: UsersProps }) => {
     const props = {
-      title: item.displayName,
+      title: item.email,
       uri: item.photoURL,
       onPress: () => createChatRoom(item.uid),
     };
