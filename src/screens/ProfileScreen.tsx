@@ -1,5 +1,5 @@
 import { CompositeNavigationProp } from "@react-navigation/core";
-import React, { FC, useState } from "react";
+import React, { FC, useCallback, useEffect, useRef, useState } from "react";
 import {
   ScrollView,
   View,
@@ -33,7 +33,9 @@ interface ProfileScreenProps {
 }
 const ProfileScreen: FC<ProfileScreenProps> = ({ navigation }) => {
   const dispatch = useDispatch();
+
   const { defaultState, fancyType } = fan;
+
   const {
     sessionReducer: { uid },
   } = useSelector((state: AppState) => state);
@@ -47,7 +49,14 @@ const ProfileScreen: FC<ProfileScreenProps> = ({ navigation }) => {
 
   const [formError, setFormError] = useState<FieldErrorProps[]>([]);
 
+  const isMounted = useRef(true);
+
   const s = styles();
+
+  const header = useCallback(
+    () => <DefaultHeader title="Profil" onPress={() => navigation.goBack()} />,
+    []
+  );
 
   const submit = async () => {
     setIsLoading(true);
@@ -113,11 +122,24 @@ const ProfileScreen: FC<ProfileScreenProps> = ({ navigation }) => {
     checkForm();
   };
 
+  const fillForm = async () => {
+    const profile = await db.ref(`${n.users}/${uid}`).once("value");
+    const detail = profile.val();
+    if (isMounted) {
+      setDisplayName(detail?.displayName);
+      setBio(detail?.bio);
+    }
+  };
+
+  useEffect(() => {
+    fillForm();
+    return () => {
+      isMounted.current = false;
+    };
+  }, []);
+
   return (
-    <AppCanvas
-      header={() => <DefaultHeader title="Profil" />}
-      {...{ fancyBarState, setFancyBarState }}
-    >
+    <AppCanvas {...{ fancyBarState, setFancyBarState, header }}>
       <ScrollView
         contentContainerStyle={{
           justifyContent: "center",
@@ -152,11 +174,13 @@ const ProfileScreen: FC<ProfileScreenProps> = ({ navigation }) => {
           onChangeText={(e) => setDisplayName(e)}
           warningText={testError("displayName")}
           isError={testError("displayName")}
+          defaultValue={displayName}
         />
         <TextField
           placeholder={str.bio}
           containerStyle={s.field}
           onChangeText={(e) => setBio(e)}
+          defaultValue={bio}
         />
         <Button style={s.button} onPress={processForm} isLoading={isLoading}>
           <TextItem type="bold16White">PERBARUI</TextItem>

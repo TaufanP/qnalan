@@ -3,6 +3,7 @@ interface UsersProps {
   displayName: string;
   uid: string;
   email: string;
+  bio: string;
 }
 
 interface RoomChatProps {

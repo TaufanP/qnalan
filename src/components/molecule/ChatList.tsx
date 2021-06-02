@@ -70,7 +70,7 @@ const ChatList: FC<ChatListProps> = ({ roomId, onPress, partnerId }) => {
     <PersonList
       {...{
         onPress: buttonOnPress,
-        title: detail.email || "Username",
+        title: detail.displayName || detail.email || "Username",
         subtitle: room.lastMessage.text || "Ayo mulai chat",
         time: finalTime,
         uri: detail.photoURL,

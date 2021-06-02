@@ -14,7 +14,11 @@ const DrawerRoute = () => {
     >
       <Drawer.Screen name={p.HomeScreen} component={HomeScreen} />
       <Drawer.Screen name={p.AuthScreen} component={AuthScreen} />
-      <Drawer.Screen name={p.ProfileScreen} component={ProfileScreen} />
+      <Drawer.Screen
+        name={p.ProfileScreen}
+        component={ProfileScreen}
+        options={{ unmountOnBlur: true }}
+      />
     </Drawer.Navigator>
   );
 };

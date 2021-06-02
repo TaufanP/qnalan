@@ -5,6 +5,7 @@ const UsersValue: UsersProps = {
   email: "",
   uid: "",
   photoURL: "",
+  bio: "",
 };
 
 export { UsersValue };

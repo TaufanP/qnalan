@@ -10,6 +10,11 @@ interface PersonListProps {
   subtitle?: string;
   time?: string;
   onPress?: any;
+  type?: string;
+}
+
+interface StyleProps {
+  type: string | undefined;
 }
 
 const PersonList: FC<PersonListProps> = ({
@@ -18,9 +23,10 @@ const PersonList: FC<PersonListProps> = ({
   title,
   time,
   subtitle,
+  type,
 }) => {
   const source = uri ? { uri } : PlaceholderUser;
-  const s = styles();
+  const s = styles({ type });
   return (
     <Button style={s.container} onPress={onPress}>
       <View style={s.photoCont}>
@@ -36,14 +42,18 @@ const PersonList: FC<PersonListProps> = ({
           )}
         </View>
         {subtitle !== undefined && (
-          <TextItem>{subtitle || "Ayo mulai chat"}</TextItem>
+          <TextItem
+            type={type == "contact" ? "normal12Text1" : "normal14Text1"}
+          >
+            {subtitle || "Ayo mulai chat"}
+          </TextItem>
         )}
       </View>
     </Button>
   );
 };
 
-const styles = () =>
+const styles = ({ type }: StyleProps) =>
   StyleSheet.create({
     titleCont: { flexDirection: "row", justifyContent: "space-between" },
     photo: { width: "100%", height: "100%" },

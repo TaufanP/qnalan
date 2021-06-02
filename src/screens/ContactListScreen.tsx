@@ -65,12 +65,17 @@ const ContactListScreen: FC<ContactListScreenProps> = ({ navigation }) => {
   const keyExtractor = (item: UsersProps) => `${item.uid}`;
 
   const renderItem = useCallback(({ item }: { item: UsersProps }) => {
-    const props = {
-      title: item.email,
-      uri: item.photoURL,
-      onPress: () => createChatRoom(item.uid),
-    };
-    return <PersonList {...props} />;
+    return (
+      <PersonList
+        {...{
+          title: item.displayName || item.email || "Username",
+          uri: item.photoURL,
+          onPress: () => createChatRoom(item.uid),
+          subtitle: item.bio || "Halo semua!",
+          type: "contact",
+        }}
+      />
+    );
   }, []);
 
   const header = useCallback(
