@@ -10,7 +10,11 @@ import React, {
 import { db } from "../../config";
 import { UsersProps } from "../../config/types";
 import { RoomDetailProps } from "../../config/types/firebase/roomDetail";
-import { colorsPalette as cp, spacing as sp } from "../../constants";
+import {
+  colorsPalette as cp,
+  spacing as sp,
+  strings as str,
+} from "../../constants";
 import { RoomDetailValue, UsersValue } from "../../constants/defaultValue";
 import PersonList from "./PersonList";
 
@@ -44,6 +48,14 @@ const ChatList: FC<ChatListProps> = ({ roomId, onPress, partnerId }) => {
     return timeFinal;
   }, [room]);
 
+  const lastMessage = useMemo(() => {
+    const isTyping = room?.participants[partnerId]?.isTyping;
+    const message = isTyping
+      ? str.typing
+      : room.lastMessage.text || "Ayo mulai chat";
+    return message;
+  }, [room]);
+
   useEffect(() => {
     let isMounted = true;
     const getDetail = async () => {
@@ -71,7 +83,7 @@ const ChatList: FC<ChatListProps> = ({ roomId, onPress, partnerId }) => {
       {...{
         onPress: buttonOnPress,
         title: detail.displayName || detail.email || "Username",
-        subtitle: room.lastMessage.text || "Ayo mulai chat",
+        subtitle: lastMessage,
         time: finalTime,
         uri: detail.photoURL,
       }}

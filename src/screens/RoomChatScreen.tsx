@@ -29,6 +29,12 @@ const RoomChatScreen: FC<RoomChatScreenProps> = ({ navigation }) => {
 
   const user = { _id: sessionReducer.uid };
 
+  const typing = async (text: string) => {
+    db.ref(
+      `${n.room_chats}/${roomId}/${n.participants}/${sessionReducer.uid}`
+    ).update({ isTyping: text.length > 0 });
+  };
+
   const onSend = useCallback((messageGift: IMessage[]) => {
     const createdAt = new Date().getTime();
     const { _id, ...finalMsg } = messageGift[0];
@@ -146,6 +152,7 @@ const RoomChatScreen: FC<RoomChatScreenProps> = ({ navigation }) => {
         renderAvatar={renderAvatar}
         renderSend={renderSend}
         placeholder="Ketik pesan"
+        onInputTextChanged={(e) => typing(e)}
       />
     </AppCanvas>
   );

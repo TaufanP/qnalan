@@ -1,7 +1,11 @@
 import React, { FC, memo } from "react";
 import { Image, StyleSheet, View } from "react-native";
 import { PlaceholderUser } from "../../../assets";
-import { colorsPalette as cp, spacing as sp } from "../../constants";
+import {
+  colorsPalette as cp,
+  spacing as sp,
+  strings as str,
+} from "../../constants";
 import { Button, TextItem } from "../atom";
 
 interface PersonListProps {
@@ -43,7 +47,11 @@ const PersonList: FC<PersonListProps> = ({
         </View>
         {subtitle !== undefined && (
           <TextItem
-            type={type == "contact" ? "normal12Text1" : "normal14Text1"}
+            type={
+              type == "contact"
+                ? "normal12Text1"
+                : `normal14Text1${subtitle == str.typing ? "Italic" : ""}`
+            }
           >
             {subtitle || "Ayo mulai chat"}
           </TextItem>

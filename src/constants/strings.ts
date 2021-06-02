@@ -23,6 +23,8 @@ const strings = {
   register: "Daftar",
   roomChat: "Ruang Percakapan",
 
+  typing: "Sedang mengetik ...",
+
   username: "username",
 };
 
