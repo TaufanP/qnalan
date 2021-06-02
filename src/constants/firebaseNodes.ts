@@ -1,4 +1,6 @@
 const node = {
+  bio: "bio",
+
   lastMessage: "lastMessage",
 
   messages: "messages",

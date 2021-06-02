@@ -4,16 +4,17 @@ import {
   useRoute,
 } from "@react-navigation/core";
 import React, { FC, useCallback, useEffect, useState } from "react";
-import { Image } from "react-native";
-import { GiftedChat, IMessage } from "react-native-gifted-chat";
+import { Image, View } from "react-native";
+import { GiftedChat, IMessage, Send } from "react-native-gifted-chat";
 import { useSelector } from "react-redux";
 import { PlaceholderUser } from "../../assets";
 import { AppCanvas, DefaultHeader } from "../components";
 import { db } from "../config";
 import { UsersProps } from "../config/types";
-import { node as n } from "../constants";
+import { colorsPalette as cp, node as n, spacing } from "../constants";
 import StackParamsList from "../constants/screenParams";
 import AppState from "../redux";
+import { Send as SendIcon } from "../../assets";
 
 interface RoomChatScreenProps {
   navigation: CompositeNavigationProp<any, any>;
@@ -119,6 +120,23 @@ const RoomChatScreen: FC<RoomChatScreenProps> = ({ navigation }) => {
       db.ref(`${n.messages}/${messageId}`).off("child_added", onValueChange);
   }, [isLoading]);
 
+  const renderSend = (props: any) => {
+    return (
+      <Send {...props}>
+        <View
+          style={{
+            paddingHorizontal: spacing.sm,
+            height: "100%",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <SendIcon width={24} height={24} fill={cp.main} />
+        </View>
+      </Send>
+    );
+  };
+
   return (
     <AppCanvas header={header}>
       <GiftedChat
@@ -126,6 +144,8 @@ const RoomChatScreen: FC<RoomChatScreenProps> = ({ navigation }) => {
         onSend={onSend}
         user={user}
         renderAvatar={renderAvatar}
+        renderSend={renderSend}
+        placeholder="Ketik pesan"
       />
     </AppCanvas>
   );

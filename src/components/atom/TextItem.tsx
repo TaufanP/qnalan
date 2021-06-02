@@ -49,19 +49,27 @@ const styles = () =>
     bold16White: { fontWeight: "bold", fontSize: 16, color: cp.white },
     bold18White: { fontWeight: "bold", fontSize: 18, color: cp.white },
     bold20Text1: { fontWeight: "bold", fontSize: 20, color: cp.text1 },
+    bold20White: { fontWeight: "bold", fontSize: 20, color: cp.white },
+    bold24White: { fontWeight: "bold", fontSize: 24, color: cp.white },
+    bold24Main: { fontWeight: "bold", fontSize: 24, color: cp.main },
 
     normal12Main: { fontWeight: "normal", fontSize: 12, color: cp.main },
     normal12Text3: { fontWeight: "normal", fontSize: 14, color: cp.text3 },
     normal14Red1: { fontWeight: "normal", fontSize: 14, color: cp.red1 },
     normal14White: { fontWeight: "normal", fontSize: 14, color: cp.white },
     normal20White: { fontWeight: "normal", fontSize: 20, color: cp.white },
+    normal24Main: { fontWeight: "normal", fontSize: 20, color: cp.main },
 
     // COLOR
     defaultWhite: { color: cp.white },
     defaultMain: { color: cp.main },
 
+    bigHeader: { fontSize: 40, color: cp.main },
+
     header: { fontWeight: "bold", fontSize: 18, color: cp.white },
+
     logo: { color: cp.main, fontSize: 24 },
+
     container: { flexDirection: "row", alignItems: "flex-end" },
     unitText: {
       color: cp.main,

@@ -17,6 +17,8 @@ const ProfileDrawer: FC<ProfileDrawerProps> = ({ navigation }) => {
     sessionReducer: { displayName, email, photoURL },
   } = useSelector((state: AppState) => state);
 
+  console.log({ displayName });
+
   const source = photoURL ? { uri: photoURL } : PlaceholderUser;
 
   const s = styles();

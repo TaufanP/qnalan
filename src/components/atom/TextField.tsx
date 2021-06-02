@@ -63,8 +63,8 @@ const TextField: FC<TextFieldProps & TextInputProps> = ({
     ]).start();
   };
   return (
-    <View style={containerStyle}>
-      <Animated.View style={s.container}>
+    <View>
+      <Animated.View style={[s.container, containerStyle]}>
         <TextInput style={[s.input, fieldStyle]} {...props} />
         {/* {sideIcon && (
           <Button style={s.button} onPress={securePress}>

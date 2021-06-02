@@ -1,4 +1,4 @@
-import { LOGIN, LOGOUT } from "../actionTypes";
+import { LOGIN, LOGOUT, UPDATE_PROFILE } from "../actionTypes";
 import { ReduxSessionStateProps } from "../../config/types";
 
 const initialState: ReduxSessionStateProps = {
@@ -18,6 +18,9 @@ const sessionReducer = (
 
     case LOGOUT:
       return { ...state, displayName: "", email: "", uid: "", photoURL: "" };
+
+    case UPDATE_PROFILE:
+      return { ...state, ...action.payload };
 
     default:
       return state;
