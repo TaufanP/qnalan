@@ -5,6 +5,7 @@ import {
   ViewStyle,
   StyleSheet,
   TouchableOpacityProps,
+  ActivityIndicator,
 } from "react-native";
 import LoadingButton from "./LoadingButton";
 import { widthPercent as wp } from "../../config/units";
@@ -17,6 +18,7 @@ interface ButtonProps {
   isLoading?: boolean;
   style?: StyleProp<ViewStyle>;
   styleKey?: string;
+  defaultLoading?: boolean;
 }
 
 const Button: FC<PropsWithChildren<ButtonProps & TouchableOpacityProps>> = ({
@@ -24,6 +26,7 @@ const Button: FC<PropsWithChildren<ButtonProps & TouchableOpacityProps>> = ({
   isLoading = false,
   style,
   styleKey = "default",
+  defaultLoading = false,
   ...props
 }) => {
   const s: { [key: string]: any } = styles();
@@ -33,7 +36,15 @@ const Button: FC<PropsWithChildren<ButtonProps & TouchableOpacityProps>> = ({
       {...props}
       activeOpacity={0.7}
     >
-      {isLoading ? <LoadingButton /> : children}
+      {isLoading ? (
+        defaultLoading ? (
+          <ActivityIndicator size="large" color="#FFF" />
+        ) : (
+          <LoadingButton />
+        )
+      ) : (
+        children
+      )}
     </TouchableOpacity>
   );
 };

@@ -17,15 +17,22 @@ const ProfilePhoto: FC<PropsWithChildren<ProfilePhotoProps>> = ({
   const s = styles();
   return (
     <Button onPress={onPress}>
-      <View style={s.imageCont}>
-        {uri?.length == 0 ? (
+      <View
+        style={[
+          s.imageCont,
+          {
+            borderWidth: uri?.length == 0 || uri?.length == undefined ? 2 : 0,
+          },
+        ]}
+      >
+        {uri?.length == 0 || uri?.length == undefined ? (
           <User
             fill={cp.main}
             width={widthPercent(14)}
             height={widthPercent(14)}
           />
         ) : (
-          <Image style={s.image} source={{ uri }} />
+          <Image style={s.image} source={{ uri }} resizeMode="cover" />
         )}
       </View>
     </Button>
@@ -41,7 +48,6 @@ const styles = () =>
       height: widthPercent(30),
       borderRadius: widthPercent(30),
       borderColor: cp.main,
-      borderWidth: 2,
       marginBottom: sp.l,
       overflow: "hidden",
     },
