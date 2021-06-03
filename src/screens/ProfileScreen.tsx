@@ -12,10 +12,11 @@ import {
   AppCanvas,
   Button,
   DefaultHeader,
+  ProfilePhoto,
   TextField,
   TextItem,
 } from "../components";
-import { db, widthPercent } from "../config";
+import { db, requestCameraPermission, widthPercent } from "../config";
 import {
   colorsPalette as cp,
   node as n,
@@ -28,6 +29,8 @@ import { useSelector, useDispatch } from "react-redux";
 import AppState from "../redux";
 import { FancyTypes, FieldErrorProps } from "../config/types";
 import { updateProfile } from "../redux/actions";
+import { launchCamera, launchImageLibrary } from "react-native-image-picker";
+import storage from "@react-native-firebase/storage";
 interface ProfileScreenProps {
   navigation: CompositeNavigationProp<any, any>;
 }
@@ -44,6 +47,7 @@ const ProfileScreen: FC<ProfileScreenProps> = ({ navigation }) => {
 
   const [displayName, setDisplayName] = useState<string>("");
   const [bio, setBio] = useState<string>("");
+  const [uri, setUri] = useState<string>("");
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
@@ -52,6 +56,35 @@ const ProfileScreen: FC<ProfileScreenProps> = ({ navigation }) => {
   const isMounted = useRef(true);
 
   const s = styles();
+
+  const onPressCamera = async () => {
+    const isGranted = await requestCameraPermission();
+    if (isGranted)
+      launchCamera(
+        {
+          mediaType: "photo",
+        },
+        (response) => {
+          // setVisible(false);
+          if (!response.didCancel) {
+            setUri(response.assets[0].uri || "");
+          }
+        }
+      );
+  };
+
+  const onPressLibrary = () =>
+    launchImageLibrary(
+      {
+        mediaType: "photo",
+      },
+      (response) => {
+        // setVisible(false);
+        if (!response.didCancel) {
+          setUri(response.assets[0].uri || "");
+        }
+      }
+    );
 
   const header = useCallback(
     () => <DefaultHeader title="Profil" onPress={() => navigation.goBack()} />,
@@ -116,10 +149,16 @@ const ProfileScreen: FC<ProfileScreenProps> = ({ navigation }) => {
     return formError[index].msg;
   };
 
-  const processForm = () => {
-    Keyboard.dismiss();
-    setFormError([]);
-    checkForm();
+  const processForm = async () => {
+    // const data = await storage().ref(`sbhumanbank/users/${uid}`).putFile(uri);
+    // console.log(data);
+    const data = await storage()
+      .ref(`sbhumanbank/users/${uid}`)
+      .getDownloadURL();
+    console.log(data);
+    // Keyboard.dismiss();
+    // setFormError([]);
+    // checkForm();
   };
 
   const fillForm = async () => {
@@ -141,33 +180,11 @@ const ProfileScreen: FC<ProfileScreenProps> = ({ navigation }) => {
   return (
     <AppCanvas {...{ fancyBarState, setFancyBarState, header }}>
       <ScrollView
-        contentContainerStyle={{
-          justifyContent: "center",
-          alignItems: "center",
-          marginTop: sp.l,
-          paddingBottom: 64,
-        }}
+        contentContainerStyle={s.scroll}
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
       >
-        <View
-          style={{
-            justifyContent: "center",
-            alignItems: "center",
-            width: widthPercent(30),
-            height: widthPercent(30),
-            borderRadius: widthPercent(30),
-            borderColor: cp.main,
-            borderWidth: 2,
-            marginBottom: sp.l,
-          }}
-        >
-          <User
-            fill={cp.main}
-            width={widthPercent(14)}
-            height={widthPercent(14)}
-          />
-        </View>
+        <ProfilePhoto onPress={onPressLibrary} uri={uri} />
         <TextField
           placeholder={str.username}
           containerStyle={s.field}
@@ -175,12 +192,14 @@ const ProfileScreen: FC<ProfileScreenProps> = ({ navigation }) => {
           warningText={testError("displayName")}
           isError={testError("displayName")}
           defaultValue={displayName}
+          maxLength={25}
         />
         <TextField
           placeholder={str.bio}
           containerStyle={s.field}
           onChangeText={(e) => setBio(e)}
           defaultValue={bio}
+          maxLength={50}
         />
         <Button style={s.button} onPress={processForm} isLoading={isLoading}>
           <TextItem type="bold16White">PERBARUI</TextItem>
@@ -192,6 +211,12 @@ const ProfileScreen: FC<ProfileScreenProps> = ({ navigation }) => {
 
 const styles = () =>
   StyleSheet.create({
+    scroll: {
+      justifyContent: "center",
+      alignItems: "center",
+      marginTop: sp.l,
+      paddingBottom: 64,
+    },
     button: {
       justifyContent: "center",
       alignItems: "center",
