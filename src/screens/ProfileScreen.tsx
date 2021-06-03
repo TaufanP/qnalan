@@ -34,6 +34,12 @@ import storage from "@react-native-firebase/storage";
 interface ProfileScreenProps {
   navigation: CompositeNavigationProp<any, any>;
 }
+
+interface ImageDataProps {
+  uri: string;
+  fileSize: number;
+}
+
 const ProfileScreen: FC<ProfileScreenProps> = ({ navigation }) => {
   const dispatch = useDispatch();
 
@@ -47,7 +53,10 @@ const ProfileScreen: FC<ProfileScreenProps> = ({ navigation }) => {
 
   const [displayName, setDisplayName] = useState<string>("");
   const [bio, setBio] = useState<string>("");
-  const [uri, setUri] = useState<string>("");
+  const [imageData, setImageData] = useState<ImageDataProps>({
+    uri: "",
+    fileSize: 0,
+  });
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
@@ -67,7 +76,11 @@ const ProfileScreen: FC<ProfileScreenProps> = ({ navigation }) => {
         (response) => {
           // setVisible(false);
           if (!response.didCancel) {
-            setUri(response.assets[0].uri || "");
+            const image = response.assets[0];
+            setImageData({
+              uri: image.uri || "",
+              fileSize: image.fileSize || 0,
+            });
           }
         }
       );
@@ -81,7 +94,8 @@ const ProfileScreen: FC<ProfileScreenProps> = ({ navigation }) => {
       (response) => {
         // setVisible(false);
         if (!response.didCancel) {
-          setUri(response.assets[0].uri || "");
+          const image = response.assets[0];
+          setImageData({ uri: image.uri || "", fileSize: image.fileSize || 0 });
         }
       }
     );
@@ -150,12 +164,21 @@ const ProfileScreen: FC<ProfileScreenProps> = ({ navigation }) => {
   };
 
   const processForm = async () => {
-    // const data = await storage().ref(`sbhumanbank/users/${uid}`).putFile(uri);
-    // console.log(data);
-    const data = await storage()
+    if (imageData.fileSize > 2000000) {
+      return console.log("Max file");
+    }
+    storage()
       .ref(`sbhumanbank/users/${uid}`)
-      .getDownloadURL();
-    console.log(data);
+      .putFile(imageData.uri)
+      .on("state_changed", (taskSnapshot) => {
+        const progress =
+          (taskSnapshot.bytesTransferred * 100) / taskSnapshot.totalBytes;
+        console.log(`${progress.toFixed(0)}%`);
+      });
+    // const data = await storage()
+    //   .ref(`sbhumanbank/users/${uid}`)
+    //   .getDownloadURL();
+    // console.log(data);
     // Keyboard.dismiss();
     // setFormError([]);
     // checkForm();
@@ -184,7 +207,7 @@ const ProfileScreen: FC<ProfileScreenProps> = ({ navigation }) => {
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
       >
-        <ProfilePhoto onPress={onPressLibrary} uri={uri} />
+        <ProfilePhoto onPress={onPressLibrary} uri={imageData.uri} />
         <TextField
           placeholder={str.username}
           containerStyle={s.field}
