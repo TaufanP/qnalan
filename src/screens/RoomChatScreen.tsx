@@ -182,6 +182,7 @@ const RoomChatScreen: FC<RoomChatScreenProps> = ({ navigation }) => {
           <VideoCall fill={cp.white} width={32} height={32} />
         )}
         onPressRight={() => navigation.navigate(p.VideoCallScreen)}
+        onPress={() => navigation.goBack()}
       />
     ),
     [partner, isTyping]
