@@ -1,4 +1,5 @@
 const LOGIN = "LOGIN";
 const LOGOUT = "LOGOUT";
+const UPDATE_PROFILE = "UPDATE_PROFILE";
 
-export { LOGIN, LOGOUT };
+export { LOGIN, LOGOUT, UPDATE_PROFILE };

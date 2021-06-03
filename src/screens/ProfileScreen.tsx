@@ -1,12 +1,315 @@
+import auth from "@react-native-firebase/auth";
+import storage from "@react-native-firebase/storage";
 import { CompositeNavigationProp } from "@react-navigation/core";
-import React, { FC } from "react";
-import { AppCanvas } from "../components";
-
+import React, { FC, useCallback, useEffect, useRef, useState } from "react";
+import { BackHandler, ScrollView, StyleSheet, Keyboard } from "react-native";
+import {
+  ImageLibraryOptions,
+  ImagePickerResponse,
+  launchCamera,
+  launchImageLibrary,
+} from "react-native-image-picker";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  AppCanvas,
+  Button,
+  DefaultHeader,
+  ProfilePhoto,
+  TextField,
+  TextItem,
+} from "../components";
+import { db, requestCameraPermission, widthPercent } from "../config";
+import {
+  FancyTypes,
+  FieldErrorProps,
+  StaticBottomSheetProps,
+} from "../config/types";
+import {
+  colorsPalette as cp,
+  fancyStates as fan,
+  node as n,
+  spacing as sp,
+  strings as str,
+} from "../constants";
+import AppState from "../redux";
+import { updateProfile } from "../redux/actions";
+import ImageResizer from "react-native-image-resizer";
 interface ProfileScreenProps {
   navigation: CompositeNavigationProp<any, any>;
 }
+
+interface ImageDataProps {
+  uri: string;
+  fileSize: number;
+}
+
 const ProfileScreen: FC<ProfileScreenProps> = ({ navigation }) => {
-  return <AppCanvas></AppCanvas>;
+  const dispatch = useDispatch();
+
+  const { defaultState, fancyType } = fan;
+
+  const {
+    sessionReducer: { uid },
+  } = useSelector((state: AppState) => state);
+
+  const [fancyBarState, setFancyBarState] = useState<FancyTypes>(defaultState);
+
+  const [displayName, setDisplayName] = useState<string>("");
+  const [bio, setBio] = useState<string>("");
+  const [imageData, setImageData] = useState<ImageDataProps>({
+    uri: "",
+    fileSize: 0,
+  });
+
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [visible, setVisible] = useState<boolean>(false);
+
+  const [formError, setFormError] = useState<FieldErrorProps[]>([]);
+
+  const isMounted = useRef(true);
+
+  const s = styles();
+
+  const pickImage = () => {
+    Keyboard.dismiss();
+    setVisible(true);
+  };
+
+  const imageCallback = (response: ImagePickerResponse) => {
+    setVisible(false);
+    if (response.didCancel) return;
+    const image = response.assets[0];
+    ImageResizer.createResizedImage(
+      image.uri || "",
+      900,
+      900,
+      "PNG",
+      100,
+      0,
+      undefined,
+      undefined
+    )
+      .then((resized) => {
+        if (resized.size > 2000000) {
+          setFancyBarState({
+            visible: true,
+            type: fancyType.failed,
+            msg: "Foto profil tidak melebihi 2MB",
+          });
+          return;
+        }
+        setImageData({
+          uri: resized.uri || "",
+          fileSize: resized.size || 0,
+        });
+      })
+      .catch((err) => {
+        console.log(`ProfileScreen, imageCallback(), ${err}`);
+        setFancyBarState({
+          visible: true,
+          type: fancyType.failed,
+          msg: "Gagal mengambil foto profil",
+        });
+        return;
+      });
+  };
+
+  const onImagePicking = async (isCamera: boolean = false) => {
+    const options: ImageLibraryOptions = { mediaType: "photo" };
+    if (!isCamera) {
+      launchImageLibrary(options, imageCallback);
+      return;
+    }
+    const isGranted = await requestCameraPermission();
+    if (!isGranted) return;
+    launchCamera(options, imageCallback);
+  };
+
+  const header = useCallback(
+    () => <DefaultHeader title="Profil" onPress={() => navigation.goBack()} />,
+    []
+  );
+
+  const submit = async () => {
+    setIsLoading(true);
+    try {
+      storage()
+        .ref(`sbhumanbank/users/${uid}`)
+        .putFile(imageData.uri)
+        .then(async () => {
+          const photoURL = await storage()
+            .ref(`sbhumanbank/users/${uid}`)
+            .getDownloadURL();
+          auth()
+            .currentUser?.updateProfile({ displayName, photoURL })
+            .then(() => dispatch(updateProfile({ displayName, photoURL })));
+          db.ref(`${n.users}/${uid}`).update({ bio, displayName, photoURL });
+          setFancyBarState({
+            visible: true,
+            type: fancyType.success,
+            msg: "Berhasil memperbarui profil",
+          });
+          setIsLoading(false);
+        });
+    } catch (error) {
+      console.log(error);
+      setIsLoading(false);
+      setFancyBarState({
+        visible: true,
+        type: fancyType.failed,
+        msg: "Terjadi kesalahan, coba kembali beberapa saat lagi",
+      });
+    }
+  };
+
+  const checkForm = () => {
+    if (displayName.length == 0)
+      return setFormError((current) => [
+        ...current,
+        {
+          msg: "Username tidak boleh kosong",
+          param: "displayName",
+          value: displayName,
+        },
+      ]);
+    if (displayName.length < 6)
+      return setFormError((current) => [
+        ...current,
+        {
+          msg: "Username minimal 6 karakter",
+          param: "displayName",
+          value: displayName,
+        },
+      ]);
+    submit();
+  };
+
+  const testError = (field: string) => {
+    if (!formError) return false;
+
+    const index = formError.findIndex(
+      (error: FieldErrorProps) => error.param == field
+    );
+
+    if (index == -1) return false;
+
+    return formError[index].msg;
+  };
+
+  const processForm = async () => {
+    Keyboard.dismiss();
+    setFormError([]);
+    checkForm();
+  };
+
+  const fillForm = async () => {
+    const profile = await db.ref(`${n.users}/${uid}`).once("value");
+    const detail = profile.val();
+    if (isMounted) {
+      setDisplayName(detail?.displayName);
+      setBio(detail?.bio);
+      setImageData({ uri: detail?.photoURL, fileSize: 0 });
+    }
+  };
+
+  const staticBottomSheetState: StaticBottomSheetProps = {
+    visible,
+    setVisible,
+    onPressRight: () => onImagePicking(false),
+    onPressLeft: () => onImagePicking(true),
+  };
+
+  useEffect(() => {
+    fillForm();
+    return () => {
+      isMounted.current = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    const backAction = () => {
+      if (visible) {
+        setVisible(false);
+        return true;
+      }
+      return isLoading;
+    };
+
+    const backHandler = BackHandler.addEventListener(
+      "hardwareBackPress",
+      backAction
+    );
+
+    return () => backHandler.remove();
+  });
+
+  return (
+    <AppCanvas
+      {...{
+        fancyBarState,
+        setFancyBarState,
+        header,
+        staticBottomSheetState,
+      }}
+    >
+      <ScrollView
+        contentContainerStyle={s.scroll}
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
+      >
+        <ProfilePhoto onPress={pickImage} uri={imageData.uri} />
+        <TextField
+          placeholder={str.username}
+          containerStyle={s.field}
+          onChangeText={(e) => setDisplayName(e)}
+          warningText={testError("displayName")}
+          isError={testError("displayName")}
+          defaultValue={displayName}
+          maxLength={25}
+        />
+        <TextField
+          placeholder={str.bio}
+          containerStyle={s.field}
+          onChangeText={(e) => setBio(e)}
+          defaultValue={bio}
+          maxLength={50}
+        />
+        <Button
+          style={s.button}
+          onPress={processForm}
+          isLoading={isLoading}
+          defaultLoading
+        >
+          <TextItem type="bold16White">PERBARUI</TextItem>
+        </Button>
+      </ScrollView>
+    </AppCanvas>
+  );
 };
+
+const styles = () =>
+  StyleSheet.create({
+    scroll: {
+      justifyContent: "center",
+      alignItems: "center",
+      marginTop: sp.l,
+      paddingBottom: 64,
+    },
+    button: {
+      justifyContent: "center",
+      alignItems: "center",
+      backgroundColor: cp.main,
+      borderRadius: 8,
+      width: widthPercent(80),
+      height: 48,
+      marginTop: sp.l,
+    },
+    field: {
+      width: widthPercent(80),
+      backgroundColor: "transparent",
+      borderBottomWidth: 2,
+      borderBottomColor: cp.main,
+    },
+  });
 
 export default ProfileScreen;

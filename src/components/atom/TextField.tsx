@@ -21,6 +21,7 @@ interface StyleProps {
 interface TextFieldProps {
   navigation?: CompositeNavigationProp<any, any>;
   containerStyle?: ViewStyle;
+  mainStyle?: ViewStyle;
   fieldStyle?: TextStyle;
   sideIcon?: boolean;
   warningText?: string | boolean;
@@ -39,6 +40,7 @@ const TextField: FC<TextFieldProps & TextInputProps> = ({
   securePress,
   isStart,
   renderSideIcon,
+  mainStyle,
   ...props
 }) => {
   const s = styles({ sideIcon, isError });
@@ -63,8 +65,8 @@ const TextField: FC<TextFieldProps & TextInputProps> = ({
     ]).start();
   };
   return (
-    <View style={containerStyle}>
-      <Animated.View style={s.container}>
+    <View style={mainStyle}>
+      <Animated.View style={[s.container, containerStyle]}>
         <TextInput style={[s.input, fieldStyle]} {...props} />
         {/* {sideIcon && (
           <Button style={s.button} onPress={securePress}>

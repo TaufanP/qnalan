@@ -5,13 +5,19 @@ import {
   DrawerNavigationHelpers,
 } from "@react-navigation/drawer/lib/typescript/src/types";
 import React, { FC } from "react";
-import { Linking, StyleSheet } from "react-native";
-import { pages as p, spacing as sp } from "../../constants";
+import { Linking, StyleSheet, View } from "react-native";
+import {
+  colorsPalette as cp,
+  pages as p,
+  spacing as sp,
+  strings as str,
+} from "../../constants";
 import { Button, TextItem } from "../atom";
 import { ProfileDrawer } from "../molecule";
 import { useDispatch } from "react-redux";
 import { loggingOut } from "../../redux/actions";
 import auth from "@react-native-firebase/auth";
+import { Export, Power } from "../../../assets";
 interface DrawerContentProps {
   navigation: DrawerNavigationHelpers;
   state: DrawerNavigationState<ParamListBase>;
@@ -44,10 +50,26 @@ const DrawerContent: FC<DrawerContentProps> = (props) => {
         onPress={() => Linking.openURL("http://sbhumanbank.com/account")}
         style={s.buttonContainer}
       >
-        <TextItem>SBHumanBank</TextItem>
+        <View style={{ flexDirection: "row", alignItems: "center" }}>
+          <Export
+            width={14}
+            height={14}
+            fill={cp.white4}
+            style={{ marginRight: sp.m }}
+          />
+          <TextItem>{str.provider}</TextItem>
+        </View>
       </Button>
       <Button onPress={logoutPress} style={s.buttonContainer}>
-        <TextItem type="normal14Red1">Logout</TextItem>
+        <View style={{ flexDirection: "row", alignItems: "center" }}>
+          <Power
+            width={14}
+            height={14}
+            fill={cp.red1}
+            style={{ marginRight: sp.m }}
+          />
+          <TextItem type="normal14Red1">{str.logout}</TextItem>
+        </View>
       </Button>
     </DrawerContentScrollView>
   );

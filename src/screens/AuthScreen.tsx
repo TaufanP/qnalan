@@ -159,21 +159,25 @@ const AuthScreen: FC<AuthProps> = ({ navigation }) => {
         </TextItem>
         <TextField
           placeholder={str.email}
-          containerStyle={{ width: widthPercent(80), marginBottom: sp.sm }}
+          containerStyle={{ width: widthPercent(80) }}
+          mainStyle={{ marginBottom: sp.l }}
           onChangeText={(e) => setEmail(e)}
           defaultValue={email}
           warningText={testError("email")}
           isError={testError("email")}
           autoCapitalize={"none"}
+          maxLength={50}
         />
         <TextField
           placeholder={str.password}
           secureTextEntry
-          containerStyle={{ width: widthPercent(80), marginBottom: sp.sm }}
+          containerStyle={{ width: widthPercent(80) }}
+          mainStyle={{ marginBottom: sp.l }}
           onChangeText={(e) => setPassword(e)}
           defaultValue={password}
           warningText={testError("password")}
           isError={testError("password")}
+          maxLength={20}
         />
         <Button
           styleKey="widthRelativeColored"

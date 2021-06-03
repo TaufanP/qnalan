@@ -25,30 +25,15 @@ const ProfileDrawer: FC<ProfileDrawerProps> = ({ navigation }) => {
       style={s.container}
       onPress={() => navigation.navigate(p.ProfileScreen)}
     >
-      <View
-        style={{
-          width: widthPercent(12),
-          height: widthPercent(12),
-          marginRight: 8,
-        }}
-      >
-        <View
-          style={{
-            width: "100%",
-            height: "100%",
-            overflow: "hidden",
-            borderRadius: widthPercent(12),
-            borderWidth: 1,
-            borderColor: cp.white2,
-          }}
-        >
-          <Image source={source} style={{ width: "100%", height: "100%" }} />
+      <View style={s.childCont}>
+        <View style={s.imageCont}>
+          <Image source={source} style={s.image} />
         </View>
       </View>
-      <View style={{ justifyContent: "center" }}>
+      <View style={s.details}>
         <TextItem>{displayName || "Username"}</TextItem>
         {email?.length !== 0 && (
-          <TextItem style={{ fontSize: 12 }}>{email}</TextItem>
+          <TextItem type="normal12Text1">{email}</TextItem>
         )}
       </View>
     </Button>
@@ -57,6 +42,21 @@ const ProfileDrawer: FC<ProfileDrawerProps> = ({ navigation }) => {
 
 const styles = () =>
   StyleSheet.create({
+    childCont: {
+      width: widthPercent(12),
+      height: widthPercent(12),
+      marginRight: 8,
+    },
+    details: { justifyContent: "center" },
+    image: { width: "100%", height: "100%" },
+    imageCont: {
+      width: "100%",
+      height: "100%",
+      overflow: "hidden",
+      borderRadius: widthPercent(12),
+      borderWidth: 1,
+      borderColor: cp.white2,
+    },
     container: {
       flexDirection: "row",
       paddingVertical: 12,

@@ -7,22 +7,29 @@ interface DefaultHeaderProps {
   onPress?: any;
   onPressRight?: any;
   rightComponent?: () => JSX.Element;
+  centerComponent?: () => JSX.Element;
 }
 
 const DefaultHeader: FC<DefaultHeaderProps> = ({
   title = "User name",
   onPress,
   rightComponent = () => <></>,
+  centerComponent,
   onPressRight,
 }) => {
   const s = styles();
+  const CenterComp =
+    centerComponent !== undefined
+      ? () => centerComponent()
+      : () => <TextItem type="header">{title}</TextItem>;
+
   return (
     <View style={s.container}>
       <ButtonHeader onPress={onPress}>
         <ArrowBack width={16} height={16} fill={"#FFF"} />
       </ButtonHeader>
       <View style={s.midContent}>
-        <TextItem type="header">{title}</TextItem>
+        <CenterComp />
       </View>
       <ButtonHeader onPress={onPressRight}>{rightComponent()}</ButtonHeader>
     </View>

@@ -3,13 +3,15 @@ import React, { FC, PropsWithChildren } from "react";
 import { StatusBar, StyleSheet, View } from "react-native";
 import { colorsPalette as cp } from "../../constants";
 import FancyBar from "./FancyBar";
-import { FancyTypes } from "../../config/types";
+import { FancyTypes, StaticBottomSheetProps } from "../../config/types";
 import AppHeader from "./AppHeader";
+import { StaticBottomSheet } from "../organism";
 interface AppCanvasProps {
   navigation?: CompositeNavigationProp<any, any>;
   fancyBarState?: FancyTypes;
   setFancyBarState?: any;
   header?: () => JSX.Element;
+  staticBottomSheetState?: StaticBottomSheetProps;
 }
 
 const AppCanvas: FC<PropsWithChildren<AppCanvasProps>> = ({
@@ -17,6 +19,7 @@ const AppCanvas: FC<PropsWithChildren<AppCanvasProps>> = ({
   fancyBarState,
   setFancyBarState,
   header,
+  staticBottomSheetState,
 }) => {
   const s = styles();
   return (
@@ -25,6 +28,7 @@ const AppCanvas: FC<PropsWithChildren<AppCanvasProps>> = ({
       {header && <AppHeader>{header()}</AppHeader>}
       {children}
       <FancyBar {...{ fancyBarState, setFancyBarState }} />
+      <StaticBottomSheet {...(staticBottomSheetState || { visible: false })} />
     </View>
   );
 };
