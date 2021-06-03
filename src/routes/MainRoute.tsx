@@ -5,7 +5,7 @@ import {
 import React from "react";
 import { LogBox } from "react-native";
 import { pages as p } from "../constants";
-import { ContactListScreen, RoomChatScreen } from "../screens";
+import { ContactListScreen, RoomChatScreen, VideoCallScreen } from "../screens";
 import DrawerRoute from "./DrawerRoute";
 
 LogBox.ignoreLogs(["swmansion"]);
@@ -32,6 +32,7 @@ const MainRoute = () => {
       <Stack.Screen name={p.DrawerRoute} component={DrawerRoute} />
       <Stack.Screen name={p.ContactListScreen} component={ContactListScreen} />
       <Stack.Screen name={p.RoomChatScreen} component={RoomChatScreen} />
+      <Stack.Screen name={p.VideoCallScreen} component={VideoCallScreen} />
     </Stack.Navigator>
   );
 };

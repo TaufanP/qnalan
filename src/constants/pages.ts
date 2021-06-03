@@ -10,6 +10,8 @@ const pages = {
   ProfileScreen: "ProfileScreen",
 
   RoomChatScreen: "RoomChatScreen",
+
+  VideoCallScreen: "VideoCallScreen",
 };
 
 export default pages;
