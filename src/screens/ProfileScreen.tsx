@@ -2,7 +2,13 @@ import auth from "@react-native-firebase/auth";
 import storage from "@react-native-firebase/storage";
 import { CompositeNavigationProp } from "@react-navigation/core";
 import React, { FC, useCallback, useEffect, useRef, useState } from "react";
-import { BackHandler, ScrollView, StyleSheet, Keyboard } from "react-native";
+import {
+  BackHandler,
+  ScrollView,
+  StyleSheet,
+  Keyboard,
+  View,
+} from "react-native";
 import {
   ImageLibraryOptions,
   ImagePickerResponse,
@@ -130,9 +136,26 @@ const ProfileScreen: FC<ProfileScreenProps> = ({ navigation }) => {
     []
   );
 
+  const updatingFireAuth = (photoURL: string) => {
+    auth()
+      .currentUser?.updateProfile({ displayName, photoURL })
+      .then(() => dispatch(updateProfile({ displayName, photoURL })));
+    db.ref(`${n.users}/${uid}`).update({ bio, displayName, photoURL });
+  };
+
   const submit = async () => {
     setIsLoading(true);
     try {
+      if (imageData.uri == "" || imageData.uri.includes("https")) {
+        updatingFireAuth(imageData.uri);
+        setFancyBarState({
+          visible: true,
+          type: fancyType.success,
+          msg: "Berhasil memperbarui profil",
+        });
+        setIsLoading(false);
+        return;
+      }
       storage()
         .ref(`sbhumanbank/users/${uid}`)
         .putFile(imageData.uri)
@@ -140,16 +163,22 @@ const ProfileScreen: FC<ProfileScreenProps> = ({ navigation }) => {
           const photoURL = await storage()
             .ref(`sbhumanbank/users/${uid}`)
             .getDownloadURL();
-          auth()
-            .currentUser?.updateProfile({ displayName, photoURL })
-            .then(() => dispatch(updateProfile({ displayName, photoURL })));
-          db.ref(`${n.users}/${uid}`).update({ bio, displayName, photoURL });
+          updatingFireAuth(photoURL);
           setFancyBarState({
             visible: true,
             type: fancyType.success,
             msg: "Berhasil memperbarui profil",
           });
           setIsLoading(false);
+        })
+        .catch((error) => {
+          console.log(error);
+          setIsLoading(false);
+          setFancyBarState({
+            visible: true,
+            type: fancyType.failed,
+            msg: "Terjadi kesalahan, coba kembali nanti",
+          });
         });
     } catch (error) {
       console.log(error);
@@ -157,7 +186,7 @@ const ProfileScreen: FC<ProfileScreenProps> = ({ navigation }) => {
       setFancyBarState({
         visible: true,
         type: fancyType.failed,
-        msg: "Terjadi kesalahan, coba kembali beberapa saat lagi",
+        msg: "Terjadi kesalahan, coba kembali nanti",
       });
     }
   };
@@ -258,6 +287,9 @@ const ProfileScreen: FC<ProfileScreenProps> = ({ navigation }) => {
         showsVerticalScrollIndicator={false}
       >
         <ProfilePhoto onPress={pickImage} uri={imageData.uri} />
+        <View style={{ flex: 1, width: widthPercent(80) }}>
+          <TextItem type="normal14Main">Nama Pengguna</TextItem>
+        </View>
         <TextField
           placeholder={str.username}
           containerStyle={s.field}
@@ -267,6 +299,9 @@ const ProfileScreen: FC<ProfileScreenProps> = ({ navigation }) => {
           defaultValue={displayName}
           maxLength={25}
         />
+        <View style={{ flex: 1, width: widthPercent(80) }}>
+          <TextItem type="normal14Main">Bio</TextItem>
+        </View>
         <TextField
           placeholder={str.bio}
           containerStyle={s.field}
@@ -309,6 +344,7 @@ const styles = () =>
       backgroundColor: "transparent",
       borderBottomWidth: 2,
       borderBottomColor: cp.main,
+      marginBottom: sp.l,
     },
   });
 
