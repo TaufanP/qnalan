@@ -5,9 +5,9 @@ import {
 } from "@react-navigation/core";
 import React, { FC, useCallback, useEffect, useRef, useState } from "react";
 import { Image, View, BackHandler } from "react-native";
-import { GiftedChat, IMessage, Send } from "react-native-gifted-chat";
+import { GiftedChat, IMessage, Send, User } from "react-native-gifted-chat";
 import { useSelector } from "react-redux";
-import { PlaceholderUser, Send as SendIcon } from "../../assets";
+import { VideoCall, PlaceholderUser, Send as SendIcon } from "../../assets";
 import { AppCanvas, DefaultHeader, TextItem } from "../components";
 import { db } from "../config";
 import { UsersProps } from "../config/types";
@@ -33,7 +33,7 @@ const RoomChatScreen: FC<RoomChatScreenProps> = ({ navigation }) => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isTyping, setIsTyping] = useState<boolean>(false);
 
-  const user = { _id: sessionReducer.uid };
+  const user: User = { _id: sessionReducer.uid };
 
   const isMounted = useRef(true);
 
@@ -59,10 +59,18 @@ const RoomChatScreen: FC<RoomChatScreenProps> = ({ navigation }) => {
     });
   }, []);
 
-  const renderAvatar = useCallback(
-    () => <Image source={PlaceholderUser} style={{ width: 32, height: 32 }} />,
-    []
-  );
+  const renderAvatar = useCallback(() => {
+    const source = partner?.photoURL
+      ? { uri: partner?.photoURL }
+      : PlaceholderUser;
+    return (
+      <View
+        style={{ width: 32, height: 32, borderRadius: 32, overflow: "hidden" }}
+      >
+        <Image source={source} style={{ width: "100%", height: "100%" }} />
+      </View>
+    );
+  }, [partner]);
 
   const findPartner = async () => {
     const dataUser = await db.ref(`${n.users}/${partnerId}`).once("value");
@@ -80,13 +88,15 @@ const RoomChatScreen: FC<RoomChatScreenProps> = ({ navigation }) => {
       setIsLoading(false);
       return;
     }
+    const messagesArray = Object.values(data.val()).map((chat: any) => ({
+      _id: chat.createdAt,
+      ...chat,
+    }));
+    const sortedMsg = messagesArray.sort((a, b) =>
+      a.createdAt > b.createdAt ? -1 : b.createdAt > a.createdAt ? 1 : 0
+    );
     if (isMounted) {
-      setMessages(
-        Object.values(data.val()).map((chat: any) => ({
-          _id: chat.createdAt,
-          ...chat,
-        }))
-      );
+      setMessages(sortedMsg);
       setIsLoading(false);
     }
   };
@@ -166,6 +176,9 @@ const RoomChatScreen: FC<RoomChatScreenProps> = ({ navigation }) => {
             </TextItem>
             {isTyping && <TextItem type="normal12White">{str.typing}</TextItem>}
           </View>
+        )}
+        rightComponent={() => (
+          <VideoCall fill={cp.white} width={32} height={32} />
         )}
       />
     ),

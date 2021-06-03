@@ -10,6 +10,7 @@ import Power from "./Power.svg";
 import Search from "./Search.svg";
 import Send from "./Send.svg";
 import User from "./User.svg";
+import VideoCall from "./VideoCall.svg";
 
 export {
   ArrowBack,
@@ -24,4 +25,5 @@ export {
   Search,
   Send,
   User,
+  VideoCall,
 };
