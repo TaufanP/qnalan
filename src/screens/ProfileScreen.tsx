@@ -59,12 +59,17 @@ const ProfileScreen: FC<ProfileScreenProps> = ({ navigation }) => {
   });
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [visible, setVisible] = useState<boolean>(false);
 
   const [formError, setFormError] = useState<FieldErrorProps[]>([]);
 
   const isMounted = useRef(true);
 
   const s = styles();
+
+  const pickImage = () => {
+    setVisible(true);
+  };
 
   const onPressCamera = async () => {
     const isGranted = await requestCameraPermission();
@@ -201,13 +206,20 @@ const ProfileScreen: FC<ProfileScreenProps> = ({ navigation }) => {
   }, []);
 
   return (
-    <AppCanvas {...{ fancyBarState, setFancyBarState, header }}>
+    <AppCanvas
+      {...{
+        fancyBarState,
+        setFancyBarState,
+        header,
+        staticBottomSheetState: { visible, setVisible },
+      }}
+    >
       <ScrollView
         contentContainerStyle={s.scroll}
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
       >
-        <ProfilePhoto onPress={onPressLibrary} uri={imageData.uri} />
+        <ProfilePhoto onPress={pickImage} uri={imageData.uri} />
         <TextField
           placeholder={str.username}
           containerStyle={s.field}

@@ -46,6 +46,8 @@ const styles = () =>
     // TEXT
     bold12Main: { fontWeight: "bold", fontSize: 12, color: cp.main },
     bold14White: { fontWeight: "bold", fontSize: 14, color: cp.white },
+    bold14Text1: { fontWeight: "bold", fontSize: 14, color: cp.text1 },
+    bold14Main: { fontWeight: "bold", fontSize: 14, color: cp.main },
     bold16White: { fontWeight: "bold", fontSize: 16, color: cp.white },
     bold18White: { fontWeight: "bold", fontSize: 18, color: cp.white },
     bold20Text1: { fontWeight: "bold", fontSize: 20, color: cp.text1 },

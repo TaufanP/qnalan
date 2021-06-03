@@ -1,7 +1,24 @@
+import { ReactNode } from "react";
+
 interface RoomChatParams {
   partnerId: string;
   messageId: string;
   roomId: string;
 }
 
-export type { RoomChatParams };
+interface StaticBottomSheetProps {
+  onPressLeft?: any;
+  onPressRight?: any;
+  onPress?: any;
+  visible: boolean;
+  action?: boolean;
+  leftLabel?: string;
+  rightLabel?: string;
+  mainLabel?: string;
+  mainTitle?: string;
+  subTitle?: string;
+  setVisible?: Function;
+  mainIcon?: ReactNode;
+}
+
+export type { RoomChatParams, StaticBottomSheetProps };
