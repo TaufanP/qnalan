@@ -25,7 +25,9 @@ import { db, requestCameraPermission } from "../config";
 import {
   FancyTypes,
   FieldErrorProps,
+  HobbyProps,
   StaticBottomSheetProps,
+  UsersProps,
 } from "../config/types";
 import {
   colorsPalette as cp,
@@ -34,35 +36,13 @@ import {
   spacing as sp,
   strings as str,
 } from "../constants";
+import { HobbiesValue } from "../constants/defaultValue/local";
 import AppState from "../redux";
 import { updateProfile } from "../redux/actions";
 
 const genderData = [
   { label: "Pria", value: 1 },
   { label: "Wanita", value: 2 },
-];
-
-const hobbiesData: { label: string; value: number }[] = [
-  {
-    label: "Art",
-    value: 1000,
-  },
-  {
-    label: "Creative",
-    value: 1100,
-  },
-  {
-    label: "Region",
-    value: 1110,
-  },
-  {
-    label: "Social",
-    value: 1111,
-  },
-  {
-    label: "Sports",
-    value: 1112,
-  },
 ];
 interface ProfileScreenProps {
   navigation: CompositeNavigationProp<any, any>;
@@ -165,17 +145,39 @@ const ProfileScreen: FC<ProfileScreenProps> = ({ navigation }) => {
   );
 
   const updatingFireAuth = (photoURL: string) => {
+    const newHobbies = HobbiesValue.map((hobby) => ({
+      ...hobby,
+      isSelected: hobbies.findIndex((item) => item == hobby.id) !== -1,
+    }));
     auth()
       .currentUser?.updateProfile({ displayName, photoURL })
-      .then(() => dispatch(updateProfile({ displayName, photoURL })));
-    db.ref(`${n.users}/${uid}`).update({ bio, displayName, photoURL });
+      .then(() =>
+        dispatch(
+          updateProfile({ displayName, photoURL, hobbies: newHobbies, gender })
+        )
+      );
+    db.ref(`${n.users}/${uid}`).update({
+      bio,
+      displayName,
+      photoURL,
+      hobbies: newHobbies,
+      gender,
+    });
   };
+
+  const fancySuccess = () =>
+    setFancyBarState({
+      visible: true,
+      type: fancyType.success,
+      msg: str.successProfile,
+    });
 
   const submit = async () => {
     setIsLoading(true);
     try {
       if (imageData.uri == "" || imageData.uri.includes("https")) {
         updatingFireAuth(imageData.uri);
+        fancySuccess();
         return;
       }
       storage()
@@ -186,11 +188,7 @@ const ProfileScreen: FC<ProfileScreenProps> = ({ navigation }) => {
             .ref(`sbhumanbank/users/${uid}`)
             .getDownloadURL();
           updatingFireAuth(photoURL);
-          setFancyBarState({
-            visible: true,
-            type: fancyType.success,
-            msg: str.successProfile,
-          });
+          fancySuccess();
         })
         .catch((error) => {
           console.log(error);
@@ -254,13 +252,27 @@ const ProfileScreen: FC<ProfileScreenProps> = ({ navigation }) => {
 
   const fillForm = async () => {
     const profile = await db.ref(`${n.users}/${uid}`).once("value");
-    const detail = profile.val();
+    const detail: UsersProps = profile.val();
+    const currentHobbies = detail?.hobbies
+      .filter((hobby) => hobby.isSelected)
+      .map((hobby) => hobby.id);
     if (isMounted) {
       setDisplayName(detail?.displayName);
       setBio(detail?.bio);
       setImageData({ uri: detail?.photoURL, fileSize: 0 });
+      setGender(detail?.gender);
+      setHobbies(currentHobbies);
     }
   };
+
+  const onPressHobbiesBox = (value: number) =>
+    setHobbies((current) => {
+      const isExist = current.findIndex((id) => id == value) !== -1;
+      if (isExist) {
+        return current.filter((id) => id !== value);
+      }
+      return [...current, value];
+    });
 
   const staticBottomSheetState: StaticBottomSheetProps = {
     visible,
@@ -332,20 +344,16 @@ const ProfileScreen: FC<ProfileScreenProps> = ({ navigation }) => {
         <Radio data={genderData} selected={gender} onPress={setGender} />
         <TextItem type="normal14Main">Hobi</TextItem>
         <CheckBoxes
-          data={hobbiesData}
-          selected={hobbies}
-          onPress={(value: number) =>
-            setHobbies((current) => {
-              const isExist = current.findIndex((id) => id == value) !== -1;
-              if (isExist) {
-                return current.filter((id) => id !== value);
-              }
-              return [...current, value];
-            })
-          }
+          data={HobbiesValue.map((hobby) => ({
+            label: hobby.label,
+            value: hobby.id,
+          }))}
+          selected={hobbies.map((hobby) => hobby)}
+          onPress={onPressHobbiesBox}
         />
         <Button
           style={s.button}
+          // onPress={() => console.log(hobbies)}
           onPress={processForm}
           isLoading={isLoading}
           defaultLoading

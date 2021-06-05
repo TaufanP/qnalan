@@ -1,5 +1,5 @@
 import { LOGIN, LOGOUT, UPDATE_PROFILE } from "../actionTypes";
-import { ReduxSessionStateProps } from "../../config/types";
+import { HobbyProps, ReduxSessionStateProps } from "../../config/types";
 
 const loggingIn = (payload: ReduxSessionStateProps) => ({
   type: LOGIN,
@@ -11,6 +11,8 @@ const updateProfile = (payload: {
   displayName?: string;
   email?: string;
   photoURL?: string;
+  hobbies?: HobbyProps[];
+  gender?: number;
 }) => ({
   type: UPDATE_PROFILE,
   payload,

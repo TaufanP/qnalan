@@ -1,4 +1,4 @@
-import { StaticBottomSheetProps } from "../../config/types";
+import { HobbyProps, StaticBottomSheetProps } from "../../config/types";
 
 const StaticBottomSheetValue: StaticBottomSheetProps = {
   onPressLeft: () => console.log("test"),
@@ -15,4 +15,32 @@ const StaticBottomSheetValue: StaticBottomSheetProps = {
   // mainIcon: ()=,
 };
 
-export { StaticBottomSheetValue };
+const HobbiesValue: HobbyProps[] = [
+  {
+    label: "Art",
+    id: 1000,
+    isSelected: false,
+  },
+  {
+    label: "Creative",
+    id: 1100,
+    isSelected: false,
+  },
+  {
+    label: "Religion",
+    id: 1110,
+    isSelected: false,
+  },
+  {
+    label: "Social",
+    id: 1111,
+    isSelected: false,
+  },
+  {
+    label: "Sports",
+    id: 1112,
+    isSelected: false,
+  },
+];
+
+export { StaticBottomSheetValue, HobbiesValue };

@@ -1,11 +1,13 @@
 import { UsersProps } from "../../config/types";
 
 const UsersValue: UsersProps = {
-  displayName: "",
-  email: "",
-  uid: "",
-  photoURL: "",
+  gender: 0,
+  hobbies: [],
   bio: "",
+  email: "",
+  displayName: "",
+  photoURL: "",
+  uid: "",
 };
 
 export { UsersValue };

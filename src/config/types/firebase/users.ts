@@ -2,12 +2,19 @@ interface RoomChatsPropsKey {
   [key: string]: RoomChatProps;
 }
 
+interface HobbyProps {
+  id: number;
+  label: string;
+  isSelected: boolean;
+}
 interface UsersProps {
-  photoURL: string;
-  displayName: string;
-  uid: string;
-  email: string;
   bio: string;
+  displayName: string;
+  gender: number;
+  hobbies: HobbyProps[];
+  email: string;
+  photoURL: string;
+  uid: string;
   roomChats?: RoomChatsPropsKey;
 }
 
@@ -16,4 +23,4 @@ interface RoomChatProps {
   roomId: string;
 }
 
-export type { UsersProps, RoomChatProps };
+export type { UsersProps, RoomChatProps, HobbyProps };
