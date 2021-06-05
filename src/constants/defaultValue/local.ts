@@ -33,7 +33,7 @@ const HobbiesValue: HobbyProps[] = [
     id: 1112,
     isSelected: false,
   },
-];
+].sort((a, b) => (a.label > b.label ? 1 : b.label > a.label ? -1 : 0));
 
 const majorValue = [
   "Accounting",

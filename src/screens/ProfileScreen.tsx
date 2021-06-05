@@ -22,6 +22,7 @@ import {
   Radio,
   TextField,
   TextItem,
+  ToggleButtons,
 } from "../components";
 import { db, requestCameraPermission, widthPercent } from "../config";
 import {
@@ -470,7 +471,7 @@ const ProfileScreen: FC<ProfileScreenProps> = ({ navigation }) => {
         <TextItem type="normal14Main">Jenis Kelamin</TextItem>
         <Radio data={genderValue} selected={gender} onPress={setGender} />
         <TextItem type="normal14Main">Hobi</TextItem>
-        <CheckBoxes
+        <ToggleButtons
           data={HobbiesValue.map((hobby) => ({
             label: hobby.label,
             value: hobby.id,
