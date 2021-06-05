@@ -65,7 +65,7 @@ const styles = () => {
   return StyleSheet.create({
     center,
     widthRelativeColored: {
-      backgroundColor: cp.blue1,
+      backgroundColor: cp.blue3,
       ...widthRelative,
     },
     widthRelativeBordered: {

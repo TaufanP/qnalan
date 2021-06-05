@@ -24,7 +24,7 @@ const ButtonFloat: FC<PropsWithChildren<ButtonFloatProps>> = ({
 const styles = () =>
   StyleSheet.create({
     container: {
-      backgroundColor: cp.main,
+      backgroundColor: cp.blue3,
       height: 54,
       width: 54,
       borderRadius: 54,

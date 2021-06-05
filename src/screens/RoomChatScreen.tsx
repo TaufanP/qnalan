@@ -16,6 +16,7 @@ import {
   node as n,
   spacing,
   strings as str,
+  pages as p,
 } from "../constants";
 import StackParamsList from "../constants/screenParams";
 import AppState from "../redux";
@@ -180,6 +181,8 @@ const RoomChatScreen: FC<RoomChatScreenProps> = ({ navigation }) => {
         rightComponent={() => (
           <VideoCall fill={cp.white} width={32} height={32} />
         )}
+        onPressRight={() => navigation.navigate(p.VideoCallScreen)}
+        onPress={() => navigation.goBack()}
       />
     ),
     [partner, isTyping]

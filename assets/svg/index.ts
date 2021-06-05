@@ -9,6 +9,7 @@ import Plus from "./Plus.svg";
 import Power from "./Power.svg";
 import Search from "./Search.svg";
 import Send from "./Send.svg";
+import Swap from "./Swap.svg";
 import User from "./User.svg";
 import VideoCall from "./VideoCall.svg";
 
@@ -24,6 +25,7 @@ export {
   Power,
   Search,
   Send,
+  Swap,
   User,
   VideoCall,
 };

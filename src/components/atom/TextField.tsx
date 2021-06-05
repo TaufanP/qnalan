@@ -16,6 +16,7 @@ import WarningIcon from "./WarningIcon";
 interface StyleProps {
   sideIcon?: boolean;
   isError?: boolean | string;
+  withPadding?: boolean;
 }
 
 interface TextFieldProps {
@@ -28,6 +29,7 @@ interface TextFieldProps {
   isError?: boolean | string;
   securePress?: any;
   isStart?: boolean;
+  withPadding?: boolean;
   renderSideIcon?: () => JSX.Element;
 }
 
@@ -41,9 +43,10 @@ const TextField: FC<TextFieldProps & TextInputProps> = ({
   isStart,
   renderSideIcon,
   mainStyle,
+  withPadding = true,
   ...props
 }) => {
-  const s = styles({ sideIcon, isError });
+  const s = styles({ sideIcon, isError, withPadding });
   // const renderIcon = renderSideIcon
   //   ? renderSideIcon
   //   : () => <>{props.secureTextEntry ? <EyeClose /> : <EyeOpen />}</>;
@@ -90,7 +93,7 @@ const TextField: FC<TextFieldProps & TextInputProps> = ({
 
 export default TextField;
 
-const styles = ({ sideIcon, isError }: StyleProps) =>
+const styles = ({ sideIcon, isError, withPadding }: StyleProps) =>
   StyleSheet.create({
     warningText: {
       marginLeft: 4,
@@ -110,7 +113,7 @@ const styles = ({ sideIcon, isError }: StyleProps) =>
     container: {
       backgroundColor: cp.white2,
       borderRadius: 8,
-      paddingLeft: sp.sm,
+      paddingLeft: withPadding ? sp.sm : 0,
       paddingRight: sideIcon || isError ? 0 : sp.sm,
       flexDirection: "row",
     },

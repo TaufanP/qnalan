@@ -5,7 +5,7 @@ import { colorsPalette as cp } from "../../constants";
 import FancyBar from "./FancyBar";
 import { FancyTypes, StaticBottomSheetProps } from "../../config/types";
 import AppHeader from "./AppHeader";
-import { StaticBottomSheet } from "../organism";
+import StaticBottomSheet from "../organism/StaticBottomSheet";
 interface AppCanvasProps {
   navigation?: CompositeNavigationProp<any, any>;
   fancyBarState?: FancyTypes;

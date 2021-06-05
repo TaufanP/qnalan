@@ -15,7 +15,8 @@ import {
   spacing as sp,
   textSize as ts,
 } from "../../constants";
-import { Button, TextItem } from "../atom";
+import TextItem from "../atom/TextItem";
+import Button from "../atom/Button";
 
 const { width, height } = Dimensions.get("screen");
 const { alert } = Alert;

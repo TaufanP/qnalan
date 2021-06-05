@@ -16,7 +16,7 @@ const ProfilePhoto: FC<PropsWithChildren<ProfilePhotoProps>> = ({
 }) => {
   const s = styles();
   return (
-    <Button onPress={onPress}>
+    <Button onPress={onPress} style={{ alignItems: "center" }}>
       <View
         style={[
           s.imageCont,
