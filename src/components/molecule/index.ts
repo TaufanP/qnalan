@@ -6,6 +6,7 @@ import PersonList from "./PersonList";
 import ProfileDrawer from "./ProfileDrawer";
 import ProfilePhoto from "./ProfilePhoto";
 import RadioButton from "./RadioButton";
+import ToggleButton from "./ToggleButton";
 
 export {
   CheckBox,
@@ -16,4 +17,5 @@ export {
   ProfileDrawer,
   ProfilePhoto,
   RadioButton,
+  ToggleButton,
 };

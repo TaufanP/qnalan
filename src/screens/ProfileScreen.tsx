@@ -1,8 +1,10 @@
 import auth from "@react-native-firebase/auth";
 import storage from "@react-native-firebase/storage";
 import { CompositeNavigationProp } from "@react-navigation/core";
+import moment from "moment";
 import React, { FC, useCallback, useEffect, useRef, useState } from "react";
 import { BackHandler, Keyboard, ScrollView, StyleSheet } from "react-native";
+import DatePicker from "react-native-date-picker";
 import {
   ImageLibraryOptions,
   ImagePickerResponse,
@@ -20,12 +22,14 @@ import {
   Radio,
   TextField,
   TextItem,
+  ToggleButtons,
 } from "../components";
-import { db, requestCameraPermission } from "../config";
+import { db, requestCameraPermission, widthPercent } from "../config";
 import {
   FancyTypes,
   FieldErrorProps,
   StaticBottomSheetProps,
+  UsersProps,
 } from "../config/types";
 import {
   colorsPalette as cp,
@@ -34,36 +38,15 @@ import {
   spacing as sp,
   strings as str,
 } from "../constants";
+import {
+  batchValue,
+  HobbiesValue,
+  genderValue,
+  majorValue,
+} from "../constants/defaultValue/local";
 import AppState from "../redux";
 import { updateProfile } from "../redux/actions";
-
-const genderData = [
-  { label: "Pria", value: 1 },
-  { label: "Wanita", value: 2 },
-];
-
-const hobbiesData: { label: string; value: number }[] = [
-  {
-    label: "Art",
-    value: 1000,
-  },
-  {
-    label: "Creative",
-    value: 1100,
-  },
-  {
-    label: "Region",
-    value: 1110,
-  },
-  {
-    label: "Social",
-    value: 1111,
-  },
-  {
-    label: "Sports",
-    value: 1112,
-  },
-];
+import Picker from "@gregfrench/react-native-wheel-picker";
 interface ProfileScreenProps {
   navigation: CompositeNavigationProp<any, any>;
 }
@@ -72,6 +55,8 @@ interface ImageDataProps {
   uri: string;
   fileSize: number;
 }
+
+const PickerItem = Picker.Item;
 
 const ProfileScreen: FC<ProfileScreenProps> = ({ navigation }) => {
   const dispatch = useDispatch();
@@ -84,11 +69,14 @@ const ProfileScreen: FC<ProfileScreenProps> = ({ navigation }) => {
 
   const [fancyBarState, setFancyBarState] = useState<FancyTypes>(defaultState);
 
-  const [displayName, setDisplayName] = useState<string>("");
+  const [batch, setBatch] = useState<string>("");
   const [bio, setBio] = useState<string>("");
+  const [displayName, setDisplayName] = useState<string>("");
+  const [dob, setDob] = useState<string>("DD/MM/YYYY");
+  const [major, setMajor] = useState<string>("");
+  const [staticType, setStaticType] = useState<string>("picture");
 
   const [gender, setGender] = useState<number>(0);
-  const [hobbies, setHobbies] = useState<number[]>([]);
 
   const [imageData, setImageData] = useState<ImageDataProps>({
     uri: "",
@@ -99,13 +87,16 @@ const ProfileScreen: FC<ProfileScreenProps> = ({ navigation }) => {
   const [visible, setVisible] = useState<boolean>(false);
 
   const [formError, setFormError] = useState<FieldErrorProps[]>([]);
+  const [hobbies, setHobbies] = useState<number[]>([]);
 
   const isMounted = useRef(true);
+  const dobRef = useRef(0);
 
   const s = styles();
 
   const pickImage = () => {
     Keyboard.dismiss();
+    setStaticType("picture");
     setVisible(true);
   };
 
@@ -159,23 +150,46 @@ const ProfileScreen: FC<ProfileScreenProps> = ({ navigation }) => {
     launchCamera(options, imageCallback);
   };
 
-  const header = useCallback(
-    () => <DefaultHeader title="Profil" onPress={() => navigation.goBack()} />,
-    []
-  );
-
   const updatingFireAuth = (photoURL: string) => {
+    const newHobbies = HobbiesValue.map((hobby) => ({
+      ...hobby,
+      isSelected: hobbies.findIndex((item) => item == hobby.id) !== -1,
+    }));
+    const profileData = {
+      displayName,
+      photoURL,
+      hobbies: newHobbies,
+      gender,
+      dob,
+      batch,
+      major,
+    };
     auth()
       .currentUser?.updateProfile({ displayName, photoURL })
-      .then(() => dispatch(updateProfile({ displayName, photoURL })));
-    db.ref(`${n.users}/${uid}`).update({ bio, displayName, photoURL });
+      .then(() => dispatch(updateProfile(profileData)));
+    db.ref(`${n.users}/${uid}`).update(profileData);
   };
+
+  const fancySuccess = () =>
+    setFancyBarState({
+      visible: true,
+      type: fancyType.success,
+      msg: str.successProfile,
+    });
+
+  const fancyFail = () =>
+    setFancyBarState({
+      visible: true,
+      type: fancyType.failed,
+      msg: str.failedHappen,
+    });
 
   const submit = async () => {
     setIsLoading(true);
     try {
       if (imageData.uri == "" || imageData.uri.includes("https")) {
         updatingFireAuth(imageData.uri);
+        fancySuccess();
         return;
       }
       storage()
@@ -186,27 +200,15 @@ const ProfileScreen: FC<ProfileScreenProps> = ({ navigation }) => {
             .ref(`sbhumanbank/users/${uid}`)
             .getDownloadURL();
           updatingFireAuth(photoURL);
-          setFancyBarState({
-            visible: true,
-            type: fancyType.success,
-            msg: str.successProfile,
-          });
+          fancySuccess();
         })
         .catch((error) => {
-          console.log(error);
-          setFancyBarState({
-            visible: true,
-            type: fancyType.failed,
-            msg: str.failedHappen,
-          });
+          console.log(`ProfileScreen, submit(), ${error}`);
+          fancyFail();
         });
     } catch (error) {
-      console.log(error);
-      setFancyBarState({
-        visible: true,
-        type: fancyType.failed,
-        msg: str.failedHappen,
-      });
+      console.log(`ProfileScreen, submit(), ${error}`);
+      fancyFail();
     } finally {
       setIsLoading(false);
     }
@@ -254,20 +256,117 @@ const ProfileScreen: FC<ProfileScreenProps> = ({ navigation }) => {
 
   const fillForm = async () => {
     const profile = await db.ref(`${n.users}/${uid}`).once("value");
-    const detail = profile.val();
+    const detail: UsersProps = profile.val();
+    const currentHobbies = detail?.hobbies
+      .filter((hobby) => hobby.isSelected)
+      .map((hobby) => hobby.id);
     if (isMounted) {
       setDisplayName(detail?.displayName);
       setBio(detail?.bio);
       setImageData({ uri: detail?.photoURL, fileSize: 0 });
+      setGender(detail?.gender);
+      setHobbies(currentHobbies);
+      setDob(detail?.dob);
+      setMajor(detail?.major);
+      setBatch(detail?.batch);
     }
   };
 
-  const staticBottomSheetState: StaticBottomSheetProps = {
-    visible,
-    setVisible,
-    onPressRight: () => onImagePicking(false),
-    onPressLeft: () => onImagePicking(true),
+  const onPressHobbiesBox = (value: number) =>
+    setHobbies((current) => {
+      const isExist = current.findIndex((id) => id == value) !== -1;
+      if (isExist) {
+        return current.filter((id) => id !== value);
+      }
+      return [...current, value];
+    });
+
+  const dobSheetPress = () => {
+    setVisible(false);
+    const age = moment().diff(dobRef.current, "years");
+    if (age < 16) {
+      setFancyBarState({
+        visible: true,
+        type: fancyType.failed,
+        msg: str.minAge,
+      });
+      return;
+    }
+    setDob(moment(dobRef.current).format("DD/MM/YYYY"));
   };
+
+  const header = useCallback(
+    () => (
+      <DefaultHeader title={str.profil} onPress={() => navigation.goBack()} />
+    ),
+    []
+  );
+
+  const customCompDob = () => (
+    <DatePicker
+      date={new Date()}
+      onDateChange={(e) => (dobRef.current = e.getTime())}
+      mode="date"
+    />
+  );
+
+  const pickerGenerator = (array: any[], setter: any, selected: number) => (
+    <Picker
+      style={{ width: widthPercent(80), height: 180 }}
+      lineColor="#000000" //to set top and bottom line color (Without gradients)
+      lineGradientColorFrom="#008000" //to set top and bottom starting gradient line color
+      lineGradientColorTo="#FF5733" //to set top and bottom ending gradient
+      selectedValue={selected}
+      itemStyle={{ color: cp.text1, fontSize: 16 }}
+      onValueChange={(index) => setter(array[index])}
+    >
+      {array.map((value, i) => (
+        <PickerItem label={value} value={i} key={i} />
+      ))}
+    </Picker>
+  );
+
+  const statics: { [key: string]: StaticBottomSheetProps } = {
+    batch: {
+      action: true,
+      customComp: () =>
+        pickerGenerator(
+          batchValue,
+          setBatch,
+          batchValue.findIndex((item) => item == batch)
+        ),
+      onPress: () => setVisible(false),
+      setVisible,
+      visible,
+    },
+    dob: {
+      action: true,
+      customComp: customCompDob,
+      onPress: dobSheetPress,
+      setVisible,
+      visible,
+    },
+    major: {
+      action: true,
+      customComp: () =>
+        pickerGenerator(
+          majorValue,
+          setMajor,
+          majorValue.findIndex((item) => item == major)
+        ),
+      onPress: () => setVisible(false),
+      setVisible,
+      visible,
+    },
+    picture: {
+      onPressLeft: () => onImagePicking(true),
+      onPressRight: () => onImagePicking(false),
+      setVisible,
+      visible,
+    },
+  };
+
+  const staticBottomSheetState: StaticBottomSheetProps = statics[staticType];
 
   useEffect(() => {
     fillForm();
@@ -275,6 +374,17 @@ const ProfileScreen: FC<ProfileScreenProps> = ({ navigation }) => {
       isMounted.current = false;
     };
   }, []);
+
+  useEffect(() => {
+    if (!visible && isMounted) {
+      setTimeout(() => {
+        setStaticType("picture");
+      }, 800);
+    }
+    return () => {
+      isMounted.current = false;
+    };
+  }, [visible]);
 
   useEffect(() => {
     const backAction = () => {
@@ -328,21 +438,46 @@ const ProfileScreen: FC<ProfileScreenProps> = ({ navigation }) => {
           maxLength={50}
           withPadding={false}
         />
+        <TextItem type="normal14Main">Tanggal Lahir</TextItem>
+        <Button
+          style={[s.field, s.customTextField]}
+          onPress={() => {
+            setStaticType("dob");
+            setVisible(true);
+          }}
+        >
+          <TextItem>{dob}</TextItem>
+        </Button>
+        <TextItem type="normal14Main">Angkatan</TextItem>
+        <Button
+          style={[s.field, s.customTextField]}
+          onPress={() => {
+            setStaticType("batch");
+            setVisible(true);
+          }}
+        >
+          <TextItem>{batch}</TextItem>
+        </Button>
+        <TextItem type="normal14Main">Jurusan</TextItem>
+        <Button
+          style={[s.field, s.customTextField]}
+          onPress={() => {
+            setStaticType("major");
+            setVisible(true);
+          }}
+        >
+          <TextItem>{major}</TextItem>
+        </Button>
         <TextItem type="normal14Main">Jenis Kelamin</TextItem>
-        <Radio data={genderData} selected={gender} onPress={setGender} />
+        <Radio data={genderValue} selected={gender} onPress={setGender} />
         <TextItem type="normal14Main">Hobi</TextItem>
-        <CheckBoxes
-          data={hobbiesData}
-          selected={hobbies}
-          onPress={(value: number) =>
-            setHobbies((current) => {
-              const isExist = current.findIndex((id) => id == value) !== -1;
-              if (isExist) {
-                return current.filter((id) => id !== value);
-              }
-              return [...current, value];
-            })
-          }
+        <ToggleButtons
+          data={HobbiesValue.map((hobby) => ({
+            label: hobby.label,
+            value: hobby.id,
+          }))}
+          selected={hobbies.map((hobby) => hobby)}
+          onPress={onPressHobbiesBox}
         />
         <Button
           style={s.button}
@@ -359,6 +494,13 @@ const ProfileScreen: FC<ProfileScreenProps> = ({ navigation }) => {
 
 const styles = () =>
   StyleSheet.create({
+    customTextField: {
+      height: 50,
+      justifyContent: "center",
+      paddingLeft: sp.ss,
+      borderLeftWidth: 2,
+      borderLeftColor: "transparent",
+    },
     scroll: {
       // justifyContent: "center",
       // alignItems: "center",

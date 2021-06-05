@@ -68,7 +68,7 @@ const TextField: FC<TextFieldProps & TextInputProps> = ({
     ]).start();
   };
   return (
-    <View style={mainStyle}>
+    <View style={[mainStyle]}>
       <Animated.View style={[s.container, containerStyle]}>
         <TextInput style={[s.input, fieldStyle]} {...props} />
         {/* {sideIcon && (

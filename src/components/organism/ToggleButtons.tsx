@@ -8,25 +8,41 @@ import {
   spacing as sp,
 } from "../../constants";
 import { Button, ButtonHeader, TextItem } from "../atom";
-interface RadioButtonProps {
-  onPress?: any;
+import { RadioButton, ToggleButton } from "../molecule";
+
+interface CheckBoxValue {
   label: string;
-  isSelected: boolean;
+  value: number;
+}
+
+interface CheckBoxesProps {
+  data: CheckBoxValue[];
+  onPress?: any;
+  selected?: number[];
 }
 
 const mainSize = 20;
 const childSize = 12;
 
-const RadioButton: FC<RadioButtonProps> = ({ onPress, label, isSelected }) => {
+const ToggleButtons: FC<CheckBoxesProps> = ({
+  data,
+  onPress = (e: any) => console.log(e),
+  selected = [],
+}) => {
   const s = styles();
   return (
-    <Button style={s.childCont} onPress={onPress}>
-      <View style={s.outer}>{isSelected && <View style={s.inner} />}</View>
-      <TextItem>{label}</TextItem>
-    </Button>
+    <View style={s.container}>
+      {data.map((check: CheckBoxValue) => (
+        <ToggleButton
+          onPress={() => onPress(check.value)}
+          isSelected={selected.findIndex((id) => id == check.value) !== -1}
+          label={check.label}
+          key={check.value}
+        />
+      ))}
+    </View>
   );
 };
-
 const styles = () =>
   StyleSheet.create({
     inner: {
@@ -49,6 +65,11 @@ const styles = () =>
       flexDirection: "row",
       marginRight: sp.xxxl,
     },
+    container: {
+      flexDirection: "row",
+      marginVertical: sp.sm,
+      flexWrap: "wrap",
+    },
   });
 
-export default RadioButton;
+export default ToggleButtons;
