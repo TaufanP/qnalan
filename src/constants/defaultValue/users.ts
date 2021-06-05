@@ -1,6 +1,7 @@
 import { UsersProps } from "../../config/types";
 
 const UsersValue: UsersProps = {
+  batch: "",
   bio: "",
   displayName: "",
   dob: "",

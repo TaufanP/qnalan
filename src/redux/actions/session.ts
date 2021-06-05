@@ -14,6 +14,7 @@ const updateProfile = (payload: {
   hobbies?: HobbyProps[];
   gender?: number;
   dob?: string;
+  batch?: string;
 }) => ({
   type: UPDATE_PROFILE,
   payload,

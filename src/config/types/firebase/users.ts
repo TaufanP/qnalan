@@ -8,6 +8,7 @@ interface HobbyProps {
   isSelected: boolean;
 }
 interface UsersProps {
+  batch: string;
   bio: string;
   displayName: string;
   dob: string;

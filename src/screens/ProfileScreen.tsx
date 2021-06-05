@@ -40,10 +40,30 @@ import {
 import { HobbiesValue } from "../constants/defaultValue/local";
 import AppState from "../redux";
 import { updateProfile } from "../redux/actions";
+import Picker from "@gregfrench/react-native-wheel-picker";
 
 const genderData = [
   { label: "Pria", value: 1 },
   { label: "Wanita", value: 2 },
+];
+
+const batchData = [
+  "2006",
+  "2007",
+  "2008",
+  "2009",
+  "2010",
+  "2011",
+  "2012",
+  "2013",
+  "2014",
+  "2015",
+  "2016",
+  "2017",
+  "2018",
+  "2019",
+  "2020",
+  "2021",
 ];
 interface ProfileScreenProps {
   navigation: CompositeNavigationProp<any, any>;
@@ -53,6 +73,8 @@ interface ImageDataProps {
   uri: string;
   fileSize: number;
 }
+
+const PickerItem = Picker.Item;
 
 const ProfileScreen: FC<ProfileScreenProps> = ({ navigation }) => {
   const dispatch = useDispatch();
@@ -65,11 +87,12 @@ const ProfileScreen: FC<ProfileScreenProps> = ({ navigation }) => {
 
   const [fancyBarState, setFancyBarState] = useState<FancyTypes>(defaultState);
 
-  const [displayName, setDisplayName] = useState<string>("");
   const [bio, setBio] = useState<string>("");
-  const [dob, setDob] = useState<string>("05/05/1991");
-  const [staticType, setStaticType] = useState<string>("dob");
+  const [displayName, setDisplayName] = useState<string>("");
+  const [dob, setDob] = useState<string>("DD/MM/YYYY");
+  const [staticType, setStaticType] = useState<string>("batch");
 
+  const [batch, setBatch] = useState<number>(0);
   const [gender, setGender] = useState<number>(0);
   const [hobbies, setHobbies] = useState<number[]>([]);
 
@@ -84,7 +107,7 @@ const ProfileScreen: FC<ProfileScreenProps> = ({ navigation }) => {
   const [formError, setFormError] = useState<FieldErrorProps[]>([]);
 
   const isMounted = useRef(true);
-  const dobRef = useRef("");
+  const dobRef = useRef(0);
 
   const s = styles();
 
@@ -164,6 +187,7 @@ const ProfileScreen: FC<ProfileScreenProps> = ({ navigation }) => {
             hobbies: newHobbies,
             gender,
             dob,
+            batch: batchData[batch],
           })
         )
       );
@@ -174,6 +198,7 @@ const ProfileScreen: FC<ProfileScreenProps> = ({ navigation }) => {
       hobbies: newHobbies,
       gender,
       dob,
+      batch: batchData[batch],
     });
   };
 
@@ -274,6 +299,7 @@ const ProfileScreen: FC<ProfileScreenProps> = ({ navigation }) => {
       setImageData({ uri: detail?.photoURL, fileSize: 0 });
       setGender(detail?.gender);
       setHobbies(currentHobbies);
+      setDob(detail?.dob);
     }
   };
 
@@ -286,30 +312,62 @@ const ProfileScreen: FC<ProfileScreenProps> = ({ navigation }) => {
       return [...current, value];
     });
 
+  const dobSheetPress = () => {
+    setVisible(false);
+    const age = moment().diff(dobRef.current, "years");
+    if (age < 16) {
+      setFancyBarState({
+        visible: true,
+        type: fancyType.failed,
+        msg: "Anda harus berumur minimal 15 tahun",
+      });
+      return;
+    }
+    setDob(moment(dobRef.current).format("DD/MM/YYYY"));
+  };
+
   const customCompDob = () => (
     <DatePicker
       date={new Date()}
-      onDateChange={(e) => (dobRef.current = moment(e).format("DD/MM/YYYY"))}
+      onDateChange={(e) => (dobRef.current = e.getTime())}
       mode="date"
     />
   );
 
   const statics: { [key: string]: StaticBottomSheetProps } = {
-    dob: {
-      visible,
-      setVisible,
-      customComp: customCompDob,
+    batch: {
       action: true,
-      onPress: () => {
-        setDob(dobRef.current);
-        setVisible(false);
-      },
+      customComp: () => (
+        <Picker
+          style={{ width: 150, height: 180 }}
+          lineColor="#000000" //to set top and bottom line color (Without gradients)
+          lineGradientColorFrom="#008000" //to set top and bottom starting gradient line color
+          lineGradientColorTo="#FF5733" //to set top and bottom ending gradient
+          selectedValue={2}
+          itemStyle={{ color: "black", fontSize: 26 }}
+          onValueChange={(index) => setBatch(index)}
+        >
+          {batchData.map((value, i) => (
+            <PickerItem label={value} value={i} key={i} />
+          ))}
+        </Picker>
+      ),
+      onPress: () => setVisible(false),
+      setVisible,
+      visible,
+    },
+    dob: {
+      action: true,
+      customComp: customCompDob,
+      onPress: dobSheetPress,
+      setVisible,
+      visible,
     },
     picture: {
-      visible,
-      setVisible,
-      onPressRight: () => onImagePicking(false),
       onPressLeft: () => onImagePicking(true),
+      onPressRight: () => onImagePicking(false),
+      setVisible,
+      visible,
     },
   };
 
@@ -383,6 +441,16 @@ const ProfileScreen: FC<ProfileScreenProps> = ({ navigation }) => {
           }}
         >
           <TextItem>{dob}</TextItem>
+        </Button>
+        <TextItem type="normal14Main">Angkatan</TextItem>
+        <Button
+          style={[s.field, s.customTextField]}
+          onPress={() => {
+            setStaticType("batch");
+            setVisible(true);
+          }}
+        >
+          <TextItem>{batchData[batch]}</TextItem>
         </Button>
         <TextItem type="normal14Main">Jenis Kelamin</TextItem>
         <Radio data={genderData} selected={gender} onPress={setGender} />
