@@ -1,6 +1,18 @@
-import { HobbyProps, StaticBottomSheetProps } from "../../config/types";
+import {
+  FilterDataProps,
+  HobbyProps,
+  StaticBottomSheetProps,
+} from "../../config/types";
 
 const batchValue = [...new Array(16)].map((_, i) => `${2005 + i}`);
+
+const filterDataValue: FilterDataProps[] = [
+  { label: "Angkatan", count: 0, value: 2000 },
+  { label: "Gender", count: 0, value: 2001 },
+  { label: "Hobi", count: 0, value: 2002 },
+  { label: "Jurusan", count: 0, value: 2003 },
+  { label: "Umur", count: 0, value: 2004 },
+].sort((a, b) => (a.label > b.label ? 1 : b.label > a.label ? -1 : 0));
 
 const genderValue = [
   { label: "Pria", value: 1 },
@@ -73,4 +85,5 @@ export {
   batchValue,
   genderValue,
   majorValue,
+  filterDataValue,
 };

@@ -1,5 +1,10 @@
 import { ReactNode } from "react";
 
+interface FilterDataProps {
+  label: string;
+  count: number;
+  value: number;
+}
 interface RoomChatParams {
   partnerId: string;
   messageId: string;
@@ -22,4 +27,4 @@ interface StaticBottomSheetProps {
   customComp?: () => JSX.Element;
 }
 
-export type { RoomChatParams, StaticBottomSheetProps };
+export type { RoomChatParams, StaticBottomSheetProps, FilterDataProps };

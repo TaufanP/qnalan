@@ -1,19 +1,34 @@
 import { CompositeNavigationProp } from "@react-navigation/core";
-import React, { FC, useCallback, useEffect, useState } from "react";
-import { FlatList } from "react-native";
+import React, { FC, useCallback, useEffect, useRef, useState } from "react";
+import { FlatList, View } from "react-native";
 import { useSelector } from "react-redux";
-import { AppCanvas, DefaultHeader, PersonList } from "../components";
+import {
+  AppCanvas,
+  DefaultHeader,
+  Filters,
+  PersonList,
+  TextItem,
+} from "../components";
 import { db } from "../config";
-import { RoomChatProps, UsersProps } from "../config/types";
+import { FilterDataProps, RoomChatProps, UsersProps } from "../config/types";
 import { node as n, pages as p, spacing as sp } from "../constants";
+import { filterDataValue } from "../constants/defaultValue/local";
 import AppState from "../redux";
 
 interface ContactListScreenProps {
   navigation: CompositeNavigationProp<any, any>;
 }
+
+interface FilterCatProps extends FilterDataProps {
+  onPress?: any;
+}
+
 const ContactListScreen: FC<ContactListScreenProps> = ({ navigation }) => {
   const { sessionReducer } = useSelector((state: AppState) => state);
   const [users, setUsers] = useState<UsersProps[]>([]);
+  const [filterCat, setFilterCat] = useState<FilterCatProps[]>(filterDataValue);
+
+  const isMounted = useRef(true);
 
   const createChatRoom = async (partnerId: string) => {
     const chatList = await db
@@ -62,6 +77,17 @@ const ContactListScreen: FC<ContactListScreenProps> = ({ navigation }) => {
     navigation.replace(p.RoomChatScreen, { partnerId, roomId, messageId });
   };
 
+  const getUsers = async () => {
+    const data = await db.ref(n.users).once("value");
+    const dataArray = Object.entries(data.val());
+    if (isMounted.current)
+      setUsers(
+        dataArray
+          .filter((user: any) => user[0] !== sessionReducer.uid)
+          .map((item: any) => ({ uid: item[0], ...item[1] }))
+      );
+  };
+
   const keyExtractor = (item: UsersProps) => `${item.uid}`;
 
   const renderItem = useCallback(({ item }: { item: UsersProps }) => {
@@ -89,26 +115,16 @@ const ContactListScreen: FC<ContactListScreenProps> = ({ navigation }) => {
   );
 
   useEffect(() => {
-    let isMounted = true;
-    const getUsers = async () => {
-      const data = await db.ref(n.users).once("value");
-      const dataArray = Object.entries(data.val());
-      if (isMounted)
-        setUsers(
-          dataArray
-            .filter((user: any) => user[0] !== sessionReducer.uid)
-            .map((item: any) => ({ uid: item[0], ...item[1] }))
-        );
-    };
     getUsers();
 
     return () => {
-      isMounted = false;
+      isMounted.current = false;
     };
   }, []);
 
   return (
     <AppCanvas header={header}>
+      <Filters data={filterCat} />
       <FlatList
         data={users}
         renderItem={renderItem}

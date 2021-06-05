@@ -260,7 +260,7 @@ const ProfileScreen: FC<ProfileScreenProps> = ({ navigation }) => {
     const currentHobbies = detail?.hobbies
       .filter((hobby) => hobby.isSelected)
       .map((hobby) => hobby.id);
-    if (isMounted) {
+    if (isMounted.current) {
       setDisplayName(detail?.displayName);
       setBio(detail?.bio);
       setImageData({ uri: detail?.photoURL, fileSize: 0 });
@@ -376,7 +376,7 @@ const ProfileScreen: FC<ProfileScreenProps> = ({ navigation }) => {
   }, []);
 
   useEffect(() => {
-    if (!visible && isMounted) {
+    if (!visible && isMounted.current) {
       setTimeout(() => {
         setStaticType("picture");
       }, 800);
