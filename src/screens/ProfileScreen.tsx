@@ -47,7 +47,25 @@ const genderData = [
   { label: "Wanita", value: 2 },
 ];
 
+const majorData = [
+  "Accounting",
+  "Branding",
+  "Business Economics",
+  "Business",
+  "Business Mathematics",
+  "Computer Systems Engineering",
+  "Digital Business Technology",
+  "Event",
+  "Hospitality Business",
+  "Finance",
+  "International Business Law",
+  "Product Design Engineering",
+  "Food Business Technology",
+  "Renewable Energy Engineering",
+];
+
 const batchData = [
+  "2005",
   "2006",
   "2007",
   "2008",
@@ -87,14 +105,14 @@ const ProfileScreen: FC<ProfileScreenProps> = ({ navigation }) => {
 
   const [fancyBarState, setFancyBarState] = useState<FancyTypes>(defaultState);
 
+  const [batch, setBatch] = useState<string>("");
   const [bio, setBio] = useState<string>("");
   const [displayName, setDisplayName] = useState<string>("");
   const [dob, setDob] = useState<string>("DD/MM/YYYY");
-  const [staticType, setStaticType] = useState<string>("batch");
+  const [major, setMajor] = useState<string>("");
+  const [staticType, setStaticType] = useState<string>("picture");
 
-  const [batch, setBatch] = useState<number>(0);
   const [gender, setGender] = useState<number>(0);
-  const [hobbies, setHobbies] = useState<number[]>([]);
 
   const [imageData, setImageData] = useState<ImageDataProps>({
     uri: "",
@@ -105,6 +123,7 @@ const ProfileScreen: FC<ProfileScreenProps> = ({ navigation }) => {
   const [visible, setVisible] = useState<boolean>(false);
 
   const [formError, setFormError] = useState<FieldErrorProps[]>([]);
+  const [hobbies, setHobbies] = useState<number[]>([]);
 
   const isMounted = useRef(true);
   const dobRef = useRef(0);
@@ -187,7 +206,8 @@ const ProfileScreen: FC<ProfileScreenProps> = ({ navigation }) => {
             hobbies: newHobbies,
             gender,
             dob,
-            batch: batchData[batch],
+            batch,
+            major,
           })
         )
       );
@@ -198,7 +218,8 @@ const ProfileScreen: FC<ProfileScreenProps> = ({ navigation }) => {
       hobbies: newHobbies,
       gender,
       dob,
-      batch: batchData[batch],
+      batch,
+      major,
     });
   };
 
@@ -294,12 +315,15 @@ const ProfileScreen: FC<ProfileScreenProps> = ({ navigation }) => {
       .filter((hobby) => hobby.isSelected)
       .map((hobby) => hobby.id);
     if (isMounted) {
+      console.log(detail?.batch);
       setDisplayName(detail?.displayName);
       setBio(detail?.bio);
       setImageData({ uri: detail?.photoURL, fileSize: 0 });
       setGender(detail?.gender);
       setHobbies(currentHobbies);
       setDob(detail?.dob);
+      setMajor(detail?.major);
+      setBatch(detail?.batch);
     }
   };
 
@@ -345,7 +369,7 @@ const ProfileScreen: FC<ProfileScreenProps> = ({ navigation }) => {
           lineGradientColorTo="#FF5733" //to set top and bottom ending gradient
           selectedValue={2}
           itemStyle={{ color: "black", fontSize: 26 }}
-          onValueChange={(index) => setBatch(index)}
+          onValueChange={(index) => setBatch(batchData[index])}
         >
           {batchData.map((value, i) => (
             <PickerItem label={value} value={i} key={i} />
@@ -360,6 +384,27 @@ const ProfileScreen: FC<ProfileScreenProps> = ({ navigation }) => {
       action: true,
       customComp: customCompDob,
       onPress: dobSheetPress,
+      setVisible,
+      visible,
+    },
+    major: {
+      action: true,
+      customComp: () => (
+        <Picker
+          style={{ width: "100%", height: 180 }}
+          lineColor="#000000" //to set top and bottom line color (Without gradients)
+          lineGradientColorFrom="#008000" //to set top and bottom starting gradient line color
+          lineGradientColorTo="#FF5733" //to set top and bottom ending gradient
+          selectedValue={2}
+          itemStyle={{ color: "black", fontSize: 18 }}
+          onValueChange={(index) => setMajor(majorData[index])}
+        >
+          {majorData.map((value, i) => (
+            <PickerItem label={value} value={i} key={i} />
+          ))}
+        </Picker>
+      ),
+      onPress: () => setVisible(false),
       setVisible,
       visible,
     },
@@ -450,7 +495,17 @@ const ProfileScreen: FC<ProfileScreenProps> = ({ navigation }) => {
             setVisible(true);
           }}
         >
-          <TextItem>{batchData[batch]}</TextItem>
+          <TextItem>{batch}</TextItem>
+        </Button>
+        <TextItem type="normal14Main">Jurusan</TextItem>
+        <Button
+          style={[s.field, s.customTextField]}
+          onPress={() => {
+            setStaticType("major");
+            setVisible(true);
+          }}
+        >
+          <TextItem>{major}</TextItem>
         </Button>
         <TextItem type="normal14Main">Jenis Kelamin</TextItem>
         <Radio data={genderData} selected={gender} onPress={setGender} />

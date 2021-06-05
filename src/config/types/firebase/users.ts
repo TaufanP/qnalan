@@ -12,9 +12,10 @@ interface UsersProps {
   bio: string;
   displayName: string;
   dob: string;
+  email: string;
   gender: number;
   hobbies: HobbyProps[];
-  email: string;
+  major: string;
   photoURL: string;
   uid: string;
   roomChats?: RoomChatsPropsKey;

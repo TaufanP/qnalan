@@ -15,6 +15,7 @@ const updateProfile = (payload: {
   gender?: number;
   dob?: string;
   batch?: string;
+  major?: string;
 }) => ({
   type: UPDATE_PROFILE,
   payload,

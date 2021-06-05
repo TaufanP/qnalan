@@ -8,6 +8,7 @@ const UsersValue: UsersProps = {
   email: "",
   gender: 0,
   hobbies: [],
+  major: "",
   photoURL: "",
   uid: "",
 };
