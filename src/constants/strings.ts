@@ -5,7 +5,7 @@ const strings = {
   emailTaken: "Alamat email tidak tersedia",
   email: "email",
 
-  failedHappen: "Telah terjadi kesalahan, coba beberapa saat lagi",
+  failedHappen: "Terjadi kesalahan, coba kembali nanti",
   fillEmail: "Harap isi alamat email",
   fillPassword: "Harap isi kata sandi",
 
@@ -22,6 +22,8 @@ const strings = {
 
   register: "Daftar",
   roomChat: "Ruang Percakapan",
+
+  successProfile: "Berhasil memperbarui profil",
 
   typing: "mengetik pesan ...",
 

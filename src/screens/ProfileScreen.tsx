@@ -2,29 +2,26 @@ import auth from "@react-native-firebase/auth";
 import storage from "@react-native-firebase/storage";
 import { CompositeNavigationProp } from "@react-navigation/core";
 import React, { FC, useCallback, useEffect, useRef, useState } from "react";
-import {
-  BackHandler,
-  ScrollView,
-  StyleSheet,
-  Keyboard,
-  View,
-} from "react-native";
+import { BackHandler, Keyboard, ScrollView, StyleSheet } from "react-native";
 import {
   ImageLibraryOptions,
   ImagePickerResponse,
   launchCamera,
   launchImageLibrary,
 } from "react-native-image-picker";
+import ImageResizer from "react-native-image-resizer";
 import { useDispatch, useSelector } from "react-redux";
 import {
   AppCanvas,
   Button,
+  CheckBoxes,
   DefaultHeader,
   ProfilePhoto,
+  Radio,
   TextField,
   TextItem,
 } from "../components";
-import { db, requestCameraPermission, widthPercent } from "../config";
+import { db, requestCameraPermission } from "../config";
 import {
   FancyTypes,
   FieldErrorProps,
@@ -39,7 +36,34 @@ import {
 } from "../constants";
 import AppState from "../redux";
 import { updateProfile } from "../redux/actions";
-import ImageResizer from "react-native-image-resizer";
+
+const genderData = [
+  { label: "Pria", value: 1 },
+  { label: "Wanita", value: 2 },
+];
+
+const hobbiesData: { label: string; value: number }[] = [
+  {
+    label: "Art",
+    value: 1000,
+  },
+  {
+    label: "Creative",
+    value: 1100,
+  },
+  {
+    label: "Region",
+    value: 1110,
+  },
+  {
+    label: "Social",
+    value: 1111,
+  },
+  {
+    label: "Sports",
+    value: 1112,
+  },
+];
 interface ProfileScreenProps {
   navigation: CompositeNavigationProp<any, any>;
 }
@@ -62,6 +86,10 @@ const ProfileScreen: FC<ProfileScreenProps> = ({ navigation }) => {
 
   const [displayName, setDisplayName] = useState<string>("");
   const [bio, setBio] = useState<string>("");
+
+  const [gender, setGender] = useState<number>(0);
+  const [hobbies, setHobbies] = useState<number[]>([]);
+
   const [imageData, setImageData] = useState<ImageDataProps>({
     uri: "",
     fileSize: 0,
@@ -148,12 +176,6 @@ const ProfileScreen: FC<ProfileScreenProps> = ({ navigation }) => {
     try {
       if (imageData.uri == "" || imageData.uri.includes("https")) {
         updatingFireAuth(imageData.uri);
-        setFancyBarState({
-          visible: true,
-          type: fancyType.success,
-          msg: "Berhasil memperbarui profil",
-        });
-        setIsLoading(false);
         return;
       }
       storage()
@@ -167,27 +189,26 @@ const ProfileScreen: FC<ProfileScreenProps> = ({ navigation }) => {
           setFancyBarState({
             visible: true,
             type: fancyType.success,
-            msg: "Berhasil memperbarui profil",
+            msg: str.successProfile,
           });
-          setIsLoading(false);
         })
         .catch((error) => {
           console.log(error);
-          setIsLoading(false);
           setFancyBarState({
             visible: true,
             type: fancyType.failed,
-            msg: "Terjadi kesalahan, coba kembali nanti",
+            msg: str.failedHappen,
           });
         });
     } catch (error) {
       console.log(error);
-      setIsLoading(false);
       setFancyBarState({
         visible: true,
         type: fancyType.failed,
-        msg: "Terjadi kesalahan, coba kembali nanti",
+        msg: str.failedHappen,
       });
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -287,9 +308,7 @@ const ProfileScreen: FC<ProfileScreenProps> = ({ navigation }) => {
         showsVerticalScrollIndicator={false}
       >
         <ProfilePhoto onPress={pickImage} uri={imageData.uri} />
-        <View style={{ flex: 1, width: widthPercent(80) }}>
-          <TextItem type="normal14Main">Nama Pengguna</TextItem>
-        </View>
+        <TextItem type="normal14Main">Nama Pengguna</TextItem>
         <TextField
           placeholder={str.username}
           containerStyle={s.field}
@@ -298,16 +317,32 @@ const ProfileScreen: FC<ProfileScreenProps> = ({ navigation }) => {
           isError={testError("displayName")}
           defaultValue={displayName}
           maxLength={25}
+          withPadding={false}
         />
-        <View style={{ flex: 1, width: widthPercent(80) }}>
-          <TextItem type="normal14Main">Bio</TextItem>
-        </View>
+        <TextItem type="normal14Main">Bio</TextItem>
         <TextField
           placeholder={str.bio}
           containerStyle={s.field}
           onChangeText={(e) => setBio(e)}
           defaultValue={bio}
           maxLength={50}
+          withPadding={false}
+        />
+        <TextItem type="normal14Main">Jenis Kelamin</TextItem>
+        <Radio data={genderData} selected={gender} onPress={setGender} />
+        <TextItem type="normal14Main">Hobi</TextItem>
+        <CheckBoxes
+          data={hobbiesData}
+          selected={hobbies}
+          onPress={(value: number) =>
+            setHobbies((current) => {
+              const isExist = current.findIndex((id) => id == value) !== -1;
+              if (isExist) {
+                return current.filter((id) => id !== value);
+              }
+              return [...current, value];
+            })
+          }
         />
         <Button
           style={s.button}
@@ -325,26 +360,25 @@ const ProfileScreen: FC<ProfileScreenProps> = ({ navigation }) => {
 const styles = () =>
   StyleSheet.create({
     scroll: {
-      justifyContent: "center",
-      alignItems: "center",
+      // justifyContent: "center",
+      // alignItems: "center",
       marginTop: sp.l,
       paddingBottom: 64,
+      paddingHorizontal: sp.l,
     },
     button: {
       justifyContent: "center",
       alignItems: "center",
-      backgroundColor: cp.main,
+      backgroundColor: cp.blue3,
       borderRadius: 8,
-      width: widthPercent(80),
       height: 48,
       marginTop: sp.l,
     },
     field: {
-      width: widthPercent(80),
       backgroundColor: "transparent",
       borderBottomWidth: 2,
-      borderBottomColor: cp.main,
-      marginBottom: sp.l,
+      borderBottomColor: cp.blue1,
+      marginBottom: sp.sm,
     },
   });
 
