@@ -1,18 +1,31 @@
 import { CompositeNavigationProp } from "@react-navigation/core";
 import React, { FC, useCallback, useEffect, useRef, useState } from "react";
-import { FlatList, View } from "react-native";
+import { FlatList, Text, View } from "react-native";
+import { TouchableOpacity } from "react-native-gesture-handler";
 import { useSelector } from "react-redux";
 import {
   AppCanvas,
+  Button,
   DefaultHeader,
+  FilterButton,
   Filters,
   PersonList,
   TextItem,
+  ToggleButtons,
 } from "../components";
-import { db } from "../config";
-import { FilterDataProps, RoomChatProps, UsersProps } from "../config/types";
+import { db, widthPercent } from "../config";
+import {
+  FilterDataProps,
+  RoomChatProps,
+  StaticBottomSheetProps,
+  UsersProps,
+} from "../config/types";
 import { node as n, pages as p, spacing as sp } from "../constants";
-import { filterDataValue } from "../constants/defaultValue/local";
+import {
+  batchValue,
+  filterDataValue,
+  genderValue,
+} from "../constants/defaultValue/local";
 import AppState from "../redux";
 
 interface ContactListScreenProps {
@@ -25,7 +38,11 @@ interface FilterCatProps extends FilterDataProps {
 
 const ContactListScreen: FC<ContactListScreenProps> = ({ navigation }) => {
   const { sessionReducer } = useSelector((state: AppState) => state);
+
+  const [visible, setVisible] = useState<boolean>(false);
+
   const [users, setUsers] = useState<UsersProps[]>([]);
+
   const [filterCat, setFilterCat] = useState<FilterCatProps[]>(filterDataValue);
 
   const isMounted = useRef(true);
@@ -114,6 +131,22 @@ const ContactListScreen: FC<ContactListScreenProps> = ({ navigation }) => {
     []
   );
 
+  const FilterComp = () => (
+    <View style={{ width: widthPercent(100), paddingHorizontal: sp.l }}>
+      <TextItem type="bold14Text1">Jenis Kelamin</TextItem>
+      <ToggleButtons containerStyle={{ marginTop: 0 }} data={genderValue} />
+      <TextItem type="bold14Text1">Angkatan</TextItem>
+      <ToggleButtons containerStyle={{ marginTop: 0 }} data={batchValue} />
+    </View>
+  );
+
+  const staticProps: StaticBottomSheetProps = {
+    visible,
+    setVisible,
+    customComp: FilterComp,
+    action: true,
+  };
+
   useEffect(() => {
     getUsers();
 
@@ -123,8 +156,14 @@ const ContactListScreen: FC<ContactListScreenProps> = ({ navigation }) => {
   }, []);
 
   return (
-    <AppCanvas header={header}>
-      <Filters data={filterCat} />
+    <AppCanvas header={header} staticBottomSheetState={staticProps}>
+      <View style={{ marginTop: sp.sm, marginLeft: sp.sm }}>
+        <FilterButton
+          label="Kriteria"
+          count={0}
+          onPress={() => setVisible(true)}
+        />
+      </View>
       <FlatList
         data={users}
         renderItem={renderItem}

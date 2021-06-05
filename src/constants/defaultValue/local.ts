@@ -4,7 +4,9 @@ import {
   StaticBottomSheetProps,
 } from "../../config/types";
 
-const batchValue = [...new Array(16)].map((_, i) => `${2005 + i}`);
+const batchValue = [...new Array(16)]
+  .map((_, i) => ({ label: `${2005 + i}`, value: 2005 + i }))
+  .sort((a, b) => (a.label > b.label ? 1 : b.label > a.label ? -1 : 0));
 
 const filterDataValue: FilterDataProps[] = [
   { label: "Angkatan", count: 0, value: 2000 },

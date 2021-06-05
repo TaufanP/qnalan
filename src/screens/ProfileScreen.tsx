@@ -333,7 +333,7 @@ const ProfileScreen: FC<ProfileScreenProps> = ({ navigation }) => {
         pickerGenerator(
           batchValue,
           setBatch,
-          batchValue.findIndex((item) => item == batch)
+          batchValue.findIndex((item) => item.label == batch)
         ),
       onPress: () => setVisible(false),
       setVisible,
