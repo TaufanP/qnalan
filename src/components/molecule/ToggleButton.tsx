@@ -32,7 +32,7 @@ const styles = ({ isSelected }: { isSelected: boolean }) =>
       borderWidth: 1,
       borderColor: cp.blue3,
       paddingHorizontal: sp.sm,
-      paddingVertical: sp.s,
+      paddingVertical: sp.ss,
       borderRadius: 8,
       backgroundColor: isSelected ? cp.blue3 : "transparent",
     },

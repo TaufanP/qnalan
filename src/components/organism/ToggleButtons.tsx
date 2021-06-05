@@ -47,22 +47,6 @@ const ToggleButtons: FC<CheckBoxesProps> = ({
 };
 const styles = () =>
   StyleSheet.create({
-    inner: {
-      width: childSize,
-      height: childSize,
-      borderRadius: childSize,
-      backgroundColor: cp.blue3,
-    },
-    outer: {
-      width: mainSize,
-      height: mainSize,
-      borderRadius: mainSize,
-      borderColor: cp.blue3,
-      borderWidth: 2,
-      marginRight: sp.ss,
-      justifyContent: "center",
-      alignItems: "center",
-    },
     childCont: {
       flexDirection: "row",
       marginRight: sp.xxxl,

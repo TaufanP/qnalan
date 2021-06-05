@@ -38,7 +38,7 @@ const multiplier = 1;
 const styles = () =>
   StyleSheet.create({
     container: {
-      backgroundColor: cp.white1,
+      backgroundColor: cp.white,
       flex: multiplier,
       width: `${multiplier * 100}%`,
     },

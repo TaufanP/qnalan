@@ -3,12 +3,9 @@ import {
   TransitionPresets,
 } from "@react-navigation/stack";
 import React from "react";
-import { LogBox } from "react-native";
 import { pages as p } from "../constants";
 import { ContactListScreen, RoomChatScreen, VideoCallScreen } from "../screens";
 import DrawerRoute from "./DrawerRoute";
-
-LogBox.ignoreLogs(["swmansion"]);
 
 const Stack = createStackNavigator();
 

@@ -1,30 +1,42 @@
 import { CompositeNavigationProp } from "@react-navigation/core";
 import React, { FC, useCallback, useEffect, useRef, useState } from "react";
-import { FlatList, Text, View } from "react-native";
-import { TouchableOpacity } from "react-native-gesture-handler";
+import { Animated, FlatList, Text, View } from "react-native";
+import ScrollBottomSheet from "react-native-scroll-bottom-sheet";
 import { useSelector } from "react-redux";
+//@ts-ignore
+import Slider from "rn-range-slider";
 import {
   AppCanvas,
   Button,
+  CheckBoxes,
   DefaultHeader,
   FilterButton,
-  Filters,
   PersonList,
+  RenderHandle,
   TextItem,
   ToggleButtons,
 } from "../components";
-import { db, widthPercent } from "../config";
 import {
-  FilterDataProps,
-  RoomChatProps,
-  StaticBottomSheetProps,
-  UsersProps,
-} from "../config/types";
-import { node as n, pages as p, spacing as sp } from "../constants";
+  Label,
+  Notch,
+  Rail,
+  RailSelected,
+  Thumb,
+} from "../components/organism/ContactSlider";
+import { db, heightPercent, widthPercent } from "../config";
+import { FilterDataProps, RoomChatProps, UsersProps } from "../config/types";
+import {
+  colorsPalette as cp,
+  node as n,
+  pages as p,
+  spacing as sp,
+} from "../constants";
 import {
   batchValue,
   filterDataValue,
   genderValue,
+  HobbiesValue,
+  majorValue,
 } from "../constants/defaultValue/local";
 import AppState from "../redux";
 
@@ -39,13 +51,14 @@ interface FilterCatProps extends FilterDataProps {
 const ContactListScreen: FC<ContactListScreenProps> = ({ navigation }) => {
   const { sessionReducer } = useSelector((state: AppState) => state);
 
-  const [visible, setVisible] = useState<boolean>(false);
+  const [isSheet, setIsSheet] = useState<boolean>(false);
 
   const [users, setUsers] = useState<UsersProps[]>([]);
 
   const [filterCat, setFilterCat] = useState<FilterCatProps[]>(filterDataValue);
 
   const isMounted = useRef(true);
+  const scrollRef = useRef<any>(null);
 
   const createChatRoom = async (partnerId: string) => {
     const chatList = await db
@@ -105,6 +118,10 @@ const ContactListScreen: FC<ContactListScreenProps> = ({ navigation }) => {
       );
   };
 
+  const snapTo = (index: number) => {
+    scrollRef.current.snapTo(index);
+  };
+
   const keyExtractor = (item: UsersProps) => `${item.uid}`;
 
   const renderItem = useCallback(({ item }: { item: UsersProps }) => {
@@ -131,21 +148,67 @@ const ContactListScreen: FC<ContactListScreenProps> = ({ navigation }) => {
     []
   );
 
-  const FilterComp = () => (
-    <View style={{ width: widthPercent(100), paddingHorizontal: sp.l }}>
+  const renderThumb = useCallback(() => <Thumb />, []);
+  const renderRail = useCallback(() => <Rail />, []);
+  const renderRailSelected = useCallback(() => <RailSelected />, []);
+  const renderLabel = useCallback((value) => <Label text={value} />, []);
+  const renderNotch = useCallback(() => <Notch />, []);
+  const handleValueChange = useCallback((low, high) => {
+    console.log(low);
+    console.log(high);
+  }, []);
+
+  const scrollComp = () => (
+    <View style={{ width: "100%" }}>
+      <TextItem type="bold14Text1">Umur</TextItem>
+      <Slider
+        min={15}
+        max={40}
+        step={1}
+        floatingLabel
+        renderThumb={renderThumb}
+        renderRail={renderRail}
+        renderRailSelected={renderRailSelected}
+        renderLabel={renderLabel}
+        renderNotch={renderNotch}
+        onValueChanged={handleValueChange}
+        style={{ marginBottom: sp.sm, marginTop: sp.sm }}
+      />
       <TextItem type="bold14Text1">Jenis Kelamin</TextItem>
       <ToggleButtons containerStyle={{ marginTop: 0 }} data={genderValue} />
       <TextItem type="bold14Text1">Angkatan</TextItem>
       <ToggleButtons containerStyle={{ marginTop: 0 }} data={batchValue} />
+      <TextItem type="bold14Text1">Jurusan</TextItem>
+      <CheckBoxes
+        data={majorValue.map((major, majorIndex) => ({
+          value: majorIndex,
+          label: major,
+        }))}
+      />
+      <TextItem type="bold14Text1">Hobi</TextItem>
+      <ToggleButtons
+        containerStyle={{ marginTop: 0 }}
+        data={HobbiesValue.map((hobby) => ({
+          value: hobby.id,
+          label: hobby.label,
+        }))}
+      />
+      <Button
+        style={{
+          height: 50,
+          backgroundColor: cp.blue3,
+          justifyContent: "center",
+          alignItems: "center",
+          marginBottom: sp.sm,
+          borderRadius: 8,
+        }}
+      >
+        <TextItem type="bold16White">TERAPKAN</TextItem>
+      </Button>
     </View>
   );
 
-  const staticProps: StaticBottomSheetProps = {
-    visible,
-    setVisible,
-    customComp: FilterComp,
-    action: true,
-  };
+  const renderHandle = useCallback(() => <RenderHandle />, []);
 
   useEffect(() => {
     getUsers();
@@ -156,12 +219,15 @@ const ContactListScreen: FC<ContactListScreenProps> = ({ navigation }) => {
   }, []);
 
   return (
-    <AppCanvas header={header} staticBottomSheetState={staticProps}>
+    <AppCanvas header={header}>
       <View style={{ marginTop: sp.sm, marginLeft: sp.sm }}>
         <FilterButton
           label="Kriteria"
           count={0}
-          onPress={() => setVisible(true)}
+          onPress={() => {
+            setIsSheet(true);
+            snapTo(1);
+          }}
         />
       </View>
       <FlatList
@@ -170,6 +236,34 @@ const ContactListScreen: FC<ContactListScreenProps> = ({ navigation }) => {
         keyExtractor={keyExtractor}
         contentContainerStyle={{ marginTop: sp.sm }}
       />
+      {isSheet && (
+        <Animated.View
+          style={{
+            position: "absolute",
+            width: widthPercent(100),
+            height: heightPercent(100),
+            backgroundColor: "#0005",
+          }}
+        />
+      )}
+      <ScrollBottomSheet // If you are using TS, that'll infer the renderItem `item` type
+        ref={scrollRef}
+        componentType="ScrollView"
+        snapPoints={[128, "50%", heightPercent(110)]}
+        initialSnapIndex={2}
+        renderHandle={renderHandle}
+        contentContainerStyle={{
+          padding: 16,
+          backgroundColor: cp.white,
+        }}
+        containerStyle={{
+          backgroundColor: cp.white,
+          borderRadius: 20,
+        }}
+        onSettle={(index) => index == 2 && setIsSheet(false)}
+      >
+        {scrollComp()}
+      </ScrollBottomSheet>
     </AppCanvas>
   );
 };
