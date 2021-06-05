@@ -10,6 +10,7 @@ interface HobbyProps {
 interface UsersProps {
   bio: string;
   displayName: string;
+  dob: string;
   gender: number;
   hobbies: HobbyProps[];
   email: string;

@@ -1,8 +1,10 @@
 import auth from "@react-native-firebase/auth";
 import storage from "@react-native-firebase/storage";
 import { CompositeNavigationProp } from "@react-navigation/core";
+import moment from "moment";
 import React, { FC, useCallback, useEffect, useRef, useState } from "react";
 import { BackHandler, Keyboard, ScrollView, StyleSheet } from "react-native";
+import DatePicker from "react-native-date-picker";
 import {
   ImageLibraryOptions,
   ImagePickerResponse,
@@ -25,7 +27,6 @@ import { db, requestCameraPermission } from "../config";
 import {
   FancyTypes,
   FieldErrorProps,
-  HobbyProps,
   StaticBottomSheetProps,
   UsersProps,
 } from "../config/types";
@@ -66,6 +67,8 @@ const ProfileScreen: FC<ProfileScreenProps> = ({ navigation }) => {
 
   const [displayName, setDisplayName] = useState<string>("");
   const [bio, setBio] = useState<string>("");
+  const [dob, setDob] = useState<string>("05/05/1991");
+  const [staticType, setStaticType] = useState<string>("dob");
 
   const [gender, setGender] = useState<number>(0);
   const [hobbies, setHobbies] = useState<number[]>([]);
@@ -81,11 +84,13 @@ const ProfileScreen: FC<ProfileScreenProps> = ({ navigation }) => {
   const [formError, setFormError] = useState<FieldErrorProps[]>([]);
 
   const isMounted = useRef(true);
+  const dobRef = useRef("");
 
   const s = styles();
 
   const pickImage = () => {
     Keyboard.dismiss();
+    setStaticType("picture");
     setVisible(true);
   };
 
@@ -153,7 +158,13 @@ const ProfileScreen: FC<ProfileScreenProps> = ({ navigation }) => {
       .currentUser?.updateProfile({ displayName, photoURL })
       .then(() =>
         dispatch(
-          updateProfile({ displayName, photoURL, hobbies: newHobbies, gender })
+          updateProfile({
+            displayName,
+            photoURL,
+            hobbies: newHobbies,
+            gender,
+            dob,
+          })
         )
       );
     db.ref(`${n.users}/${uid}`).update({
@@ -162,6 +173,7 @@ const ProfileScreen: FC<ProfileScreenProps> = ({ navigation }) => {
       photoURL,
       hobbies: newHobbies,
       gender,
+      dob,
     });
   };
 
@@ -274,12 +286,34 @@ const ProfileScreen: FC<ProfileScreenProps> = ({ navigation }) => {
       return [...current, value];
     });
 
-  const staticBottomSheetState: StaticBottomSheetProps = {
-    visible,
-    setVisible,
-    onPressRight: () => onImagePicking(false),
-    onPressLeft: () => onImagePicking(true),
+  const customCompDob = () => (
+    <DatePicker
+      date={new Date()}
+      onDateChange={(e) => (dobRef.current = moment(e).format("DD/MM/YYYY"))}
+      mode="date"
+    />
+  );
+
+  const statics: { [key: string]: StaticBottomSheetProps } = {
+    dob: {
+      visible,
+      setVisible,
+      customComp: customCompDob,
+      action: true,
+      onPress: () => {
+        setDob(dobRef.current);
+        setVisible(false);
+      },
+    },
+    picture: {
+      visible,
+      setVisible,
+      onPressRight: () => onImagePicking(false),
+      onPressLeft: () => onImagePicking(true),
+    },
   };
+
+  const staticBottomSheetState: StaticBottomSheetProps = statics[staticType];
 
   useEffect(() => {
     fillForm();
@@ -340,6 +374,16 @@ const ProfileScreen: FC<ProfileScreenProps> = ({ navigation }) => {
           maxLength={50}
           withPadding={false}
         />
+        <TextItem type="normal14Main">Tanggal Lahir</TextItem>
+        <Button
+          style={[s.field, s.customTextField]}
+          onPress={() => {
+            setStaticType("dob");
+            setVisible(true);
+          }}
+        >
+          <TextItem>{dob}</TextItem>
+        </Button>
         <TextItem type="normal14Main">Jenis Kelamin</TextItem>
         <Radio data={genderData} selected={gender} onPress={setGender} />
         <TextItem type="normal14Main">Hobi</TextItem>
@@ -353,7 +397,6 @@ const ProfileScreen: FC<ProfileScreenProps> = ({ navigation }) => {
         />
         <Button
           style={s.button}
-          // onPress={() => console.log(hobbies)}
           onPress={processForm}
           isLoading={isLoading}
           defaultLoading
@@ -367,6 +410,13 @@ const ProfileScreen: FC<ProfileScreenProps> = ({ navigation }) => {
 
 const styles = () =>
   StyleSheet.create({
+    customTextField: {
+      height: 50,
+      justifyContent: "center",
+      paddingLeft: sp.ss,
+      borderLeftWidth: 2,
+      borderLeftColor: "transparent",
+    },
     scroll: {
       // justifyContent: "center",
       // alignItems: "center",

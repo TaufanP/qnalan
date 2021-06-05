@@ -1,4 +1,4 @@
-import React, { FC, ReactNode, useEffect, useRef } from "react";
+import React, { FC, useEffect, useRef } from "react";
 import {
   Alert,
   Animated,
@@ -7,16 +7,13 @@ import {
   Text,
   TouchableOpacity,
   View,
+  ViewStyle,
 } from "react-native";
 import { CameraColor } from "../../../assets";
 import { StaticBottomSheetProps } from "../../config/types";
-import {
-  colorsPalette as cp,
-  spacing as sp,
-  textSize as ts,
-} from "../../constants";
-import TextItem from "../atom/TextItem";
+import { colorsPalette as cp, spacing as sp } from "../../constants";
 import Button from "../atom/Button";
+import TextItem from "../atom/TextItem";
 
 const { width, height } = Dimensions.get("screen");
 const { alert } = Alert;
@@ -36,6 +33,7 @@ const StaticBottomSheet: FC<StaticBottomSheetProps> = ({
   action = false,
   setVisible = (e: boolean) => alert("test"),
   mainIcon = <CameraColor width={iconWidth * 0.7} height={iconWidth * 0.7} />,
+  customComp,
 }) => {
   const s = styles();
 
@@ -93,64 +91,30 @@ const StaticBottomSheet: FC<StaticBottomSheetProps> = ({
       </Animated.View>
       <View style={s.contentCont}>
         <View style={s.imageGroup}>
-          <View
-            style={{
-              width: iconWidth,
-              height: iconWidth,
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-          >
-            {mainIcon}
-          </View>
-          <Text style={s.titleText}>{mainTitle}</Text>
-          <Text
-            style={{
-              textAlign: "center",
-              color: cp.text1,
-              paddingHorizontal: 16,
-            }}
-          >
-            {subTitle}
-          </Text>
+          {customComp == undefined ? (
+            <>
+              <View style={s.titleCont}>{mainIcon}</View>
+              <Text style={s.titleText}>{mainTitle}</Text>
+              <Text style={s.subtitleText}>{subTitle}</Text>
+            </>
+          ) : (
+            customComp()
+          )}
         </View>
         <View style={s.buttonsCont}>
           {action ? (
-            <Button onPress={onPress}>
-              <TextItem>{mainLabel}</TextItem>
+            <Button onPress={onPress} style={s.actionButton}>
+              <TextItem type="bold14White">{mainLabel}</TextItem>
             </Button>
           ) : (
             <>
               <View style={s.buttonCont}>
-                <Button
-                  onPress={onPressLeft}
-                  style={[
-                    {
-                      borderWidth: 1,
-                      flex: 1,
-                      justifyContent: "center",
-                      alignItems: "center",
-                      borderRadius: 8,
-                    },
-                    s.leftButton,
-                  ]}
-                >
-                  <TextItem type="bold14Main">{leftLabel}</TextItem>
+                <Button onPress={onPressLeft} style={s.leftButton}>
+                  <TextItem type="bold14Blue3">{leftLabel}</TextItem>
                 </Button>
               </View>
               <View style={s.buttonCont}>
-                <Button
-                  onPress={onPressRight}
-                  style={[
-                    s.rightButton,
-                    {
-                      flex: 1,
-                      justifyContent: "center",
-                      alignItems: "center",
-                      borderRadius: 8,
-                    },
-                  ]}
-                >
+                <Button onPress={onPressRight} style={s.rightButton}>
                   <TextItem type="bold14White">{rightLabel}</TextItem>
                 </Button>
               </View>
@@ -162,8 +126,26 @@ const StaticBottomSheet: FC<StaticBottomSheetProps> = ({
   );
 };
 
-const styles = () =>
-  StyleSheet.create({
+const styles = () => {
+  const buttonBase: ViewStyle = {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: 8,
+  };
+  return StyleSheet.create({
+    actionButton: { ...buttonBase, backgroundColor: cp.blue3, height: 50 },
+    titleCont: {
+      width: iconWidth,
+      height: iconWidth,
+      justifyContent: "center",
+      alignItems: "center",
+    },
+    subtitleText: {
+      textAlign: "center",
+      color: cp.text1,
+      paddingHorizontal: sp.sm,
+    },
     touchArea: { width: "100%", height: "100%" },
     blackBackground: {
       width,
@@ -182,12 +164,15 @@ const styles = () =>
       textAlign: "center",
     },
     rightButton: {
+      ...buttonBase,
       marginLeft: sp.ss,
-      backgroundColor: cp.main,
+      backgroundColor: cp.blue3,
     },
     leftButton: {
-      borderColor: cp.main,
+      ...buttonBase,
+      borderColor: cp.blue3,
       marginRight: sp.ss,
+      borderWidth: 1,
     },
     buttonCont: { flex: 1, height: 50 },
     titleText: {
@@ -228,5 +213,6 @@ const styles = () =>
       bottom: 0,
     },
   });
+};
 
 export default StaticBottomSheet;

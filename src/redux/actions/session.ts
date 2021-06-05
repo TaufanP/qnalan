@@ -13,6 +13,7 @@ const updateProfile = (payload: {
   photoURL?: string;
   hobbies?: HobbyProps[];
   gender?: number;
+  dob?: string;
 }) => ({
   type: UPDATE_PROFILE,
   payload,

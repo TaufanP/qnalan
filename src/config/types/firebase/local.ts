@@ -19,6 +19,7 @@ interface StaticBottomSheetProps {
   subTitle?: string;
   setVisible?: Function;
   mainIcon?: ReactNode;
+  customComp?: () => JSX.Element;
 }
 
 export type { RoomChatParams, StaticBottomSheetProps };
