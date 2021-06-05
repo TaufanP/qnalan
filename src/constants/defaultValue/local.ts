@@ -1,19 +1,11 @@
 import { HobbyProps, StaticBottomSheetProps } from "../../config/types";
 
-const StaticBottomSheetValue: StaticBottomSheetProps = {
-  onPressLeft: () => console.log("test"),
-  onPressRight: () => console.log("test"),
-  onPress: () => console.log("test"),
-  visible: false,
-  action: true,
-  leftLabel: "leftLabel",
-  rightLabel: "rightLabel",
-  mainLabel: "mainLabel",
-  mainTitle: "mainTitle",
-  subTitle: "subTitle",
-  setVisible: () => console.log("test"),
-  // mainIcon: ()=,
-};
+const batchValue = [...new Array(16)].map((_, i) => `${2005 + i}`);
+
+const genderValue = [
+  { label: "Pria", value: 1 },
+  { label: "Wanita", value: 2 },
+];
 
 const HobbiesValue: HobbyProps[] = [
   {
@@ -43,4 +35,42 @@ const HobbiesValue: HobbyProps[] = [
   },
 ];
 
-export { StaticBottomSheetValue, HobbiesValue };
+const majorValue = [
+  "Accounting",
+  "Branding",
+  "Business Economics",
+  "Business",
+  "Business Mathematics",
+  "Computer Systems Engineering",
+  "Digital Business Technology",
+  "Event",
+  "Finance",
+  "Food Business Technology",
+  "Hospitality Business",
+  "International Business Law",
+  "Product Design Engineering",
+  "Renewable Energy Engineering",
+].sort((a, b) => (a > b ? 1 : b > a ? -1 : 0));
+
+const StaticBottomSheetValue: StaticBottomSheetProps = {
+  onPressLeft: () => console.log("test"),
+  onPressRight: () => console.log("test"),
+  onPress: () => console.log("test"),
+  visible: false,
+  action: true,
+  leftLabel: "leftLabel",
+  rightLabel: "rightLabel",
+  mainLabel: "mainLabel",
+  mainTitle: "mainTitle",
+  subTitle: "subTitle",
+  setVisible: () => console.log("test"),
+  // mainIcon: ()=,
+};
+
+export {
+  StaticBottomSheetValue,
+  HobbiesValue,
+  batchValue,
+  genderValue,
+  majorValue,
+};

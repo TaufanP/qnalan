@@ -23,7 +23,7 @@ import {
   TextField,
   TextItem,
 } from "../components";
-import { db, requestCameraPermission } from "../config";
+import { db, requestCameraPermission, widthPercent } from "../config";
 import {
   FancyTypes,
   FieldErrorProps,
@@ -37,52 +37,15 @@ import {
   spacing as sp,
   strings as str,
 } from "../constants";
-import { HobbiesValue } from "../constants/defaultValue/local";
+import {
+  batchValue,
+  HobbiesValue,
+  genderValue,
+  majorValue,
+} from "../constants/defaultValue/local";
 import AppState from "../redux";
 import { updateProfile } from "../redux/actions";
 import Picker from "@gregfrench/react-native-wheel-picker";
-
-const genderData = [
-  { label: "Pria", value: 1 },
-  { label: "Wanita", value: 2 },
-];
-
-const majorData = [
-  "Accounting",
-  "Branding",
-  "Business Economics",
-  "Business",
-  "Business Mathematics",
-  "Computer Systems Engineering",
-  "Digital Business Technology",
-  "Event",
-  "Hospitality Business",
-  "Finance",
-  "International Business Law",
-  "Product Design Engineering",
-  "Food Business Technology",
-  "Renewable Energy Engineering",
-];
-
-const batchData = [
-  "2005",
-  "2006",
-  "2007",
-  "2008",
-  "2009",
-  "2010",
-  "2011",
-  "2012",
-  "2013",
-  "2014",
-  "2015",
-  "2016",
-  "2017",
-  "2018",
-  "2019",
-  "2020",
-  "2021",
-];
 interface ProfileScreenProps {
   navigation: CompositeNavigationProp<any, any>;
 }
@@ -186,33 +149,12 @@ const ProfileScreen: FC<ProfileScreenProps> = ({ navigation }) => {
     launchCamera(options, imageCallback);
   };
 
-  const header = useCallback(
-    () => <DefaultHeader title="Profil" onPress={() => navigation.goBack()} />,
-    []
-  );
-
   const updatingFireAuth = (photoURL: string) => {
     const newHobbies = HobbiesValue.map((hobby) => ({
       ...hobby,
       isSelected: hobbies.findIndex((item) => item == hobby.id) !== -1,
     }));
-    auth()
-      .currentUser?.updateProfile({ displayName, photoURL })
-      .then(() =>
-        dispatch(
-          updateProfile({
-            displayName,
-            photoURL,
-            hobbies: newHobbies,
-            gender,
-            dob,
-            batch,
-            major,
-          })
-        )
-      );
-    db.ref(`${n.users}/${uid}`).update({
-      bio,
+    const profileData = {
       displayName,
       photoURL,
       hobbies: newHobbies,
@@ -220,7 +162,11 @@ const ProfileScreen: FC<ProfileScreenProps> = ({ navigation }) => {
       dob,
       batch,
       major,
-    });
+    };
+    auth()
+      .currentUser?.updateProfile({ displayName, photoURL })
+      .then(() => dispatch(updateProfile(profileData)));
+    db.ref(`${n.users}/${uid}`).update(profileData);
   };
 
   const fancySuccess = () =>
@@ -228,6 +174,13 @@ const ProfileScreen: FC<ProfileScreenProps> = ({ navigation }) => {
       visible: true,
       type: fancyType.success,
       msg: str.successProfile,
+    });
+
+  const fancyFail = () =>
+    setFancyBarState({
+      visible: true,
+      type: fancyType.failed,
+      msg: str.failedHappen,
     });
 
   const submit = async () => {
@@ -249,20 +202,12 @@ const ProfileScreen: FC<ProfileScreenProps> = ({ navigation }) => {
           fancySuccess();
         })
         .catch((error) => {
-          console.log(error);
-          setFancyBarState({
-            visible: true,
-            type: fancyType.failed,
-            msg: str.failedHappen,
-          });
+          console.log(`ProfileScreen, submit(), ${error}`);
+          fancyFail();
         });
     } catch (error) {
-      console.log(error);
-      setFancyBarState({
-        visible: true,
-        type: fancyType.failed,
-        msg: str.failedHappen,
-      });
+      console.log(`ProfileScreen, submit(), ${error}`);
+      fancyFail();
     } finally {
       setIsLoading(false);
     }
@@ -315,7 +260,6 @@ const ProfileScreen: FC<ProfileScreenProps> = ({ navigation }) => {
       .filter((hobby) => hobby.isSelected)
       .map((hobby) => hobby.id);
     if (isMounted) {
-      console.log(detail?.batch);
       setDisplayName(detail?.displayName);
       setBio(detail?.bio);
       setImageData({ uri: detail?.photoURL, fileSize: 0 });
@@ -343,12 +287,19 @@ const ProfileScreen: FC<ProfileScreenProps> = ({ navigation }) => {
       setFancyBarState({
         visible: true,
         type: fancyType.failed,
-        msg: "Anda harus berumur minimal 15 tahun",
+        msg: str.minAge,
       });
       return;
     }
     setDob(moment(dobRef.current).format("DD/MM/YYYY"));
   };
+
+  const header = useCallback(
+    () => (
+      <DefaultHeader title={str.profil} onPress={() => navigation.goBack()} />
+    ),
+    []
+  );
 
   const customCompDob = () => (
     <DatePicker
@@ -358,24 +309,31 @@ const ProfileScreen: FC<ProfileScreenProps> = ({ navigation }) => {
     />
   );
 
+  const pickerGenerator = (array: any[], setter: any, selected: number) => (
+    <Picker
+      style={{ width: widthPercent(80), height: 180 }}
+      lineColor="#000000" //to set top and bottom line color (Without gradients)
+      lineGradientColorFrom="#008000" //to set top and bottom starting gradient line color
+      lineGradientColorTo="#FF5733" //to set top and bottom ending gradient
+      selectedValue={selected}
+      itemStyle={{ color: cp.text1, fontSize: 16 }}
+      onValueChange={(index) => setter(array[index])}
+    >
+      {array.map((value, i) => (
+        <PickerItem label={value} value={i} key={i} />
+      ))}
+    </Picker>
+  );
+
   const statics: { [key: string]: StaticBottomSheetProps } = {
     batch: {
       action: true,
-      customComp: () => (
-        <Picker
-          style={{ width: 150, height: 180 }}
-          lineColor="#000000" //to set top and bottom line color (Without gradients)
-          lineGradientColorFrom="#008000" //to set top and bottom starting gradient line color
-          lineGradientColorTo="#FF5733" //to set top and bottom ending gradient
-          selectedValue={2}
-          itemStyle={{ color: "black", fontSize: 26 }}
-          onValueChange={(index) => setBatch(batchData[index])}
-        >
-          {batchData.map((value, i) => (
-            <PickerItem label={value} value={i} key={i} />
-          ))}
-        </Picker>
-      ),
+      customComp: () =>
+        pickerGenerator(
+          batchValue,
+          setBatch,
+          batchValue.findIndex((item) => item == batch)
+        ),
       onPress: () => setVisible(false),
       setVisible,
       visible,
@@ -389,21 +347,12 @@ const ProfileScreen: FC<ProfileScreenProps> = ({ navigation }) => {
     },
     major: {
       action: true,
-      customComp: () => (
-        <Picker
-          style={{ width: "100%", height: 180 }}
-          lineColor="#000000" //to set top and bottom line color (Without gradients)
-          lineGradientColorFrom="#008000" //to set top and bottom starting gradient line color
-          lineGradientColorTo="#FF5733" //to set top and bottom ending gradient
-          selectedValue={2}
-          itemStyle={{ color: "black", fontSize: 18 }}
-          onValueChange={(index) => setMajor(majorData[index])}
-        >
-          {majorData.map((value, i) => (
-            <PickerItem label={value} value={i} key={i} />
-          ))}
-        </Picker>
-      ),
+      customComp: () =>
+        pickerGenerator(
+          majorValue,
+          setMajor,
+          majorValue.findIndex((item) => item == major)
+        ),
       onPress: () => setVisible(false),
       setVisible,
       visible,
@@ -424,6 +373,17 @@ const ProfileScreen: FC<ProfileScreenProps> = ({ navigation }) => {
       isMounted.current = false;
     };
   }, []);
+
+  useEffect(() => {
+    if (!visible && isMounted) {
+      setTimeout(() => {
+        setStaticType("picture");
+      }, 800);
+    }
+    return () => {
+      isMounted.current = false;
+    };
+  }, [visible]);
 
   useEffect(() => {
     const backAction = () => {
@@ -508,7 +468,7 @@ const ProfileScreen: FC<ProfileScreenProps> = ({ navigation }) => {
           <TextItem>{major}</TextItem>
         </Button>
         <TextItem type="normal14Main">Jenis Kelamin</TextItem>
-        <Radio data={genderData} selected={gender} onPress={setGender} />
+        <Radio data={genderValue} selected={gender} onPress={setGender} />
         <TextItem type="normal14Main">Hobi</TextItem>
         <CheckBoxes
           data={HobbiesValue.map((hobby) => ({

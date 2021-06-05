@@ -14,10 +14,13 @@ const strings = {
   login: "Masuk",
   logout: "Keluar",
 
+  minAge: "Anda harus berumur minimal 15 tahun",
+
   notHaveAcc: "Belum punya akun?",
 
   passwordInvalid: "Kata sandi tidak cocok",
   password: "kata sandi",
+  profil: "Profil",
   provider: "SBHumanBank",
 
   register: "Daftar",
