@@ -1,21 +1,12 @@
-import { CompositeNavigationProp } from "@react-navigation/core";
-import React, { FC, PropsWithChildren } from "react";
-import { StyleSheet, View } from "react-native";
-import { HamburgerMenu, Search } from "../../../assets";
-import {
-  strings as str,
-  colorsPalette as cp,
-  spacing as sp,
-} from "../../constants";
-import { Button, ButtonHeader, TextItem } from "../atom";
+import React, { FC } from "react";
+import { StyleSheet } from "react-native";
+import { colorsPalette as cp, spacing as sp } from "../../constants";
+import { Button, TextItem } from "../atom";
 interface ToggleButtonProps {
   onPress?: any;
   label: string;
   isSelected: boolean;
 }
-
-const mainSize = 20;
-const childSize = 12;
 
 const ToggleButton: FC<ToggleButtonProps> = ({
   onPress,
@@ -41,7 +32,7 @@ const styles = ({ isSelected }: { isSelected: boolean }) =>
       borderWidth: 1,
       borderColor: cp.blue3,
       paddingHorizontal: sp.sm,
-      paddingVertical: sp.s,
+      paddingVertical: sp.ss,
       borderRadius: 8,
       backgroundColor: isSelected ? cp.blue3 : "transparent",
     },

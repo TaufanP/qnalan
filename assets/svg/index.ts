@@ -2,6 +2,8 @@ import ArrowBack from "./ArrowBack.svg";
 import Camera from "./Camera.svg";
 import CameraColor from "./CameraColor.svg";
 import EmptyInbox from "./EmptyInbox.svg";
+import EmptyInboxColored from "./EmptyInboxColored.svg";
+import EmptyPocket from "./EmptyPocket.svg";
 import Export from "./Export.svg";
 import HamburgerMenu from "./HamburgerMenu.svg";
 import Inbox from "./Inbox.svg";
@@ -18,6 +20,8 @@ export {
   Camera,
   CameraColor,
   EmptyInbox,
+  EmptyInboxColored,
+  EmptyPocket,
   Export,
   HamburgerMenu,
   Inbox,

@@ -81,7 +81,7 @@ const HomeScreen: FC<HomeScreenProps> = ({ navigation }) => {
       db.ref(`${n.users}/${sessionReducer.uid}/${n.roomChats}`).on(
         "value",
         (snapshot) => {
-          if (!isMounted) {
+          if (!isMounted.current) {
             return;
           }
           setUsers([]);

@@ -1,12 +1,6 @@
-import { CompositeNavigationProp } from "@react-navigation/core";
-import React, { FC, PropsWithChildren } from "react";
+import React, { FC } from "react";
 import { StyleSheet, View } from "react-native";
-import { HamburgerMenu, Search } from "../../../assets";
-import {
-  strings as str,
-  colorsPalette as cp,
-  spacing as sp,
-} from "../../constants";
+import { spacing as sp } from "../../constants";
 import { CheckBox } from "../molecule";
 
 interface CheckBoxValue {
@@ -19,9 +13,6 @@ interface CheckBoxesProps {
   onPress?: any;
   selected?: number[];
 }
-
-const mainSize = 20;
-const childSize = 12;
 
 const CheckBoxes: FC<CheckBoxesProps> = ({
   data,

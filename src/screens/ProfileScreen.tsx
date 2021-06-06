@@ -257,18 +257,20 @@ const ProfileScreen: FC<ProfileScreenProps> = ({ navigation }) => {
   const fillForm = async () => {
     const profile = await db.ref(`${n.users}/${uid}`).once("value");
     const detail: UsersProps = profile.val();
-    const currentHobbies = detail?.hobbies
-      .filter((hobby) => hobby.isSelected)
-      .map((hobby) => hobby.id);
-    if (isMounted) {
+    const currentHobbies =
+      detail?.hobbies !== undefined &&
+      detail?.hobbies
+        .filter((hobby) => hobby.isSelected)
+        .map((hobby) => hobby.id);
+    if (isMounted.current) {
       setDisplayName(detail?.displayName);
-      setBio(detail?.bio);
-      setImageData({ uri: detail?.photoURL, fileSize: 0 });
-      setGender(detail?.gender);
-      setHobbies(currentHobbies);
-      setDob(detail?.dob);
-      setMajor(detail?.major);
-      setBatch(detail?.batch);
+      setBio(detail?.bio || "");
+      setImageData({ uri: detail?.photoURL || "", fileSize: 0 });
+      setGender(detail?.gender || 0);
+      setHobbies(currentHobbies || []);
+      setDob(detail?.dob || "DD/MM/YYYY");
+      setMajor(detail?.major || "");
+      setBatch(detail?.batch || "");
     }
   };
 
@@ -310,14 +312,19 @@ const ProfileScreen: FC<ProfileScreenProps> = ({ navigation }) => {
     />
   );
 
-  const pickerGenerator = (array: any[], setter: any, selected: number) => (
+  const pickerGenerator = (
+    array: any[],
+    setter: any,
+    selected: number,
+    fontSize: number
+  ) => (
     <Picker
       style={{ width: widthPercent(80), height: 180 }}
       lineColor="#000000" //to set top and bottom line color (Without gradients)
-      lineGradientColorFrom="#008000" //to set top and bottom starting gradient line color
-      lineGradientColorTo="#FF5733" //to set top and bottom ending gradient
+      lineGradientColorFrom="#000000" //to set top and bottom starting gradient line color
+      lineGradientColorTo="#000000" //to set top and bottom ending gradient
       selectedValue={selected}
-      itemStyle={{ color: cp.text1, fontSize: 16 }}
+      itemStyle={{ color: cp.text1, fontSize }}
       onValueChange={(index) => setter(array[index])}
     >
       {array.map((value, i) => (
@@ -331,19 +338,35 @@ const ProfileScreen: FC<ProfileScreenProps> = ({ navigation }) => {
       action: true,
       customComp: () =>
         pickerGenerator(
-          batchValue,
+          batchValue.map((item) => item.label),
           setBatch,
-          batchValue.findIndex((item) => item == batch)
+          batchValue.findIndex((item) => item.label == batch),
+          24
         ),
-      onPress: () => setVisible(false),
-      setVisible,
+      onPress: () => {
+        setVisible(false);
+        setTimeout(() => {
+          setStaticType("picture");
+        }, 800);
+      },
+      setVisible: () => {
+        setVisible(false);
+        setTimeout(() => {
+          setStaticType("picture");
+        }, 800);
+      },
       visible,
     },
     dob: {
       action: true,
       customComp: customCompDob,
       onPress: dobSheetPress,
-      setVisible,
+      setVisible: () => {
+        setVisible(false);
+        setTimeout(() => {
+          setStaticType("picture");
+        }, 800);
+      },
       visible,
     },
     major: {
@@ -352,10 +375,21 @@ const ProfileScreen: FC<ProfileScreenProps> = ({ navigation }) => {
         pickerGenerator(
           majorValue,
           setMajor,
-          majorValue.findIndex((item) => item == major)
+          majorValue.findIndex((item) => item == major),
+          16
         ),
-      onPress: () => setVisible(false),
-      setVisible,
+      onPress: () => {
+        setVisible(false);
+        setTimeout(() => {
+          setStaticType("picture");
+        }, 800);
+      },
+      setVisible: () => {
+        setVisible(false);
+        setTimeout(() => {
+          setStaticType("picture");
+        }, 800);
+      },
       visible,
     },
     picture: {
@@ -376,7 +410,7 @@ const ProfileScreen: FC<ProfileScreenProps> = ({ navigation }) => {
   }, []);
 
   useEffect(() => {
-    if (!visible && isMounted) {
+    if (!visible && isMounted.current) {
       setTimeout(() => {
         setStaticType("picture");
       }, 800);
@@ -463,7 +497,9 @@ const ProfileScreen: FC<ProfileScreenProps> = ({ navigation }) => {
           style={[s.field, s.customTextField]}
           onPress={() => {
             setStaticType("major");
-            setVisible(true);
+            setTimeout(() => {
+              setVisible(true);
+            }, 200);
           }}
         >
           <TextItem>{major}</TextItem>

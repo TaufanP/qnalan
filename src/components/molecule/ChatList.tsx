@@ -5,6 +5,7 @@ import React, {
   useCallback,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from "react";
 import { db } from "../../config";
@@ -27,6 +28,8 @@ interface ChatListProps {
 const ChatList: FC<ChatListProps> = ({ roomId, onPress, partnerId }) => {
   const [detail, setDetail] = useState<UsersProps>(UsersValue);
   const [room, setRoom] = useState<RoomDetailProps>(RoomDetailValue);
+
+  const isMounted = useRef(true);
 
   const buttonOnPress = useCallback(
     () => onPress({ messageId: room.messageId, roomId, partnerId }),
@@ -56,17 +59,17 @@ const ChatList: FC<ChatListProps> = ({ roomId, onPress, partnerId }) => {
     return message;
   }, [room]);
 
-  useEffect(() => {
-    let isMounted = true;
-    const getDetail = async () => {
-      const partnerDetail = await db.ref(`users/${partnerId}`).once("value");
+  const getDetail = async () => {
+    const partnerDetail = await db.ref(`users/${partnerId}`).once("value");
 
-      if (isMounted) setDetail(partnerDetail.val());
-    };
+    if (isMounted.current) setDetail(partnerDetail.val());
+  };
+
+  useEffect(() => {
     getDetail();
 
     return () => {
-      isMounted = false;
+      isMounted.current = false;
     };
   }, []);
 

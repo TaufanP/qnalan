@@ -1,6 +1,6 @@
 import { CompositeNavigationProp } from "@react-navigation/core";
 import React, { FC, PropsWithChildren } from "react";
-import { StyleSheet, View } from "react-native";
+import { StyleSheet, View, ViewStyle } from "react-native";
 import { HamburgerMenu, Search } from "../../../assets";
 import {
   strings as str,
@@ -19,6 +19,7 @@ interface CheckBoxesProps {
   data: CheckBoxValue[];
   onPress?: any;
   selected?: number[];
+  containerStyle?: ViewStyle;
 }
 
 const mainSize = 20;
@@ -28,10 +29,11 @@ const ToggleButtons: FC<CheckBoxesProps> = ({
   data,
   onPress = (e: any) => console.log(e),
   selected = [],
+  containerStyle,
 }) => {
   const s = styles();
   return (
-    <View style={s.container}>
+    <View style={[s.container, containerStyle]}>
       {data.map((check: CheckBoxValue) => (
         <ToggleButton
           onPress={() => onPress(check.value)}
@@ -45,22 +47,6 @@ const ToggleButtons: FC<CheckBoxesProps> = ({
 };
 const styles = () =>
   StyleSheet.create({
-    inner: {
-      width: childSize,
-      height: childSize,
-      borderRadius: childSize,
-      backgroundColor: cp.blue3,
-    },
-    outer: {
-      width: mainSize,
-      height: mainSize,
-      borderRadius: mainSize,
-      borderColor: cp.blue3,
-      borderWidth: 2,
-      marginRight: sp.ss,
-      justifyContent: "center",
-      alignItems: "center",
-    },
     childCont: {
       flexDirection: "row",
       marginRight: sp.xxxl,

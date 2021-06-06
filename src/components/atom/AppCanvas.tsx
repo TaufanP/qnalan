@@ -1,11 +1,11 @@
 import { CompositeNavigationProp } from "@react-navigation/core";
 import React, { FC, PropsWithChildren } from "react";
 import { StatusBar, StyleSheet, View } from "react-native";
-import { colorsPalette as cp } from "../../constants";
-import FancyBar from "./FancyBar";
 import { FancyTypes, StaticBottomSheetProps } from "../../config/types";
-import AppHeader from "./AppHeader";
+import { colorsPalette as cp } from "../../constants";
 import StaticBottomSheet from "../organism/StaticBottomSheet";
+import AppHeader from "./AppHeader";
+import FancyBar from "./FancyBar";
 interface AppCanvasProps {
   navigation?: CompositeNavigationProp<any, any>;
   fancyBarState?: FancyTypes;
@@ -38,7 +38,7 @@ const multiplier = 1;
 const styles = () =>
   StyleSheet.create({
     container: {
-      backgroundColor: cp.white1,
+      backgroundColor: cp.white,
       flex: multiplier,
       width: `${multiplier * 100}%`,
     },

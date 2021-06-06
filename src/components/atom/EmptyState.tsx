@@ -1,22 +1,26 @@
 import { CompositeNavigationProp } from "@react-navigation/core";
-import React, { FC } from "react";
+import React, { FC, ReactNode } from "react";
 import { StyleSheet, View } from "react-native";
 import TextItem from "./TextItem";
-import { EmptyInbox } from "../../../assets";
+import { EmptyInbox, EmptyInboxColored } from "../../../assets";
 import { spacing as sp, colorsPalette as cp } from "../../constants";
 interface EmptyStateProps {
-  navigation?: CompositeNavigationProp<any, any>;
+  title?: string;
+  subtitle?: string;
+  icon?: () => ReactNode;
 }
 
-const EmptyState: FC<EmptyStateProps> = ({ children }) => {
+const EmptyState: FC<EmptyStateProps> = ({
+  title = "Tidak ada percakapan",
+  subtitle = "Ayo mulai percakapan dengan teman baru",
+  icon = () => <EmptyInboxColored width={120} height={120} />,
+}) => {
   const s = styles();
   return (
     <View style={s.container}>
-      <View style={s.iconCont}>
-        <EmptyInbox fill={cp.white4} width={88} height={88} />
-      </View>
-      <TextItem type="bold20Text1">Tidak ada percakapan</TextItem>
-      <TextItem>Ayo mulai percakapan dengan teman baru</TextItem>
+      <View style={s.iconCont}>{icon()}</View>
+      <TextItem type="bold20Text1">{title}</TextItem>
+      <TextItem>{subtitle}</TextItem>
     </View>
   );
 };

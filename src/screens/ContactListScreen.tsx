@@ -1,19 +1,78 @@
 import { CompositeNavigationProp } from "@react-navigation/core";
-import React, { FC, useCallback, useEffect, useState } from "react";
-import { FlatList } from "react-native";
+import moment from "moment";
+import React, { FC, useCallback, useEffect, useRef, useState } from "react";
+import { Animated, FlatList, StyleSheet, View } from "react-native";
+import ScrollBottomSheet from "react-native-scroll-bottom-sheet";
 import { useSelector } from "react-redux";
-import { AppCanvas, DefaultHeader, PersonList } from "../components";
-import { db } from "../config";
-import { RoomChatProps, UsersProps } from "../config/types";
-import { node as n, pages as p, spacing as sp } from "../constants";
+//@ts-ignore
+import Slider from "rn-range-slider";
+import { EmptyPocket } from "../../assets";
+import {
+  AppCanvas,
+  Button,
+  CheckBoxes,
+  DefaultHeader,
+  EmptyState,
+  FilterButton,
+  PersonList,
+  RenderHandle,
+  TextItem,
+  ToggleButtons,
+} from "../components";
+import {
+  Label,
+  Notch,
+  Rail,
+  RailSelected,
+  Thumb,
+} from "../components/organism/ContactSlider";
+import { db, heightPercent, widthPercent } from "../config";
+import { FilterDataProps, RoomChatProps, UsersProps } from "../config/types";
+import {
+  colorsPalette as cp,
+  node as n,
+  pages as p,
+  spacing as sp,
+} from "../constants";
+import {
+  batchValue,
+  filterDataValue,
+  genderValue,
+  HobbiesValue,
+  majorValue,
+} from "../constants/defaultValue/local";
 import AppState from "../redux";
 
 interface ContactListScreenProps {
   navigation: CompositeNavigationProp<any, any>;
 }
+
+interface FilterCatProps extends FilterDataProps {
+  onPress?: any;
+}
+
 const ContactListScreen: FC<ContactListScreenProps> = ({ navigation }) => {
   const { sessionReducer } = useSelector((state: AppState) => state);
+
+  const s = styles();
+
+  const [isSheet, setIsSheet] = useState<boolean>(false);
+
   const [users, setUsers] = useState<UsersProps[]>([]);
+  const [filterUsers, setFilterUsers] = useState<UsersProps[]>([]);
+
+  const [age, setAge] = useState({ min: 15, max: 40 });
+  const [gender, setGender] = useState<number[]>([]);
+  const [batch, setBatch] = useState<number[]>([]);
+  const [major, setMajor] = useState<number[]>([]);
+  const [hobby, setHobby] = useState<number[]>([]);
+  const [count, setCount] = useState<number>(0);
+
+  const [filterCat, setFilterCat] = useState<FilterCatProps[]>(filterDataValue);
+
+  const isMounted = useRef(true);
+  const scrollRef = useRef<any>(null);
+  const ageRef = useRef({ min: 15, max: 40 });
 
   const createChatRoom = async (partnerId: string) => {
     const chatList = await db
@@ -62,6 +121,120 @@ const ContactListScreen: FC<ContactListScreenProps> = ({ navigation }) => {
     navigation.replace(p.RoomChatScreen, { partnerId, roomId, messageId });
   };
 
+  const getUsers = async () => {
+    const data = await db.ref(n.users).once("value");
+    const dataArray = Object.entries(data.val());
+    const finalUsers = dataArray
+      .filter((user: any) => user[0] !== sessionReducer.uid)
+      .map((item: any) => ({ uid: item[0], ...item[1] }));
+    if (isMounted.current) {
+      setUsers(finalUsers);
+      setFilterUsers(finalUsers);
+    }
+  };
+
+  const snapTo = (index: number) => {
+    scrollRef.current.snapTo(index);
+  };
+
+  const counterSettter = () => {
+    const ageLength =
+      ageRef.current.min == 15 && ageRef.current.max == 40 ? 0 : 1;
+    const genderLength = gender.length == 0 ? 0 : 1;
+    const batchLength = batch.length == 0 ? 0 : 1;
+    const majorLength = major.length == 0 ? 0 : 1;
+    const hobbyLength = hobby.length == 0 ? 0 : 1;
+    setCount(
+      ageLength + genderLength + batchLength + majorLength + hobbyLength
+    );
+  };
+
+  const filterSet = () => {
+    snapTo(1);
+    setTimeout(() => {
+      setAge(ageRef.current);
+      counterSettter();
+      filtering({ ...ageRef.current });
+    }, 100);
+  };
+
+  const filtering = ({ min, max }: { min: number; max: number }) => {
+    const ageFilter = users.filter((user) => {
+      if (user.dob == undefined) return true;
+      const [day, month, year] = user.dob.split("/");
+      const userAge = moment().diff([year, month, day], "years");
+      return min < userAge && userAge < max;
+    });
+    if (ageFilter.length == 0) {
+      setFilterUsers([]);
+      return;
+    }
+    const genderFilter =
+      gender.length == 0
+        ? ageFilter
+        : ageFilter.filter((user) => {
+            if (user.gender == undefined || user.gender == 0) return false;
+            return (
+              gender.findIndex((knownGender) => knownGender == user.gender) !==
+              -1
+            );
+          });
+    if (genderFilter.length == 0) {
+      setFilterUsers([]);
+      return;
+    }
+    const batchFilter =
+      batch.length == 0
+        ? genderFilter
+        : genderFilter.filter((user) => {
+            if (user.batch == undefined) return false;
+            const userBatch =
+              batchValue[
+                batchValue.findIndex(
+                  (knownBatch) => knownBatch.label == user.batch
+                )
+              ];
+            return (
+              batch.findIndex((knownBatch) => knownBatch == userBatch.value) !==
+              -1
+            );
+          });
+    if (batchFilter.length == 0) {
+      setFilterUsers([]);
+      return;
+    }
+    const majorFilter =
+      major.length == 0
+        ? batchFilter
+        : batchFilter.filter((user) => {
+            if (user.major == undefined) return false;
+            const userMajor = majorValue.findIndex(
+              (knownMajor) => knownMajor == user.major
+            );
+            return (
+              major.findIndex((knownMajor) => knownMajor == userMajor) !== -1
+            );
+          });
+    if (majorFilter.length == 0) {
+      setFilterUsers([]);
+      return;
+    }
+    const hobbyFilter =
+      hobby.length == 0
+        ? majorFilter
+        : majorFilter.filter((user) => {
+            if (user.hobbies == undefined) return false;
+            const userHobbies = user.hobbies
+              .filter((currentHobby) => currentHobby.isSelected)
+              .map((currHobby) => currHobby.id);
+            const isExist = userHobbies.filter((userHobby) =>
+              hobby.includes(userHobby)
+            );
+            return isExist.length !== 0;
+          });
+    setFilterUsers(hobbyFilter);
+  };
+
   const keyExtractor = (item: UsersProps) => `${item.uid}`;
 
   const renderItem = useCallback(({ item }: { item: UsersProps }) => {
@@ -88,35 +261,259 @@ const ContactListScreen: FC<ContactListScreenProps> = ({ navigation }) => {
     []
   );
 
+  const renderThumb = useCallback(() => <Thumb />, []);
+  const renderRail = useCallback(() => <Rail />, []);
+  const renderRailSelected = useCallback(() => <RailSelected />, []);
+  const renderLabel = useCallback((value) => <Label text={value} />, []);
+  const renderNotch = useCallback(() => <Notch />, []);
+  const handleValueChange = useCallback((low, high) => {
+    ageRef.current = { min: low, max: high };
+  }, []);
+
+  const genderPress = useCallback(
+    (value: number) =>
+      setGender((current) => {
+        const isExist: boolean =
+          current.findIndex((gend) => gend == value) !== -1;
+        if (isExist) {
+          return current.filter((gend) => gend !== value);
+        }
+        return [...current, value];
+      }),
+    [gender]
+  );
+  const GenderToggler = useCallback(
+    () => (
+      <>
+        <TextItem type="bold14Text1">Jenis Kelamin</TextItem>
+        <ToggleButtons
+          containerStyle={s.togglerCont}
+          data={genderValue}
+          selected={gender}
+          onPress={genderPress}
+        />
+      </>
+    ),
+    [gender]
+  );
+
+  const batchPress = useCallback(
+    (value: number) =>
+      setBatch((current) => {
+        const isExist: boolean =
+          current.findIndex((currBatch) => currBatch == value) !== -1;
+        if (isExist) {
+          return current.filter((currBatch) => currBatch !== value);
+        }
+        return [...current, value];
+      }),
+    [batch]
+  );
+  const BatchToggler = useCallback(
+    () => (
+      <>
+        <TextItem type="bold14Text1">Angkatan</TextItem>
+        <ToggleButtons
+          containerStyle={s.togglerCont}
+          data={batchValue}
+          selected={batch}
+          onPress={batchPress}
+        />
+      </>
+    ),
+    [batch]
+  );
+
+  const majorPress = useCallback(
+    (value: number) =>
+      setMajor((current) => {
+        const isExist: boolean =
+          current.findIndex((currMajor) => currMajor == value) !== -1;
+        if (isExist) {
+          return current.filter((currMajor) => currMajor !== value);
+        }
+        return [...current, value];
+      }),
+    [major]
+  );
+  const MajorToggler = useCallback(
+    () => (
+      <>
+        <TextItem type="bold14Text1">Jurusan</TextItem>
+        <CheckBoxes
+          data={majorValue.map((major, majorIndex) => ({
+            value: majorIndex,
+            label: major,
+          }))}
+          selected={major}
+          onPress={majorPress}
+        />
+      </>
+    ),
+    [major]
+  );
+
+  const hobbyPress = useCallback(
+    (value: number) =>
+      setHobby((current) => {
+        const isExist: boolean =
+          current.findIndex((currHobby) => currHobby == value) !== -1;
+        if (isExist) {
+          return current.filter((currHobby) => currHobby !== value);
+        }
+        return [...current, value];
+      }),
+    [hobby]
+  );
+  const HobbyToggler = useCallback(
+    () => (
+      <>
+        <TextItem type="bold14Text1">Hobi</TextItem>
+        <ToggleButtons
+          containerStyle={s.togglerCont}
+          data={HobbiesValue.map((hobby) => ({
+            value: hobby.id,
+            label: hobby.label,
+          }))}
+          selected={hobby}
+          onPress={hobbyPress}
+        />
+      </>
+    ),
+    [hobby]
+  );
+
+  const scrollComp = useCallback(
+    () => (
+      <View style={s.scrollCont}>
+        <TextItem type="bold14Text1">Umur</TextItem>
+        <Slider
+          min={15}
+          max={40}
+          step={1}
+          floatingLabel
+          renderThumb={renderThumb}
+          renderRail={renderRail}
+          renderRailSelected={renderRailSelected}
+          renderLabel={renderLabel}
+          renderNotch={renderNotch}
+          onValueChanged={handleValueChange}
+          style={s.sliderStyle}
+        />
+        <GenderToggler />
+        <BatchToggler />
+        <MajorToggler />
+        <HobbyToggler />
+        <Button style={s.scrollButton} onPress={filterSet}>
+          <TextItem type="bold16White">TERAPKAN</TextItem>
+        </Button>
+      </View>
+    ),
+    [age, gender, batch, major, hobby]
+  );
+
+  const renderHandle = useCallback(() => <RenderHandle />, []);
+
+  const onSettle = useCallback(
+    (index) => index == 1 && setIsSheet(false),
+    [isSheet]
+  );
+
+  const onFilterPress = useCallback(() => {
+    setIsSheet(true);
+    snapTo(0);
+  }, []);
+
   useEffect(() => {
-    let isMounted = true;
-    const getUsers = async () => {
-      const data = await db.ref(n.users).once("value");
-      const dataArray = Object.entries(data.val());
-      if (isMounted)
-        setUsers(
-          dataArray
-            .filter((user: any) => user[0] !== sessionReducer.uid)
-            .map((item: any) => ({ uid: item[0], ...item[1] }))
-        );
-    };
     getUsers();
 
     return () => {
-      isMounted = false;
+      isMounted.current = false;
     };
   }, []);
 
+  const ListEmptyComponent = useCallback(
+    () => (
+      <View style={{ height: heightPercent(60) }}>
+        <EmptyState
+          title="Teman Tidak Ditemukan"
+          subtitle="Sesuaikan kriteria dengan cakupan lebih luas"
+          icon={() => <EmptyPocket width={120} height={120} />}
+        />
+      </View>
+    ),
+    []
+  );
   return (
     <AppCanvas header={header}>
+      {users.length !== 0 && (
+        <View style={s.filterButtonCont}>
+          <FilterButton
+            label="Kriteria"
+            count={count}
+            onPress={onFilterPress}
+          />
+        </View>
+      )}
+      {/* <Button
+        style={{ backgroundColor: "red", width: 40, height: 40 }}
+        onPress={()=>filtering({...ageRef.current})}
+      >
+        <TextItem>TEST</TextItem>
+      </Button> */}
       <FlatList
-        data={users}
+        data={filterUsers}
         renderItem={renderItem}
         keyExtractor={keyExtractor}
         contentContainerStyle={{ marginTop: sp.sm }}
+        ListEmptyComponent={ListEmptyComponent}
       />
+      {isSheet && <Animated.View style={s.overlayCont} />}
+      <ScrollBottomSheet
+        ref={scrollRef}
+        showsHorizontalScrollIndicator={false}
+        componentType="ScrollView"
+        snapPoints={["20%", heightPercent(110)]}
+        initialSnapIndex={1}
+        renderHandle={renderHandle}
+        contentContainerStyle={s.scrollContentContainerStyle}
+        containerStyle={s.scrollContainerStyle}
+        onSettle={onSettle}
+      >
+        {scrollComp()}
+      </ScrollBottomSheet>
     </AppCanvas>
   );
 };
 
 export default ContactListScreen;
+
+const styles = () =>
+  StyleSheet.create({
+    scrollContainerStyle: {
+      backgroundColor: cp.white,
+      borderRadius: 20,
+    },
+    scrollContentContainerStyle: {
+      padding: 16,
+      backgroundColor: cp.white,
+    },
+    sliderStyle: { marginBottom: sp.sm, marginTop: sp.sm },
+    overlayCont: {
+      position: "absolute",
+      width: widthPercent(100),
+      height: heightPercent(100),
+      backgroundColor: "#0005",
+    },
+    filterButtonCont: { marginTop: sp.sm, marginLeft: sp.sm },
+    scrollCont: { width: "100%" },
+    togglerCont: { marginTop: 0 },
+    scrollButton: {
+      height: 50,
+      backgroundColor: cp.blue3,
+      justifyContent: "center",
+      alignItems: "center",
+      marginBottom: sp.sm,
+      borderRadius: 8,
+    },
+  });

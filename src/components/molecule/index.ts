@@ -1,6 +1,7 @@
 import ChatList from "./ChatList";
 import CheckBox from "./CheckBox";
 import DefaultHeader from "./DefaultHeader";
+import FilterButton from "./FilterButton";
 import HomeHeader from "./HomeHeader";
 import PersonList from "./PersonList";
 import ProfileDrawer from "./ProfileDrawer";
@@ -18,4 +19,5 @@ export {
   ProfilePhoto,
   RadioButton,
   ToggleButton,
+  FilterButton,
 };

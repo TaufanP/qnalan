@@ -76,7 +76,7 @@ const RoomChatScreen: FC<RoomChatScreenProps> = ({ navigation }) => {
   const findPartner = async () => {
     const dataUser = await db.ref(`${n.users}/${partnerId}`).once("value");
     const user = dataUser.val();
-    if (isMounted) setPartner(user);
+    if (isMounted.current) setPartner(user);
   };
 
   const onValueChange = async () => {
@@ -85,7 +85,7 @@ const RoomChatScreen: FC<RoomChatScreenProps> = ({ navigation }) => {
       .ref(`${n.messages}/${messageId}`)
       .orderByChild("createdAt")
       .once("value");
-    if (data.val() == null && isMounted) {
+    if (data.val() == null && isMounted.current) {
       setIsLoading(false);
       return;
     }
@@ -96,7 +96,7 @@ const RoomChatScreen: FC<RoomChatScreenProps> = ({ navigation }) => {
     const sortedMsg = messagesArray.sort((a, b) =>
       a.createdAt > b.createdAt ? -1 : b.createdAt > a.createdAt ? 1 : 0
     );
-    if (isMounted) {
+    if (isMounted.current) {
       setMessages(sortedMsg);
       setIsLoading(false);
     }
@@ -142,7 +142,7 @@ const RoomChatScreen: FC<RoomChatScreenProps> = ({ navigation }) => {
       )
       .on("value", (snapshot) => {
         const result = snapshot.val();
-        if (isMounted) setIsTyping(result);
+        if (isMounted.current) setIsTyping(result);
       });
 
     return () =>
