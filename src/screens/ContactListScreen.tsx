@@ -1,10 +1,12 @@
 import { CompositeNavigationProp } from "@react-navigation/core";
+import moment from "moment";
 import React, { FC, useCallback, useEffect, useRef, useState } from "react";
 import { Animated, FlatList, StyleSheet, View } from "react-native";
 import ScrollBottomSheet from "react-native-scroll-bottom-sheet";
 import { useSelector } from "react-redux";
 //@ts-ignore
 import Slider from "rn-range-slider";
+import { EmptyPocket } from "../../assets";
 import {
   AppCanvas,
   Button,
@@ -57,6 +59,7 @@ const ContactListScreen: FC<ContactListScreenProps> = ({ navigation }) => {
   const [isSheet, setIsSheet] = useState<boolean>(false);
 
   const [users, setUsers] = useState<UsersProps[]>([]);
+  const [filterUsers, setFilterUsers] = useState<UsersProps[]>([]);
 
   const [age, setAge] = useState({ min: 15, max: 40 });
   const [gender, setGender] = useState<number[]>([]);
@@ -121,12 +124,13 @@ const ContactListScreen: FC<ContactListScreenProps> = ({ navigation }) => {
   const getUsers = async () => {
     const data = await db.ref(n.users).once("value");
     const dataArray = Object.entries(data.val());
-    if (isMounted.current)
-      setUsers(
-        dataArray
-          .filter((user: any) => user[0] !== sessionReducer.uid)
-          .map((item: any) => ({ uid: item[0], ...item[1] }))
-      );
+    const finalUsers = dataArray
+      .filter((user: any) => user[0] !== sessionReducer.uid)
+      .map((item: any) => ({ uid: item[0], ...item[1] }));
+    if (isMounted.current) {
+      setUsers(finalUsers);
+      setFilterUsers(finalUsers);
+    }
   };
 
   const snapTo = (index: number) => {
@@ -146,9 +150,89 @@ const ContactListScreen: FC<ContactListScreenProps> = ({ navigation }) => {
   };
 
   const filterSet = () => {
-    setAge(ageRef.current);
     snapTo(1);
-    counterSettter();
+    setTimeout(() => {
+      setAge(ageRef.current);
+      counterSettter();
+      filtering({ ...ageRef.current });
+    }, 100);
+  };
+
+  const filtering = ({ min, max }: { min: number; max: number }) => {
+    const ageFilter = users.filter((user) => {
+      if (user.dob == undefined) return true;
+      const [day, month, year] = user.dob.split("/");
+      const userAge = moment().diff([year, month, day], "years");
+      return min < userAge && userAge < max;
+    });
+    if (ageFilter.length == 0) {
+      setFilterUsers([]);
+      return;
+    }
+    const genderFilter =
+      gender.length == 0
+        ? ageFilter
+        : ageFilter.filter((user) => {
+            if (user.gender == undefined || user.gender == 0) return false;
+            return (
+              gender.findIndex((knownGender) => knownGender == user.gender) !==
+              -1
+            );
+          });
+    if (genderFilter.length == 0) {
+      setFilterUsers([]);
+      return;
+    }
+    const batchFilter =
+      batch.length == 0
+        ? genderFilter
+        : genderFilter.filter((user) => {
+            if (user.batch == undefined) return false;
+            const userBatch =
+              batchValue[
+                batchValue.findIndex(
+                  (knownBatch) => knownBatch.label == user.batch
+                )
+              ];
+            return (
+              batch.findIndex((knownBatch) => knownBatch == userBatch.value) !==
+              -1
+            );
+          });
+    if (batchFilter.length == 0) {
+      setFilterUsers([]);
+      return;
+    }
+    const majorFilter =
+      major.length == 0
+        ? batchFilter
+        : batchFilter.filter((user) => {
+            if (user.major == undefined) return false;
+            const userMajor = majorValue.findIndex(
+              (knownMajor) => knownMajor == user.major
+            );
+            return (
+              major.findIndex((knownMajor) => knownMajor == userMajor) !== -1
+            );
+          });
+    if (majorFilter.length == 0) {
+      setFilterUsers([]);
+      return;
+    }
+    const hobbyFilter =
+      hobby.length == 0
+        ? majorFilter
+        : majorFilter.filter((user) => {
+            if (user.hobbies == undefined) return false;
+            const userHobbies = user.hobbies
+              .filter((currentHobby) => currentHobby.isSelected)
+              .map((currHobby) => currHobby.id);
+            const isExist = userHobbies.filter((userHobby) =>
+              hobby.includes(userHobby)
+            );
+            return isExist.length !== 0;
+          });
+    setFilterUsers(hobbyFilter);
   };
 
   const keyExtractor = (item: UsersProps) => `${item.uid}`;
@@ -354,6 +438,7 @@ const ContactListScreen: FC<ContactListScreenProps> = ({ navigation }) => {
         <EmptyState
           title="Teman Tidak Ditemukan"
           subtitle="Sesuaikan kriteria dengan cakupan lebih luas"
+          icon={() => <EmptyPocket width={120} height={120} />}
         />
       </View>
     ),
@@ -370,8 +455,14 @@ const ContactListScreen: FC<ContactListScreenProps> = ({ navigation }) => {
           />
         </View>
       )}
+      {/* <Button
+        style={{ backgroundColor: "red", width: 40, height: 40 }}
+        onPress={()=>filtering({...ageRef.current})}
+      >
+        <TextItem>TEST</TextItem>
+      </Button> */}
       <FlatList
-        data={users}
+        data={filterUsers}
         renderItem={renderItem}
         keyExtractor={keyExtractor}
         contentContainerStyle={{ marginTop: sp.sm }}
