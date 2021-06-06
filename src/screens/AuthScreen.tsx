@@ -45,7 +45,7 @@ const AuthScreen: FC<AuthProps> = ({ navigation }) => {
       const data = isLogin
         ? await auth().signInWithEmailAndPassword(email, password)
         : await auth().createUserWithEmailAndPassword(email, password);
-
+      console.log({ data });
       setIsLoading(false);
       setEmail("");
       setPassword("");
@@ -70,6 +70,7 @@ const AuthScreen: FC<AuthProps> = ({ navigation }) => {
         navigation.navigate(p.DrawerRoute);
         return;
       }
+      console.log("test");
       // CONDITION IF FALSE
       setFancyBarState({
         visible: true,
@@ -78,6 +79,12 @@ const AuthScreen: FC<AuthProps> = ({ navigation }) => {
       });
     } catch (error) {
       setIsLoading(false);
+      if (error.code == "auth/weak-password") {
+        return setFormError((current) => [
+          ...current,
+          { param: "password", msg: str.weakPassword, value: password },
+        ]);
+      }
       if (error.code == "auth/wrong-password") {
         return setFormError((current) => [
           ...current,
@@ -90,12 +97,16 @@ const AuthScreen: FC<AuthProps> = ({ navigation }) => {
           { param: "email", msg: str.emailNotExist, value: email },
         ]);
       }
-      if (error.code == "auth/email-already-in-use") {
+      if (
+        error.code == "auth/email-already-in-use" ||
+        error.code == "auth/invalid-email"
+      ) {
         return setFormError((current) => [
           ...current,
           { param: "email", msg: str.emailTaken, value: email },
         ]);
       }
+      console.log(`AuthScren, firebaseLogin(),${error}`);
     }
   };
 

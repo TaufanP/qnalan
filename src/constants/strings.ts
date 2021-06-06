@@ -8,6 +8,7 @@ const strings = {
   failedHappen: "Terjadi kesalahan, coba kembali nanti",
   fillEmail: "Harap isi alamat email",
   fillPassword: "Harap isi kata sandi",
+  weakPassword: "Kata sandi minimal 6 karakter",
 
   haveAcc: "Sudah punya akun?",
 
