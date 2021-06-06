@@ -10,6 +10,7 @@ import {
   Button,
   CheckBoxes,
   DefaultHeader,
+  EmptyState,
   FilterButton,
   PersonList,
   RenderHandle,
@@ -62,6 +63,7 @@ const ContactListScreen: FC<ContactListScreenProps> = ({ navigation }) => {
   const [batch, setBatch] = useState<number[]>([]);
   const [major, setMajor] = useState<number[]>([]);
   const [hobby, setHobby] = useState<number[]>([]);
+  const [count, setCount] = useState<number>(0);
 
   const [filterCat, setFilterCat] = useState<FilterCatProps[]>(filterDataValue);
 
@@ -131,9 +133,22 @@ const ContactListScreen: FC<ContactListScreenProps> = ({ navigation }) => {
     scrollRef.current.snapTo(index);
   };
 
+  const counterSettter = () => {
+    const ageLength =
+      ageRef.current.min == 15 && ageRef.current.max == 40 ? 0 : 1;
+    const genderLength = gender.length == 0 ? 0 : 1;
+    const batchLength = batch.length == 0 ? 0 : 1;
+    const majorLength = major.length == 0 ? 0 : 1;
+    const hobbyLength = hobby.length == 0 ? 0 : 1;
+    setCount(
+      ageLength + genderLength + batchLength + majorLength + hobbyLength
+    );
+  };
+
   const filterSet = () => {
     setAge(ageRef.current);
     snapTo(1);
+    counterSettter();
   };
 
   const keyExtractor = (item: UsersProps) => `${item.uid}`;
@@ -333,19 +348,34 @@ const ContactListScreen: FC<ContactListScreenProps> = ({ navigation }) => {
     };
   }, []);
 
+  const ListEmptyComponent = useCallback(
+    () => (
+      <View style={{ height: heightPercent(60) }}>
+        <EmptyState
+          title="Teman Tidak Ditemukan"
+          subtitle="Sesuaikan kriteria dengan cakupan lebih luas"
+        />
+      </View>
+    ),
+    []
+  );
   return (
     <AppCanvas header={header}>
-      <View style={s.filterButtonCont}>
-        <FilterButton label="Kriteria" count={0} onPress={onFilterPress} />
-      </View>
-      <Button onPress={() => console.log({ age, gender, batch })}>
-        <TextItem>TeSSSSSSSST</TextItem>
-      </Button>
+      {users.length !== 0 && (
+        <View style={s.filterButtonCont}>
+          <FilterButton
+            label="Kriteria"
+            count={count}
+            onPress={onFilterPress}
+          />
+        </View>
+      )}
       <FlatList
         data={users}
         renderItem={renderItem}
         keyExtractor={keyExtractor}
         contentContainerStyle={{ marginTop: sp.sm }}
+        ListEmptyComponent={ListEmptyComponent}
       />
       {isSheet && <Animated.View style={s.overlayCont} />}
       <ScrollBottomSheet

@@ -5,18 +5,22 @@ import TextItem from "./TextItem";
 import { EmptyInbox } from "../../../assets";
 import { spacing as sp, colorsPalette as cp } from "../../constants";
 interface EmptyStateProps {
-  navigation?: CompositeNavigationProp<any, any>;
+  title?: string;
+  subtitle?: string;
 }
 
-const EmptyState: FC<EmptyStateProps> = ({ children }) => {
+const EmptyState: FC<EmptyStateProps> = ({
+  title = "Tidak ada percakapan",
+  subtitle = "Ayo mulai percakapan dengan teman baru",
+}) => {
   const s = styles();
   return (
     <View style={s.container}>
       <View style={s.iconCont}>
         <EmptyInbox fill={cp.white4} width={88} height={88} />
       </View>
-      <TextItem type="bold20Text1">Tidak ada percakapan</TextItem>
-      <TextItem>Ayo mulai percakapan dengan teman baru</TextItem>
+      <TextItem type="bold20Text1">{title}</TextItem>
+      <TextItem>{subtitle}</TextItem>
     </View>
   );
 };

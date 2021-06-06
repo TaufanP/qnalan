@@ -16,7 +16,11 @@ const FilterButton: FC<FilterButtonProps> = ({ label, count, onPress }) => {
     <Button style={s.container} onPress={onPress}>
       {count !== 0 && (
         <View style={s.counterCont}>
-          <TextItem style={{ fontSize: 11, color: cp.white }}>{count}</TextItem>
+          <TextItem
+            style={{ fontSize: 11, color: cp.white, top: -1, left: -1 }}
+          >
+            {count}
+          </TextItem>
         </View>
       )}
       <TextItem type={`normal14Blue3`}>{label}</TextItem>
