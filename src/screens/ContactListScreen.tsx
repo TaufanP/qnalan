@@ -1,6 +1,6 @@
 import { CompositeNavigationProp } from "@react-navigation/core";
 import React, { FC, useCallback, useEffect, useRef, useState } from "react";
-import { Animated, FlatList, Text, View } from "react-native";
+import { Animated, FlatList, StyleSheet, View } from "react-native";
 import ScrollBottomSheet from "react-native-scroll-bottom-sheet";
 import { useSelector } from "react-redux";
 //@ts-ignore
@@ -51,14 +51,23 @@ interface FilterCatProps extends FilterDataProps {
 const ContactListScreen: FC<ContactListScreenProps> = ({ navigation }) => {
   const { sessionReducer } = useSelector((state: AppState) => state);
 
+  const s = styles();
+
   const [isSheet, setIsSheet] = useState<boolean>(false);
 
   const [users, setUsers] = useState<UsersProps[]>([]);
+
+  const [age, setAge] = useState({ min: 15, max: 40 });
+  const [gender, setGender] = useState<number[]>([]);
+  const [batch, setBatch] = useState<number[]>([]);
+  const [major, setMajor] = useState<number[]>([]);
+  const [hobby, setHobby] = useState<number[]>([]);
 
   const [filterCat, setFilterCat] = useState<FilterCatProps[]>(filterDataValue);
 
   const isMounted = useRef(true);
   const scrollRef = useRef<any>(null);
+  const ageRef = useRef({ min: 15, max: 40 });
 
   const createChatRoom = async (partnerId: string) => {
     const chatList = await db
@@ -122,6 +131,11 @@ const ContactListScreen: FC<ContactListScreenProps> = ({ navigation }) => {
     scrollRef.current.snapTo(index);
   };
 
+  const filterSet = () => {
+    setAge(ageRef.current);
+    snapTo(1);
+  };
+
   const keyExtractor = (item: UsersProps) => `${item.uid}`;
 
   const renderItem = useCallback(({ item }: { item: UsersProps }) => {
@@ -154,61 +168,162 @@ const ContactListScreen: FC<ContactListScreenProps> = ({ navigation }) => {
   const renderLabel = useCallback((value) => <Label text={value} />, []);
   const renderNotch = useCallback(() => <Notch />, []);
   const handleValueChange = useCallback((low, high) => {
-    console.log(low);
-    console.log(high);
+    ageRef.current = { min: low, max: high };
   }, []);
 
-  const scrollComp = () => (
-    <View style={{ width: "100%" }}>
-      <TextItem type="bold14Text1">Umur</TextItem>
-      <Slider
-        min={15}
-        max={40}
-        step={1}
-        floatingLabel
-        renderThumb={renderThumb}
-        renderRail={renderRail}
-        renderRailSelected={renderRailSelected}
-        renderLabel={renderLabel}
-        renderNotch={renderNotch}
-        onValueChanged={handleValueChange}
-        style={{ marginBottom: sp.sm, marginTop: sp.sm }}
-      />
-      <TextItem type="bold14Text1">Jenis Kelamin</TextItem>
-      <ToggleButtons containerStyle={{ marginTop: 0 }} data={genderValue} />
-      <TextItem type="bold14Text1">Angkatan</TextItem>
-      <ToggleButtons containerStyle={{ marginTop: 0 }} data={batchValue} />
-      <TextItem type="bold14Text1">Jurusan</TextItem>
-      <CheckBoxes
-        data={majorValue.map((major, majorIndex) => ({
-          value: majorIndex,
-          label: major,
-        }))}
-      />
-      <TextItem type="bold14Text1">Hobi</TextItem>
-      <ToggleButtons
-        containerStyle={{ marginTop: 0 }}
-        data={HobbiesValue.map((hobby) => ({
-          value: hobby.id,
-          label: hobby.label,
-        }))}
-      />
-      <Button
-        style={{
-          height: 50,
-          backgroundColor: cp.blue3,
-          justifyContent: "center",
-          alignItems: "center",
-          marginBottom: sp.sm,
-          borderRadius: 8,
-        }}
-      >
-        <TextItem type="bold16White">TERAPKAN</TextItem>
-      </Button>
-    </View>
+  const genderPress = useCallback(
+    (value: number) =>
+      setGender((current) => {
+        const isExist: boolean =
+          current.findIndex((gend) => gend == value) !== -1;
+        if (isExist) {
+          return current.filter((gend) => gend !== value);
+        }
+        return [...current, value];
+      }),
+    [gender]
+  );
+  const GenderToggler = useCallback(
+    () => (
+      <>
+        <TextItem type="bold14Text1">Jenis Kelamin</TextItem>
+        <ToggleButtons
+          containerStyle={s.togglerCont}
+          data={genderValue}
+          selected={gender}
+          onPress={genderPress}
+        />
+      </>
+    ),
+    [gender]
+  );
+
+  const batchPress = useCallback(
+    (value: number) =>
+      setBatch((current) => {
+        const isExist: boolean =
+          current.findIndex((currBatch) => currBatch == value) !== -1;
+        if (isExist) {
+          return current.filter((currBatch) => currBatch !== value);
+        }
+        return [...current, value];
+      }),
+    [batch]
+  );
+  const BatchToggler = useCallback(
+    () => (
+      <>
+        <TextItem type="bold14Text1">Angkatan</TextItem>
+        <ToggleButtons
+          containerStyle={s.togglerCont}
+          data={batchValue}
+          selected={batch}
+          onPress={batchPress}
+        />
+      </>
+    ),
+    [batch]
+  );
+
+  const majorPress = useCallback(
+    (value: number) =>
+      setMajor((current) => {
+        const isExist: boolean =
+          current.findIndex((currMajor) => currMajor == value) !== -1;
+        if (isExist) {
+          return current.filter((currMajor) => currMajor !== value);
+        }
+        return [...current, value];
+      }),
+    [major]
+  );
+  const MajorToggler = useCallback(
+    () => (
+      <>
+        <TextItem type="bold14Text1">Jurusan</TextItem>
+        <CheckBoxes
+          data={majorValue.map((major, majorIndex) => ({
+            value: majorIndex,
+            label: major,
+          }))}
+          selected={major}
+          onPress={majorPress}
+        />
+      </>
+    ),
+    [major]
+  );
+
+  const hobbyPress = useCallback(
+    (value: number) =>
+      setHobby((current) => {
+        const isExist: boolean =
+          current.findIndex((currHobby) => currHobby == value) !== -1;
+        if (isExist) {
+          return current.filter((currHobby) => currHobby !== value);
+        }
+        return [...current, value];
+      }),
+    [hobby]
+  );
+  const HobbyToggler = useCallback(
+    () => (
+      <>
+        <TextItem type="bold14Text1">Hobi</TextItem>
+        <ToggleButtons
+          containerStyle={s.togglerCont}
+          data={HobbiesValue.map((hobby) => ({
+            value: hobby.id,
+            label: hobby.label,
+          }))}
+          selected={hobby}
+          onPress={hobbyPress}
+        />
+      </>
+    ),
+    [hobby]
+  );
+
+  const scrollComp = useCallback(
+    () => (
+      <View style={s.scrollCont}>
+        <TextItem type="bold14Text1">Umur</TextItem>
+        <Slider
+          min={15}
+          max={40}
+          step={1}
+          floatingLabel
+          renderThumb={renderThumb}
+          renderRail={renderRail}
+          renderRailSelected={renderRailSelected}
+          renderLabel={renderLabel}
+          renderNotch={renderNotch}
+          onValueChanged={handleValueChange}
+          style={s.sliderStyle}
+        />
+        <GenderToggler />
+        <BatchToggler />
+        <MajorToggler />
+        <HobbyToggler />
+        <Button style={s.scrollButton} onPress={filterSet}>
+          <TextItem type="bold16White">TERAPKAN</TextItem>
+        </Button>
+      </View>
+    ),
+    [age, gender, batch, major, hobby]
   );
 
   const renderHandle = useCallback(() => <RenderHandle />, []);
+
+  const onSettle = useCallback(
+    (index) => index == 1 && setIsSheet(false),
+    [isSheet]
+  );
+
+  const onFilterPress = useCallback(() => {
+    setIsSheet(true);
+    snapTo(0);
+  }, []);
 
   useEffect(() => {
     getUsers();
@@ -220,47 +335,29 @@ const ContactListScreen: FC<ContactListScreenProps> = ({ navigation }) => {
 
   return (
     <AppCanvas header={header}>
-      <View style={{ marginTop: sp.sm, marginLeft: sp.sm }}>
-        <FilterButton
-          label="Kriteria"
-          count={0}
-          onPress={() => {
-            setIsSheet(true);
-            snapTo(1);
-          }}
-        />
+      <View style={s.filterButtonCont}>
+        <FilterButton label="Kriteria" count={0} onPress={onFilterPress} />
       </View>
+      <Button onPress={() => console.log({ age, gender, batch })}>
+        <TextItem>TeSSSSSSSST</TextItem>
+      </Button>
       <FlatList
         data={users}
         renderItem={renderItem}
         keyExtractor={keyExtractor}
         contentContainerStyle={{ marginTop: sp.sm }}
       />
-      {isSheet && (
-        <Animated.View
-          style={{
-            position: "absolute",
-            width: widthPercent(100),
-            height: heightPercent(100),
-            backgroundColor: "#0005",
-          }}
-        />
-      )}
-      <ScrollBottomSheet // If you are using TS, that'll infer the renderItem `item` type
+      {isSheet && <Animated.View style={s.overlayCont} />}
+      <ScrollBottomSheet
         ref={scrollRef}
+        showsHorizontalScrollIndicator={false}
         componentType="ScrollView"
-        snapPoints={[128, "50%", heightPercent(110)]}
-        initialSnapIndex={2}
+        snapPoints={["20%", heightPercent(110)]}
+        initialSnapIndex={1}
         renderHandle={renderHandle}
-        contentContainerStyle={{
-          padding: 16,
-          backgroundColor: cp.white,
-        }}
-        containerStyle={{
-          backgroundColor: cp.white,
-          borderRadius: 20,
-        }}
-        onSettle={(index) => index == 2 && setIsSheet(false)}
+        contentContainerStyle={s.scrollContentContainerStyle}
+        containerStyle={s.scrollContainerStyle}
+        onSettle={onSettle}
       >
         {scrollComp()}
       </ScrollBottomSheet>
@@ -269,3 +366,33 @@ const ContactListScreen: FC<ContactListScreenProps> = ({ navigation }) => {
 };
 
 export default ContactListScreen;
+
+const styles = () =>
+  StyleSheet.create({
+    scrollContainerStyle: {
+      backgroundColor: cp.white,
+      borderRadius: 20,
+    },
+    scrollContentContainerStyle: {
+      padding: 16,
+      backgroundColor: cp.white,
+    },
+    sliderStyle: { marginBottom: sp.sm, marginTop: sp.sm },
+    overlayCont: {
+      position: "absolute",
+      width: widthPercent(100),
+      height: heightPercent(100),
+      backgroundColor: "#0005",
+    },
+    filterButtonCont: { marginTop: sp.sm, marginLeft: sp.sm },
+    scrollCont: { width: "100%" },
+    togglerCont: { marginTop: 0 },
+    scrollButton: {
+      height: 50,
+      backgroundColor: cp.blue3,
+      justifyContent: "center",
+      alignItems: "center",
+      marginBottom: sp.sm,
+      borderRadius: 8,
+    },
+  });
