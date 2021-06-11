@@ -1,6 +1,6 @@
 import auth from "@react-native-firebase/auth";
 import { CompositeNavigationProp } from "@react-navigation/core";
-import React, { FC, useEffect, useState } from "react";
+import React, { FC, useCallback, useEffect, useState } from "react";
 import { Keyboard, View } from "react-native";
 import SplashScreen from "react-native-splash-screen";
 import { useDispatch, useSelector } from "react-redux";
@@ -31,6 +31,7 @@ const AuthScreen: FC<AuthProps> = ({ navigation }) => {
 
   const [isLogin, setIsLogin] = useState<boolean>(true);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isSecure, setIsSecure] = useState<boolean>(true);
 
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
@@ -39,6 +40,11 @@ const AuthScreen: FC<AuthProps> = ({ navigation }) => {
     setFormError([]);
     setIsLogin((current) => !current);
   };
+
+  const securePress = useCallback(
+    () => setIsSecure((current) => !current),
+    [isSecure]
+  );
 
   const firebaseLogin = async () => {
     try {
@@ -166,7 +172,7 @@ const AuthScreen: FC<AuthProps> = ({ navigation }) => {
     <AppCanvas {...{ fancyBarState, setFancyBarState }}>
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
         <TextItem type="logo" style={{ marginBottom: heightAdapt(24) }}>
-          SCHumanBank
+          Qnalan
         </TextItem>
         <TextField
           placeholder={str.email}
@@ -181,7 +187,7 @@ const AuthScreen: FC<AuthProps> = ({ navigation }) => {
         />
         <TextField
           placeholder={str.password}
-          secureTextEntry
+          secureTextEntry={isSecure}
           containerStyle={{ width: widthPercent(80) }}
           mainStyle={{ marginBottom: sp.l }}
           onChangeText={(e) => setPassword(e)}
@@ -189,6 +195,8 @@ const AuthScreen: FC<AuthProps> = ({ navigation }) => {
           warningText={testError("password")}
           isError={testError("password")}
           maxLength={20}
+          sideIcon
+          securePress={securePress}
         />
         <Button
           styleKey="widthRelativeColored"

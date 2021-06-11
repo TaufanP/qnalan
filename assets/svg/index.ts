@@ -5,6 +5,8 @@ import EmptyInbox from "./EmptyInbox.svg";
 import EmptyInboxColored from "./EmptyInboxColored.svg";
 import EmptyPocket from "./EmptyPocket.svg";
 import Export from "./Export.svg";
+import EyeClose from "./eyeClose.svg";
+import EyeOpen from "./eyeOpen.svg";
 import HamburgerMenu from "./HamburgerMenu.svg";
 import Inbox from "./Inbox.svg";
 import Plus from "./Plus.svg";
@@ -23,6 +25,8 @@ export {
   EmptyInboxColored,
   EmptyPocket,
   Export,
+  EyeClose,
+  EyeOpen,
   HamburgerMenu,
   Inbox,
   Plus,

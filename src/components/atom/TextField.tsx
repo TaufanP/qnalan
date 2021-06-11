@@ -9,6 +9,7 @@ import {
   View,
   ViewStyle,
 } from "react-native";
+import { EyeClose, EyeOpen } from "../../../assets";
 import { colorsPalette as cp, spacing as sp } from "../../constants";
 import Button from "./Button";
 import WarningIcon from "./WarningIcon";
@@ -47,9 +48,9 @@ const TextField: FC<TextFieldProps & TextInputProps> = ({
   ...props
 }) => {
   const s = styles({ sideIcon, isError, withPadding });
-  // const renderIcon = renderSideIcon
-  //   ? renderSideIcon
-  //   : () => <>{props.secureTextEntry ? <EyeClose /> : <EyeOpen />}</>;
+  const renderIcon = renderSideIcon
+    ? renderSideIcon
+    : () => <>{props.secureTextEntry ? <EyeClose /> : <EyeOpen />}</>;
 
   const translateX = new Animated.Value(0);
   const translateDistance = 4;
@@ -71,11 +72,11 @@ const TextField: FC<TextFieldProps & TextInputProps> = ({
     <View style={[mainStyle]}>
       <Animated.View style={[s.container, containerStyle]}>
         <TextInput style={[s.input, fieldStyle]} {...props} />
-        {/* {sideIcon && (
+        {sideIcon && (
           <Button style={s.button} onPress={securePress}>
             {renderIcon()}
           </Button>
-        )} */}
+        )}
         {isError && (
           <Button style={s.button} onPress={triggerError}>
             <WarningIcon isStart={isStart} />
@@ -109,6 +110,7 @@ const styles = ({ sideIcon, isError, withPadding }: StyleProps) =>
     input: {
       fontWeight: "normal",
       flex: 1,
+      color: cp.text1,
     },
     container: {
       backgroundColor: cp.white2,
