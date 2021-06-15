@@ -1,5 +1,6 @@
 import ChatList from "./ChatList";
 import CheckBox from "./CheckBox";
+import CustomNav from "./CustomNav";
 import DefaultHeader from "./DefaultHeader";
 import FilterButton from "./FilterButton";
 import HomeHeader from "./HomeHeader";
@@ -10,8 +11,9 @@ import RadioButton from "./RadioButton";
 import ToggleButton from "./ToggleButton";
 
 export {
-  CheckBox,
   ChatList,
+  CheckBox,
+  CustomNav,
   DefaultHeader,
   HomeHeader,
   PersonList,
