@@ -1,4 +1,5 @@
-import AuthScreen from "./AuthScreen";
+import Auth from "./Auth";
+
 import ContactListScreen from "./ContactListScreen";
 import HomeScreen from "./HomeScreen";
 import RoomChatScreen from "./RoomChatScreen";
@@ -7,7 +8,7 @@ import ProfileScreen from "./ProfileScreen";
 import VideoCallScreen from "./VideoCallScreen";
 
 export {
-  AuthScreen,
+  Auth,
   ContactListScreen,
   HomeScreen,
   ProfileScreen,

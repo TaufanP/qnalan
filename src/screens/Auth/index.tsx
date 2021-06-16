@@ -1,29 +1,27 @@
 import auth from "@react-native-firebase/auth";
 import { CompositeNavigationProp } from "@react-navigation/core";
-import React, { FC, useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { Keyboard, View } from "react-native";
 import SplashScreen from "react-native-splash-screen";
-import { useDispatch, useSelector } from "react-redux";
-import { AppCanvas, Button, TextField, TextItem } from "../components";
-import { heightAdapt, widthPercent } from "../config";
-import { db } from "../config/firebase";
-import { FancyTypes, FieldErrorProps } from "../config/types";
+import { useDispatch } from "react-redux";
+import { AppCanvas, Button, TextField, TextItem } from "../../components";
+import { heightAdapt, widthPercent } from "../../config";
+import { db } from "../../config/firebase";
+import { FancyTypes, FieldErrorProps } from "../../config/types";
 import {
   fancyStates as fan,
   pages as p,
   spacing as sp,
   strings as str,
-} from "../constants";
-import AppState from "../redux";
-import { loggingIn } from "../redux/actions";
+} from "../../constants";
+import { loggingIn } from "../../redux/actions";
 
 interface AuthProps {
   navigation: CompositeNavigationProp<any, any>;
 }
-const AuthScreen: FC<AuthProps> = ({ navigation }) => {
+const Auth = ({ navigation }: AuthProps) => {
   const { defaultState, fancyType } = fan;
   const dispatch = useDispatch();
-  const { sessionReducer } = useSelector((state: AppState) => state);
 
   const [fancyBarState, setFancyBarState] = useState<FancyTypes>(defaultState);
 
@@ -219,4 +217,4 @@ const AuthScreen: FC<AuthProps> = ({ navigation }) => {
   );
 };
 
-export default AuthScreen;
+export default Auth;

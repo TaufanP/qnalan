@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "212011831950",
+    "firebase_url": "https://qnalan-apps-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "qnalan-apps",
+    "storage_bucket": "qnalan-apps.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:212011831950:android:658576170f0975af8d2fdf",
+        "android_client_info": {
+          "package_name": "com.sbhumanbank"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "212011831950-2o8cr7f8ktp8g31ovjbnn411kiradm9m.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAC9V3HRYzEURsAZVHgQLEYMVOoBHtNL1g"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "212011831950-2o8cr7f8ktp8g31ovjbnn411kiradm9m.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

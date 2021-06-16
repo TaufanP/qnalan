@@ -4,7 +4,7 @@ import {
 } from "@react-navigation/stack";
 import React from "react";
 import { pages as p } from "../constants";
-import { AuthScreen, HomeScreen } from "../screens";
+import { Auth } from "../screens";
 import DrawerRoute from "./DrawerRoute";
 
 const Stack = createStackNavigator();
@@ -12,7 +12,7 @@ const Stack = createStackNavigator();
 const AuthRoute = () => {
   return (
     <Stack.Navigator
-      initialRouteName={p.AuthScreen}
+      initialRouteName={p.Auth}
       headerMode="none"
       screenOptions={({ route, navigation }) => ({
         headerShown: false,
@@ -26,7 +26,7 @@ const AuthRoute = () => {
       })}
       mode="card"
     >
-      <Stack.Screen name={p.AuthScreen} component={AuthScreen} />
+      <Stack.Screen name={p.Auth} component={Auth} />
       <Stack.Screen name={p.DrawerRoute} component={DrawerRoute} />
     </Stack.Navigator>
   );
