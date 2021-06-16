@@ -23,7 +23,7 @@ const HomeScreen: FC<HomeScreenProps> = ({ navigation }) => {
     dispatch(loggingOut());
     navigation.reset({
       index: 0,
-      routes: [{ name: p.AuthScreen }],
+      routes: [{ name: p.Auth }],
     });
   };
 

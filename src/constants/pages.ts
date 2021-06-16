@@ -1,4 +1,5 @@
 const pages = {
+  Auth: "Auth",
   AuthScreen: "AuthScreen",
 
   ContactListScreen: "ContactListScreen",

@@ -34,12 +34,12 @@ const DrawerContent: FC<DrawerContentProps> = (props) => {
       dispatch(loggingOut());
       props.navigation.closeDrawer();
       // @ts-ignore
-      props.navigation.replace(p.AuthScreen);
+      props.navigation.replace(p.Auth);
     } catch (error) {
       dispatch(loggingOut());
       props.navigation.closeDrawer();
       // @ts-ignore
-      props.navigation.replace(p.AuthScreen);
+      props.navigation.replace(p.Auth);
     }
   };
 

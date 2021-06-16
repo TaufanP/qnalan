@@ -59,7 +59,7 @@ const RoomListScreen: FC<RoomListScreenProps> = ({ navigation }) => {
     dispatch(loggingOut());
     navigation.reset({
       index: 0,
-      routes: [{ name: p.AuthScreen }],
+      routes: [{ name: p.Auth }],
     });
   };
 
