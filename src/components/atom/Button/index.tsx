@@ -1,18 +1,13 @@
 import React, { FC, PropsWithChildren } from "react";
 import {
-  TouchableOpacity,
-  StyleProp,
-  ViewStyle,
-  StyleSheet,
-  TouchableOpacityProps,
   ActivityIndicator,
+  StyleProp,
+  TouchableOpacity,
+  TouchableOpacityProps,
+  ViewStyle,
 } from "react-native";
-import LoadingButton from "./LoadingButton";
-import { widthPercent as wp } from "../../config/units";
-import { colorsPalette as cp } from "../../constants";
-
-const relativeWidth = wp(80);
-const fixedHeightRWRatio = relativeWidth * 0.1519;
+import LoadingButton from "../LoadingButton";
+import styles from "./styles";
 
 interface ButtonProps {
   isLoading?: boolean;
@@ -50,28 +45,3 @@ const Button: FC<PropsWithChildren<ButtonProps & TouchableOpacityProps>> = ({
 };
 
 export default Button;
-
-const styles = () => {
-  const center: ViewStyle = {
-    justifyContent: "center",
-    alignItems: "center",
-  };
-  const widthRelative: ViewStyle = {
-    width: relativeWidth,
-    height: fixedHeightRWRatio,
-    borderRadius: fixedHeightRWRatio * 0.16,
-    ...center,
-  };
-  return StyleSheet.create({
-    center,
-    widthRelativeColored: {
-      backgroundColor: cp.blue3,
-      ...widthRelative,
-    },
-    widthRelativeBordered: {
-      borderWidth: 1,
-      borderColor: cp.main,
-      ...widthRelative,
-    },
-  });
-};

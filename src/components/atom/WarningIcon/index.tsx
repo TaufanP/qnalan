@@ -1,7 +1,6 @@
-import { CompositeNavigationProp } from "@react-navigation/core";
 import React, { FC, useEffect } from "react";
-import { Animated, StyleSheet, Text, View } from "react-native";
-import { colorsPalette as cp } from "../../constants";
+import { Animated, Text } from "react-native";
+import styles from "./styles";
 
 interface WarningIconProps {
   isStart?: boolean;
@@ -32,16 +31,3 @@ const WarningIcon: FC<WarningIconProps> = ({ isStart = false }) => {
 };
 
 export default WarningIcon;
-
-const styles = () =>
-  StyleSheet.create({
-    excla: { fontWeight: "800", color: "#FFF" },
-    container: {
-      backgroundColor: cp.red1,
-      width: 24,
-      height: 24,
-      borderRadius: 24,
-      justifyContent: "center",
-      alignItems: "center",
-    },
-  });

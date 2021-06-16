@@ -1,9 +1,9 @@
-import { CompositeNavigationProp } from "@react-navigation/core";
 import React, { FC, ReactNode } from "react";
-import { StyleSheet, View } from "react-native";
-import TextItem from "./TextItem";
-import { EmptyInbox, EmptyInboxColored } from "../../../assets";
-import { spacing as sp, colorsPalette as cp } from "../../constants";
+import { View } from "react-native";
+import { EmptyInboxColored } from "../../../../assets";
+import TextItem from "../TextItem";
+import styles from "./styles";
+
 interface EmptyStateProps {
   title?: string;
   subtitle?: string;
@@ -24,19 +24,5 @@ const EmptyState: FC<EmptyStateProps> = ({
     </View>
   );
 };
-
-const styles = () =>
-  StyleSheet.create({
-    iconCont: {
-      marginBottom: sp.sm,
-      justifyContent: "center",
-      alignItems: "center",
-    },
-    container: {
-      flex: 1,
-      justifyContent: "center",
-      alignItems: "center",
-    },
-  });
 
 export default EmptyState;

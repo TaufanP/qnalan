@@ -1,8 +1,8 @@
-import { CompositeNavigationProp } from "@react-navigation/core";
 import React, { FC, PropsWithChildren } from "react";
-import { StyleSheet, View, ViewStyle } from "react-native";
-import { colorsPalette as cp } from "../../constants";
-import Button from "./Button";
+import { ViewStyle } from "react-native";
+import Button from "../Button";
+import styles from "./styles";
+
 interface ButtonHeaderProps {
   onPress?: any;
   style?: ViewStyle;
@@ -20,15 +20,5 @@ const ButtonHeader: FC<PropsWithChildren<ButtonHeaderProps>> = ({
     </Button>
   );
 };
-
-const styles = () =>
-  StyleSheet.create({
-    container: {
-      height: 54,
-      width: 54,
-      justifyContent: "center",
-      alignItems: "center",
-    },
-  });
 
 export default ButtonHeader;

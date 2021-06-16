@@ -1,11 +1,6 @@
 import React, { FC, useEffect } from "react";
-import { Animated, Dimensions, StyleSheet, View } from "react-native";
-
-const { width, height } = Dimensions.get("screen");
-
-interface StyleProps {
-  color?: string;
-}
+import { Animated, View } from "react-native";
+import styles from "./styles";
 
 interface LoadingButtonProps {
   color?: string;
@@ -81,19 +76,5 @@ const LoadingButton: FC<LoadingButtonProps> = ({ color = "#FFF" }) => {
     </View>
   );
 };
-
-const styles = ({ color }: StyleProps) =>
-  StyleSheet.create({
-    button: {
-      width: 6,
-      height: 6,
-      backgroundColor: color,
-      borderRadius: 6,
-      marginRight: 6,
-    },
-    container: {
-      flexDirection: "row",
-    },
-  });
 
 export default LoadingButton;

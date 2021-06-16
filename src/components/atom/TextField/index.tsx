@@ -2,23 +2,16 @@ import { CompositeNavigationProp } from "@react-navigation/core";
 import React, { FC } from "react";
 import {
   Animated,
-  StyleSheet,
   TextInput,
   TextInputProps,
   TextStyle,
   View,
   ViewStyle,
 } from "react-native";
-import { EyeClose, EyeOpen } from "../../../assets";
-import { colorsPalette as cp, spacing as sp } from "../../constants";
-import Button from "./Button";
-import WarningIcon from "./WarningIcon";
-
-interface StyleProps {
-  sideIcon?: boolean;
-  isError?: boolean | string;
-  withPadding?: boolean;
-}
+import { EyeClose, EyeOpen } from "../../../../assets";
+import Button from "../Button";
+import WarningIcon from "../WarningIcon";
+import styles from "./styles";
 
 interface TextFieldProps {
   navigation?: CompositeNavigationProp<any, any>;
@@ -93,30 +86,3 @@ const TextField: FC<TextFieldProps & TextInputProps> = ({
 };
 
 export default TextField;
-
-const styles = ({ sideIcon, isError, withPadding }: StyleProps) =>
-  StyleSheet.create({
-    warningText: {
-      marginLeft: 4,
-      color: cp.red1,
-      fontSize: 12,
-      fontWeight: "bold",
-    },
-    button: {
-      width: 50,
-      justifyContent: "center",
-      alignItems: "center",
-    },
-    input: {
-      fontWeight: "normal",
-      flex: 1,
-      color: cp.text1,
-    },
-    container: {
-      backgroundColor: cp.white2,
-      borderRadius: 8,
-      paddingLeft: withPadding ? sp.sm : 0,
-      paddingRight: sideIcon || isError ? 0 : sp.sm,
-      flexDirection: "row",
-    },
-  });

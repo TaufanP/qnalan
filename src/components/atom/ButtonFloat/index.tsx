@@ -1,8 +1,7 @@
 import { CompositeNavigationProp } from "@react-navigation/core";
 import React, { FC, PropsWithChildren } from "react";
-import { StyleSheet, View } from "react-native";
-import Button from "./Button";
-import { colorsPalette as cp, spacing as sp } from "../../constants";
+import Button from "../Button";
+import styles from "./styles";
 
 interface ButtonFloatProps {
   navigation?: CompositeNavigationProp<any, any>;
@@ -20,20 +19,5 @@ const ButtonFloat: FC<PropsWithChildren<ButtonFloatProps>> = ({
     </Button>
   );
 };
-
-const styles = () =>
-  StyleSheet.create({
-    container: {
-      backgroundColor: cp.blue3,
-      height: 54,
-      width: 54,
-      borderRadius: 54,
-      position: "absolute",
-      bottom: sp.xl,
-      right: sp.xl,
-      justifyContent: "center",
-      alignItems: "center",
-    },
-  });
 
 export default ButtonFloat;

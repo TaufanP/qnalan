@@ -1,25 +1,16 @@
 import React, { FC, memo, useEffect } from "react";
-import { Animated, Dimensions, StyleSheet } from "react-native";
-import TextItem from "./TextItem";
-import {
-  colorsPalette as cp,
-  fancyStates as fan,
-  spacing as sp,
-} from "../../constants";
-import { FancyTypes } from "../../config/types";
-import Button from "./Button";
+import { Animated } from "react-native";
+import { FancyTypes } from "../../../config/types";
+import { fancyStates as fan, spacing as sp } from "../../../constants";
+import Button from "../Button";
+import TextItem from "../TextItem";
+import styles from "./styles";
 
-const { width } = Dimensions.get("screen");
-const { fancyType, defaultState } = fan;
+const { defaultState } = fan;
 
 interface FancyBarProps {
   fancyBarState?: FancyTypes;
   setFancyBarState?: any;
-}
-
-interface StyleProps {
-  bottomContainer: any;
-  state: string;
 }
 
 const FancyBar: FC<FancyBarProps> = ({
@@ -68,27 +59,5 @@ const FancyBar: FC<FancyBarProps> = ({
     </Animated.View>
   );
 };
-
-const styles = ({ bottomContainer, state }: StyleProps) =>
-  StyleSheet.create({
-    container: {
-      width: width - 32,
-      left: 16,
-      height: 50,
-      bottom: -50,
-      position: "absolute",
-      backgroundColor:
-        state == fancyType.success
-          ? cp.green1
-          : state == fancyType.warning
-          ? "yellow"
-          : cp.red1,
-      borderRadius: 8,
-      transform: [{ translateY: bottomContainer }],
-      justifyContent: "space-between",
-      alignItems: "center",
-      flexDirection: "row",
-    },
-  });
 
 export default memo(FancyBar);

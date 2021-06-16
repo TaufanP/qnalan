@@ -1,13 +1,14 @@
 import { CompositeNavigationProp } from "@react-navigation/core";
 import React, { FC, PropsWithChildren } from "react";
-import { StatusBar, StyleSheet, View, Image } from "react-native";
-import { DefaultBg, HomeBg } from "../../../assets";
-import { heightPercent, widthPercent } from "../../config";
-import { FancyTypes, StaticBottomSheetProps } from "../../config/types";
-import { colorsPalette as cp } from "../../constants";
-import StaticBottomSheet from "../organism/StaticBottomSheet";
-import AppHeader from "./AppHeader";
-import FancyBar from "./FancyBar";
+import { Image, StatusBar, View } from "react-native";
+import { DefaultBg, HomeBg } from "../../../../assets";
+import { heightPercent, widthPercent } from "../../../config";
+import { FancyTypes, StaticBottomSheetProps } from "../../../config/types";
+import StaticBottomSheet from "../../organism/StaticBottomSheet";
+import AppHeader from "../AppHeader";
+import FancyBar from "../FancyBar";
+import styles from "./styles";
+
 interface AppCanvasProps {
   navigation?: CompositeNavigationProp<any, any>;
   fancyBarState?: FancyTypes;
@@ -40,14 +41,6 @@ const AppCanvas: FC<PropsWithChildren<AppCanvasProps>> = ({
           source={homeBg ? HomeBg : DefaultBg}
           style={{ resizeMode: "cover", width: "100%", height: "100%" }}
         />
-        {/* <View
-          style={{
-            width: "100%",
-            height: "100%",
-            position: "absolute",
-            backgroundColor: "#0002",
-          }}
-        /> */}
       </View>
       {header && <AppHeader>{header()}</AppHeader>}
       {children}
@@ -56,16 +49,5 @@ const AppCanvas: FC<PropsWithChildren<AppCanvasProps>> = ({
     </View>
   );
 };
-
-const multiplier = 1;
-
-const styles = () =>
-  StyleSheet.create({
-    container: {
-      backgroundColor: cp.white,
-      flex: multiplier,
-      width: `${multiplier * 100}%`,
-    },
-  });
 
 export default AppCanvas;
