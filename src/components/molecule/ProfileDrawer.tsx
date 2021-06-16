@@ -21,10 +21,7 @@ const ProfileDrawer: FC<ProfileDrawerProps> = ({ navigation }) => {
 
   const s = styles();
   return (
-    <Button
-      style={s.container}
-      onPress={() => navigation.navigate(p.ProfileScreen)}
-    >
+    <Button style={s.container} onPress={() => navigation.navigate(p.Profile)}>
       <View style={s.childCont}>
         <View style={s.imageCont}>
           <Image source={source} style={s.image} />

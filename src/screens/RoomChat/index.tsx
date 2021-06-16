@@ -4,28 +4,28 @@ import {
   useRoute,
 } from "@react-navigation/core";
 import React, { FC, useCallback, useEffect, useRef, useState } from "react";
-import { Image, View, BackHandler } from "react-native";
+import { BackHandler, Image, View } from "react-native";
 import { GiftedChat, IMessage, Send, User } from "react-native-gifted-chat";
 import { useSelector } from "react-redux";
-import { VideoCall, PlaceholderUser, Send as SendIcon } from "../../assets";
-import { AppCanvas, DefaultHeader, TextItem } from "../components";
-import { db } from "../config";
-import { UsersProps } from "../config/types";
+import { PlaceholderUser, Send as SendIcon, VideoCall } from "../../../assets";
+import { AppCanvas, DefaultHeader, TextItem } from "../../components";
+import { db } from "../../config";
+import { UsersProps } from "../../config/types";
 import {
   colorsPalette as cp,
   node as n,
+  pages as p,
   spacing,
   strings as str,
-  pages as p,
-} from "../constants";
-import StackParamsList from "../constants/screenParams";
-import AppState from "../redux";
+} from "../../constants";
+import StackParamsList from "../../constants/screenParams";
+import AppState from "../../redux";
 
-interface RoomChatScreenProps {
+interface RoomChatProps {
   navigation: CompositeNavigationProp<any, any>;
 }
 
-const RoomChatScreen: FC<RoomChatScreenProps> = ({ navigation }) => {
+const RoomChat: FC<RoomChatProps> = ({ navigation }) => {
   const { sessionReducer } = useSelector((state: AppState) => state);
   const route = useRoute<RouteProp<StackParamsList, "ROOM_CHAT_SCREEN">>();
   const { messageId, partnerId, roomId } = route.params;
@@ -181,7 +181,7 @@ const RoomChatScreen: FC<RoomChatScreenProps> = ({ navigation }) => {
         rightComponent={() => (
           <VideoCall fill={cp.white} width={32} height={32} />
         )}
-        onPressRight={() => navigation.navigate(p.VideoCallScreen)}
+        onPressRight={() => navigation.navigate(p.VideoCall)}
         onPress={() => navigation.goBack()}
       />
     ),
@@ -217,4 +217,4 @@ const RoomChatScreen: FC<RoomChatScreenProps> = ({ navigation }) => {
   );
 };
 
-export default RoomChatScreen;
+export default RoomChat;

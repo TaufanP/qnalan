@@ -1,9 +1,10 @@
+import Picker from "@gregfrench/react-native-wheel-picker";
 import auth from "@react-native-firebase/auth";
 import storage from "@react-native-firebase/storage";
 import { CompositeNavigationProp } from "@react-navigation/core";
 import moment from "moment";
 import React, { FC, useCallback, useEffect, useRef, useState } from "react";
-import { BackHandler, Keyboard, ScrollView, StyleSheet } from "react-native";
+import { BackHandler, Keyboard, ScrollView } from "react-native";
 import DatePicker from "react-native-date-picker";
 import {
   ImageLibraryOptions,
@@ -16,38 +17,36 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   AppCanvas,
   Button,
-  CheckBoxes,
   DefaultHeader,
   ProfilePhoto,
   Radio,
   TextField,
   TextItem,
   ToggleButtons,
-} from "../components";
-import { db, requestCameraPermission, widthPercent } from "../config";
+} from "../../components";
+import { db, requestCameraPermission, widthPercent } from "../../config";
 import {
   FancyTypes,
   FieldErrorProps,
   StaticBottomSheetProps,
   UsersProps,
-} from "../config/types";
+} from "../../config/types";
 import {
   colorsPalette as cp,
   fancyStates as fan,
   node as n,
-  spacing as sp,
   strings as str,
-} from "../constants";
+} from "../../constants";
 import {
   batchValue,
-  HobbiesValue,
   genderValue,
+  HobbiesValue,
   majorValue,
-} from "../constants/defaultValue/local";
-import AppState from "../redux";
-import { updateProfile } from "../redux/actions";
-import Picker from "@gregfrench/react-native-wheel-picker";
-interface ProfileScreenProps {
+} from "../../constants/defaultValue/local";
+import AppState from "../../redux";
+import { updateProfile } from "../../redux/actions";
+import styles from "./styles";
+interface ProfileProps {
   navigation: CompositeNavigationProp<any, any>;
 }
 
@@ -58,7 +57,7 @@ interface ImageDataProps {
 
 const PickerItem = Picker.Item;
 
-const ProfileScreen: FC<ProfileScreenProps> = ({ navigation }) => {
+const Profile: FC<ProfileProps> = ({ navigation }) => {
   const dispatch = useDispatch();
 
   const { defaultState, fancyType } = fan;
@@ -129,7 +128,7 @@ const ProfileScreen: FC<ProfileScreenProps> = ({ navigation }) => {
         });
       })
       .catch((err) => {
-        console.log(`ProfileScreen, imageCallback(), ${err}`);
+        console.log(`Profile, imageCallback(), ${err}`);
         setFancyBarState({
           visible: true,
           type: fancyType.failed,
@@ -203,11 +202,11 @@ const ProfileScreen: FC<ProfileScreenProps> = ({ navigation }) => {
           fancySuccess();
         })
         .catch((error) => {
-          console.log(`ProfileScreen, submit(), ${error}`);
+          console.log(`Profile, submit(), ${error}`);
           fancyFail();
         });
     } catch (error) {
-      console.log(`ProfileScreen, submit(), ${error}`);
+      console.log(`Profile, submit(), ${error}`);
       fancyFail();
     } finally {
       setIsLoading(false);
@@ -528,36 +527,4 @@ const ProfileScreen: FC<ProfileScreenProps> = ({ navigation }) => {
   );
 };
 
-const styles = () =>
-  StyleSheet.create({
-    customTextField: {
-      height: 50,
-      justifyContent: "center",
-      paddingLeft: sp.ss,
-      borderLeftWidth: 2,
-      borderLeftColor: "transparent",
-    },
-    scroll: {
-      // justifyContent: "center",
-      // alignItems: "center",
-      marginTop: sp.l,
-      paddingBottom: 64,
-      paddingHorizontal: sp.l,
-    },
-    button: {
-      justifyContent: "center",
-      alignItems: "center",
-      backgroundColor: cp.blue3,
-      borderRadius: 8,
-      height: 48,
-      marginTop: sp.l,
-    },
-    field: {
-      backgroundColor: "transparent",
-      borderBottomWidth: 2,
-      borderBottomColor: cp.blue1,
-      marginBottom: sp.sm,
-    },
-  });
-
-export default ProfileScreen;
+export default Profile;

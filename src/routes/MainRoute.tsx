@@ -4,7 +4,7 @@ import {
 } from "@react-navigation/stack";
 import React from "react";
 import { pages as p } from "../constants";
-import { ContactListScreen, RoomChatScreen, VideoCallScreen } from "../screens";
+import { ContactList, RoomChat, VideoCall } from "../screens";
 import DrawerRoute from "./DrawerRoute";
 
 const Stack = createStackNavigator();
@@ -27,9 +27,9 @@ const MainRoute = () => {
       mode="card"
     >
       <Stack.Screen name={p.DrawerRoute} component={DrawerRoute} />
-      <Stack.Screen name={p.ContactListScreen} component={ContactListScreen} />
-      <Stack.Screen name={p.RoomChatScreen} component={RoomChatScreen} />
-      <Stack.Screen name={p.VideoCallScreen} component={VideoCallScreen} />
+      <Stack.Screen name={p.ContactList} component={ContactList} />
+      <Stack.Screen name={p.RoomChat} component={RoomChat} />
+      <Stack.Screen name={p.VideoCall} component={VideoCall} />
     </Stack.Navigator>
   );
 };

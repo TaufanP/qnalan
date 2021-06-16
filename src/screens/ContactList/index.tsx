@@ -1,12 +1,12 @@
 import { CompositeNavigationProp } from "@react-navigation/core";
 import moment from "moment";
 import React, { FC, useCallback, useEffect, useRef, useState } from "react";
-import { Animated, FlatList, StyleSheet, View } from "react-native";
+import { Animated, FlatList, View } from "react-native";
 import ScrollBottomSheet from "react-native-scroll-bottom-sheet";
 import { useSelector } from "react-redux";
 //@ts-ignore
 import Slider from "rn-range-slider";
-import { EmptyPocket } from "../../assets";
+import { EmptyPocket } from "../../../assets";
 import {
   AppCanvas,
   Button,
@@ -18,32 +18,28 @@ import {
   RenderHandle,
   TextItem,
   ToggleButtons,
-} from "../components";
+} from "../../components";
 import {
   Label,
   Notch,
   Rail,
   RailSelected,
   Thumb,
-} from "../components/organism/ContactSlider";
-import { db, heightPercent, widthPercent } from "../config";
-import { FilterDataProps, RoomChatProps, UsersProps } from "../config/types";
-import {
-  colorsPalette as cp,
-  node as n,
-  pages as p,
-  spacing as sp,
-} from "../constants";
+} from "../../components/organism/ContactSlider";
+import { db, heightPercent } from "../../config";
+import { FilterDataProps, RoomChatProps, UsersProps } from "../../config/types";
+import { node as n, pages as p, spacing as sp } from "../../constants";
 import {
   batchValue,
   filterDataValue,
   genderValue,
   HobbiesValue,
   majorValue,
-} from "../constants/defaultValue/local";
-import AppState from "../redux";
+} from "../../constants/defaultValue/local";
+import AppState from "../../redux";
+import styles from "./styles";
 
-interface ContactListScreenProps {
+interface ContactListProps {
   navigation: CompositeNavigationProp<any, any>;
 }
 
@@ -51,7 +47,7 @@ interface FilterCatProps extends FilterDataProps {
   onPress?: any;
 }
 
-const ContactListScreen: FC<ContactListScreenProps> = ({ navigation }) => {
+const ContactList: FC<ContactListProps> = ({ navigation }) => {
   const { sessionReducer } = useSelector((state: AppState) => state);
 
   const s = styles();
@@ -89,7 +85,7 @@ const ContactListScreen: FC<ContactListScreenProps> = ({ navigation }) => {
       const msgId = await db
         .ref(`${n.room_chats}/${details.roomId}/${n.messageId}`)
         .once("value");
-      navigation.replace(p.RoomChatScreen, {
+      navigation.replace(p.RoomChat, {
         partnerId,
         roomId: details.roomId,
         messageId: msgId.val(),
@@ -118,7 +114,7 @@ const ContactListScreen: FC<ContactListScreenProps> = ({ navigation }) => {
       roomId,
       partnerId: sessionReducer.uid,
     });
-    navigation.replace(p.RoomChatScreen, { partnerId, roomId, messageId });
+    navigation.replace(p.RoomChat, { partnerId, roomId, messageId });
   };
 
   const getUsers = async () => {
@@ -486,34 +482,4 @@ const ContactListScreen: FC<ContactListScreenProps> = ({ navigation }) => {
   );
 };
 
-export default ContactListScreen;
-
-const styles = () =>
-  StyleSheet.create({
-    scrollContainerStyle: {
-      backgroundColor: cp.white,
-      borderRadius: 20,
-    },
-    scrollContentContainerStyle: {
-      padding: 16,
-      backgroundColor: cp.white,
-    },
-    sliderStyle: { marginBottom: sp.sm, marginTop: sp.sm },
-    overlayCont: {
-      position: "absolute",
-      width: widthPercent(100),
-      height: heightPercent(100),
-      backgroundColor: "#0005",
-    },
-    filterButtonCont: { marginTop: sp.sm, marginLeft: sp.sm },
-    scrollCont: { width: "100%" },
-    togglerCont: { marginTop: 0 },
-    scrollButton: {
-      height: 50,
-      backgroundColor: cp.blue3,
-      justifyContent: "center",
-      alignItems: "center",
-      marginBottom: sp.sm,
-      borderRadius: 8,
-    },
-  });
+export default ContactList;

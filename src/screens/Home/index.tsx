@@ -3,16 +3,16 @@ import { CompositeNavigationProp } from "@react-navigation/core";
 import React, { FC, useEffect } from "react";
 import SplashScreen from "react-native-splash-screen";
 import { useDispatch } from "react-redux";
-import { AppCanvas, CustomNav } from "../components";
-import { SettingIcon } from "../../assets";
-import { pages as p } from "../constants";
-import { loggingOut } from "../redux/actions";
+import { SettingIcon } from "../../../assets";
+import { AppCanvas, CustomNav } from "../../components";
+import { pages as p } from "../../constants";
+import { loggingOut } from "../../redux/actions";
 
-interface HomeScreenProps {
+interface HomeProps {
   navigation: CompositeNavigationProp<any, any>;
 }
 
-const HomeScreen: FC<HomeScreenProps> = ({ navigation }) => {
+const Home: FC<HomeProps> = ({ navigation }) => {
   const dispatch = useDispatch();
 
   const onAuthStateChanged = (user: any) => {
@@ -45,10 +45,10 @@ const HomeScreen: FC<HomeScreenProps> = ({ navigation }) => {
       />
       <CustomNav
         backPress={() => navigation.toggleDrawer()}
-        chatPress={() => navigation.navigate(p.RoomListScreen)}
+        chatPress={() => navigation.navigate(p.RoomList)}
       />
     </AppCanvas>
   );
 };
 
-export default HomeScreen;
+export default Home;

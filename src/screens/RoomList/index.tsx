@@ -4,30 +4,30 @@ import React, { FC, useCallback, useEffect, useRef, useState } from "react";
 import { FlatList, View } from "react-native";
 import SplashScreen from "react-native-splash-screen";
 import { useDispatch, useSelector } from "react-redux";
-import { Inbox } from "../../assets";
+import { Inbox } from "../../../assets";
 import {
   AppCanvas,
   ButtonFloat,
   ChatList,
   EmptyState,
   HomeHeader,
-} from "../components";
-import { db, heightPercent } from "../config";
-import { RoomChatParams, RoomChatProps } from "../config/types";
+} from "../../components";
+import { db, heightPercent } from "../../config";
+import { RoomChatParams, RoomChatProps } from "../../config/types";
 import {
   colorsPalette as cp,
   node as n,
   pages as p,
   spacing as sp,
-} from "../constants";
-import AppState from "../redux";
-import { loggingOut } from "../redux/actions";
+} from "../../constants";
+import AppState from "../../redux";
+import { loggingOut } from "../../redux/actions";
 
-interface RoomListScreenProps {
+interface RoomListProps {
   navigation: CompositeNavigationProp<any, any>;
 }
 
-const RoomListScreen: FC<RoomListScreenProps> = ({ navigation }) => {
+const RoomList: FC<RoomListProps> = ({ navigation }) => {
   const dispatch = useDispatch();
   const { sessionReducer } = useSelector((state: AppState) => state);
 
@@ -38,7 +38,7 @@ const RoomListScreen: FC<RoomListScreenProps> = ({ navigation }) => {
 
   const onPress = useCallback(
     (item: RoomChatParams) =>
-      navigation.navigate(p.RoomChatScreen, {
+      navigation.navigate(p.RoomChat, {
         partnerId: item.partnerId,
         roomId: item.roomId,
         messageId: item.messageId,
@@ -46,10 +46,7 @@ const RoomListScreen: FC<RoomListScreenProps> = ({ navigation }) => {
     []
   );
 
-  const buttonPress = useCallback(
-    () => navigation.navigate(p.ContactListScreen),
-    []
-  );
+  const buttonPress = useCallback(() => navigation.navigate(p.ContactList), []);
 
   const onAuthStateChanged = (user: any) => {
     if (user !== null) {
@@ -145,4 +142,4 @@ const RoomListScreen: FC<RoomListScreenProps> = ({ navigation }) => {
   );
 };
 
-export default RoomListScreen;
+export default RoomList;

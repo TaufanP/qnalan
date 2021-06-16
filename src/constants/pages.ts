@@ -1,19 +1,18 @@
 const pages = {
   Auth: "Auth",
-  AuthScreen: "AuthScreen",
 
-  ContactListScreen: "ContactListScreen",
+  ContactList: "ContactList",
 
   DrawerRoute: "DrawerRoute",
 
-  HomeScreen: "HomeScreen",
+  Home: "Home",
 
-  ProfileScreen: "ProfileScreen",
+  Profile: "Profile",
 
-  RoomChatScreen: "RoomChatScreen",
-  RoomListScreen: "RoomListScreen",
+  RoomChat: "RoomChat",
+  RoomList: "RoomList",
 
-  VideoCallScreen: "VideoCallScreen",
+  VideoCall: "VideoCall",
 };
 
 export default pages;
