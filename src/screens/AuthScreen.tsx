@@ -51,7 +51,6 @@ const AuthScreen: FC<AuthProps> = ({ navigation }) => {
       const data = isLogin
         ? await auth().signInWithEmailAndPassword(email, password)
         : await auth().createUserWithEmailAndPassword(email, password);
-      console.log({ data });
       setIsLoading(false);
       setEmail("");
       setPassword("");

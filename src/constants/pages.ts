@@ -10,6 +10,7 @@ const pages = {
   ProfileScreen: "ProfileScreen",
 
   RoomChatScreen: "RoomChatScreen",
+  RoomListScreen: "RoomListScreen",
 
   VideoCallScreen: "VideoCallScreen",
 };
