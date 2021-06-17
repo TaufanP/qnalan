@@ -1,18 +1,14 @@
 import React from "react";
-import { Image, StyleSheet, View } from "react-native";
-import { widthPercent } from "../../config";
+import { View } from "react-native";
 import {
+  AddUserIcon,
   BackIcon,
   ChatIcon,
-  AddUserIcon,
   ConsoleIcon,
-  BackImg,
-  ChatImg,
-  ConsoleImg,
   Plus,
-  UserPlusImg,
-} from "../../../assets";
-import { Button } from "../atom";
+} from "../../../../assets";
+import { Button } from "../../atom";
+import styles from "./styles";
 
 interface CustomNavProps {
   backPress?: any;
@@ -51,35 +47,5 @@ const CustomNav = ({
     </View>
   );
 };
-
-const styles = () =>
-  StyleSheet.create({
-    specialButtonCont: {
-      width: 64,
-      height: 64,
-      borderRadius: 64,
-      backgroundColor: "yellow",
-      alignItems: "center",
-      justifyContent: "center",
-      top: -8,
-    },
-    buttonCont: {
-      width: 48,
-      height: 48,
-      alignItems: "center",
-      justifyContent: "center",
-    },
-    container: {
-      width: widthPercent(100),
-      height: 72,
-      position: "absolute",
-      bottom: 0,
-      flexDirection: "row",
-      justifyContent: "space-between",
-      alignItems: "center",
-      paddingHorizontal: 16,
-    },
-    image: { width: "200%", height: "200%" },
-  });
 
 export default CustomNav;

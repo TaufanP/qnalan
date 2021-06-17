@@ -1,3 +1,4 @@
+import auth from "@react-native-firebase/auth";
 import { DrawerNavigationState, ParamListBase } from "@react-navigation/core";
 import { DrawerContentScrollView } from "@react-navigation/drawer";
 import {
@@ -5,19 +6,20 @@ import {
   DrawerNavigationHelpers,
 } from "@react-navigation/drawer/lib/typescript/src/types";
 import React, { FC } from "react";
-import { Linking, StyleSheet, View } from "react-native";
+import { Linking, View } from "react-native";
+import { useDispatch } from "react-redux";
+import { Export, Power } from "../../../../assets";
 import {
   colorsPalette as cp,
   pages as p,
   spacing as sp,
   strings as str,
-} from "../../constants";
-import { Button, TextItem } from "../atom";
-import { ProfileDrawer } from "../molecule";
-import { useDispatch } from "react-redux";
-import { loggingOut } from "../../redux/actions";
-import auth from "@react-native-firebase/auth";
-import { Export, Power } from "../../../assets";
+} from "../../../constants";
+import { loggingOut } from "../../../redux/actions";
+import { Button, TextItem } from "../../atom";
+import { ProfileDrawer } from "../../molecule";
+import styles from "./styles";
+
 interface DrawerContentProps {
   navigation: DrawerNavigationHelpers;
   state: DrawerNavigationState<ParamListBase>;
@@ -74,10 +76,5 @@ const DrawerContent: FC<DrawerContentProps> = (props) => {
     </DrawerContentScrollView>
   );
 };
-
-const styles = () =>
-  StyleSheet.create({
-    buttonContainer: { paddingVertical: sp.s },
-  });
 
 export default DrawerContent;

@@ -1,7 +1,9 @@
 import React, { FC } from "react";
-import { StyleSheet, View } from "react-native";
-import { ArrowBack } from "../../../assets";
-import { ButtonHeader, TextItem } from "../atom";
+import { View } from "react-native";
+import { ArrowBack } from "../../../../assets";
+import { ButtonHeader, TextItem } from "../../atom";
+import styles from "./styles";
+
 interface DefaultHeaderProps {
   title: string;
   onPress?: any;
@@ -35,13 +37,5 @@ const DefaultHeader: FC<DefaultHeaderProps> = ({
     </View>
   );
 };
-
-const styles = () =>
-  StyleSheet.create({
-    midContent: { flex: 1, justifyContent: "center" },
-    container: {
-      flexDirection: "row",
-    },
-  });
 
 export default DefaultHeader;

@@ -1,12 +1,12 @@
-import React, { FC } from "react";
-import { Image, StyleSheet, View } from "react-native";
-import { useSelector } from "react-redux";
-import { PlaceholderUser } from "../../../assets";
-import { widthPercent } from "../../config";
-import { colorsPalette as cp, pages as p } from "../../constants";
-import AppState from "../../redux";
-import { Button, TextItem } from "../atom";
 import { DrawerNavigationHelpers } from "@react-navigation/drawer/lib/typescript/src/types";
+import React, { FC } from "react";
+import { Image, View } from "react-native";
+import { useSelector } from "react-redux";
+import { PlaceholderUser } from "../../../../assets";
+import { pages as p } from "../../../constants";
+import AppState from "../../../redux";
+import { Button, TextItem } from "../../atom";
+import styles from "./styles";
 
 interface ProfileDrawerProps {
   navigation: DrawerNavigationHelpers;
@@ -36,28 +36,5 @@ const ProfileDrawer: FC<ProfileDrawerProps> = ({ navigation }) => {
     </Button>
   );
 };
-
-const styles = () =>
-  StyleSheet.create({
-    childCont: {
-      width: widthPercent(12),
-      height: widthPercent(12),
-      marginRight: 8,
-    },
-    details: { justifyContent: "center" },
-    image: { width: "100%", height: "100%" },
-    imageCont: {
-      width: "100%",
-      height: "100%",
-      overflow: "hidden",
-      borderRadius: widthPercent(12),
-      borderWidth: 1,
-      borderColor: cp.white2,
-    },
-    container: {
-      flexDirection: "row",
-      paddingVertical: 12,
-    },
-  });
 
 export default ProfileDrawer;

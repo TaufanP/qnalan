@@ -1,7 +1,7 @@
 import React, { FC } from "react";
-import { StyleSheet, View } from "react-native";
-import { spacing as sp } from "../../constants";
-import { CheckBox } from "../molecule";
+import { View, ViewStyle } from "react-native";
+import { ToggleButton } from "../../molecule";
+import styles from "./styles";
 
 interface CheckBoxValue {
   label: string;
@@ -12,32 +12,28 @@ interface CheckBoxesProps {
   data: CheckBoxValue[];
   onPress?: any;
   selected?: number[];
+  containerStyle?: ViewStyle;
 }
 
-const CheckBoxes: FC<CheckBoxesProps> = ({
+const ToggleButtons: FC<CheckBoxesProps> = ({
   data,
   onPress = (e: any) => console.log(e),
   selected = [],
+  containerStyle,
 }) => {
   const s = styles();
   return (
-    <View style={s.container}>
+    <View style={[s.container, containerStyle]}>
       {data.map((check: CheckBoxValue) => (
-        <CheckBox
-          key={check.value}
-          label={check.label}
-          value={true}
+        <ToggleButton
           onPress={() => onPress(check.value)}
           isSelected={selected.findIndex((id) => id == check.value) !== -1}
+          label={check.label}
+          key={check.value}
         />
       ))}
     </View>
   );
 };
 
-const styles = () =>
-  StyleSheet.create({
-    container: { marginVertical: sp.sm },
-  });
-
-export default CheckBoxes;
+export default ToggleButtons;

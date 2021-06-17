@@ -8,16 +8,12 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { db } from "../../config";
-import { UsersProps } from "../../config/types";
-import { RoomDetailProps } from "../../config/types/firebase/roomDetail";
-import {
-  colorsPalette as cp,
-  spacing as sp,
-  strings as str,
-} from "../../constants";
-import { RoomDetailValue, UsersValue } from "../../constants/defaultValue";
-import PersonList from "./PersonList";
+import { db } from "../../../config";
+import { UsersProps } from "../../../config/types";
+import { RoomDetailProps } from "../../../config/types/firebase/roomDetail";
+import { strings as str } from "../../../constants";
+import { RoomDetailValue, UsersValue } from "../../../constants/defaultValue";
+import PersonList from "../PersonList";
 
 interface ChatListProps {
   roomId: string;

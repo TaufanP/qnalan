@@ -1,9 +1,10 @@
 import React, { FC, PropsWithChildren } from "react";
-import { Image, StyleSheet, View } from "react-native";
-import { User } from "../../../assets";
-import { widthPercent } from "../../config";
-import { colorsPalette as cp, spacing as sp } from "../../constants";
-import { Button } from "../atom";
+import { Image, View } from "react-native";
+import { User } from "../../../../assets";
+import { widthPercent } from "../../../config";
+import { colorsPalette as cp } from "../../../constants";
+import { Button } from "../../atom";
+import styles from "./styles";
 
 interface ProfilePhotoProps {
   onPress?: any;
@@ -38,20 +39,5 @@ const ProfilePhoto: FC<PropsWithChildren<ProfilePhotoProps>> = ({
     </Button>
   );
 };
-
-const styles = () =>
-  StyleSheet.create({
-    imageCont: {
-      justifyContent: "center",
-      alignItems: "center",
-      width: widthPercent(30),
-      height: widthPercent(30),
-      borderRadius: widthPercent(30),
-      borderColor: cp.main,
-      marginBottom: sp.l,
-      overflow: "hidden",
-    },
-    image: { width: "100%", height: "100%" },
-  });
 
 export default ProfilePhoto;

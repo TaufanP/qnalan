@@ -1,12 +1,12 @@
 import React, { FC, memo } from "react";
 import { Image, StyleSheet, View } from "react-native";
-import { PlaceholderUser } from "../../../assets";
+import { PlaceholderUser } from "../../../../assets";
 import {
   colorsPalette as cp,
   spacing as sp,
   strings as str,
-} from "../../constants";
-import { Button, TextItem } from "../atom";
+} from "../../../constants";
+import { Button, TextItem } from "../../atom";
 
 interface PersonListProps {
   uri?: string;
@@ -15,10 +15,6 @@ interface PersonListProps {
   time?: string;
   onPress?: any;
   type?: string;
-}
-
-interface StyleProps {
-  type: string | undefined;
 }
 
 const PersonList: FC<PersonListProps> = ({
@@ -30,7 +26,7 @@ const PersonList: FC<PersonListProps> = ({
   type,
 }) => {
   const source = uri ? { uri } : PlaceholderUser;
-  const s = styles({ type });
+  const s = styles();
   return (
     <Button style={s.container} onPress={onPress}>
       <View style={s.photoCont}>
@@ -61,7 +57,7 @@ const PersonList: FC<PersonListProps> = ({
   );
 };
 
-const styles = ({ type }: StyleProps) =>
+const styles = () =>
   StyleSheet.create({
     titleCont: { flexDirection: "row", justifyContent: "space-between" },
     photo: { width: "100%", height: "100%" },

@@ -1,7 +1,7 @@
 import React, { FC } from "react";
-import { ScrollView, StyleSheet, View } from "react-native";
-import { spacing as sp } from "../../constants";
-import { FilterButton } from "../molecule";
+import { ScrollView } from "react-native";
+import { FilterButton } from "../../molecule";
+import styles from "./styles";
 
 interface CheckBoxValue {
   label: string;
@@ -37,15 +37,5 @@ const Filters: FC<FiltersProps> = ({
     </ScrollView>
   );
 };
-
-const styles = () =>
-  StyleSheet.create({
-    container: {
-      height: 36,
-      marginVertical: sp.sm,
-      flexDirection: "row",
-      paddingHorizontal: sp.sm,
-    },
-  });
 
 export default Filters;
