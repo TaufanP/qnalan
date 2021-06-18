@@ -1,5 +1,5 @@
 import { CompositeNavigationProp } from "@react-navigation/core";
-import React, { FC } from "react";
+import React from "react";
 import {
   Animated,
   TextInput,
@@ -14,45 +14,46 @@ import WarningIcon from "../WarningIcon";
 import styles from "./styles";
 
 interface TextFieldProps {
-  navigation?: CompositeNavigationProp<any, any>;
   containerStyle?: ViewStyle;
-  mainStyle?: ViewStyle;
   fieldStyle?: TextStyle;
+  isError?: boolean | string;
+  isStart?: boolean;
+  mainStyle?: ViewStyle;
+  renderSideIcon?: () => JSX.Element;
+  securePress?: any;
   sideIcon?: boolean;
   warningText?: string | boolean;
-  isError?: boolean | string;
-  securePress?: any;
-  isStart?: boolean;
   withPadding?: boolean;
-  renderSideIcon?: () => JSX.Element;
 }
 
-const TextField: FC<TextFieldProps & TextInputProps> = ({
+const translateDistance = 4;
+
+const TextField = ({
   containerStyle,
   fieldStyle,
+  isError = false,
+  isStart,
+  mainStyle,
+  renderSideIcon,
+  securePress,
   sideIcon = false,
   warningText = "Username fennarex tidak tersedia",
-  isError = false,
-  securePress,
-  isStart,
-  renderSideIcon,
-  mainStyle,
   withPadding = true,
   ...props
-}) => {
+}: TextFieldProps & TextInputProps) => {
   const s = styles({ sideIcon, isError, withPadding });
   const renderIcon = renderSideIcon
     ? renderSideIcon
     : () => <>{props.secureTextEntry ? <EyeClose /> : <EyeOpen />}</>;
-
   const translateX = new Animated.Value(0);
-  const translateDistance = 4;
+
   const translateValue = (toValue: number) =>
     Animated.timing(translateX, {
       duration: 100,
       useNativeDriver: true,
       toValue,
     });
+
   const triggerError = () => {
     Animated.sequence([
       translateValue(translateDistance),
@@ -61,8 +62,9 @@ const TextField: FC<TextFieldProps & TextInputProps> = ({
       translateValue(0),
     ]).start();
   };
+
   return (
-    <View style={[mainStyle]}>
+    <View style={mainStyle}>
       <Animated.View style={[s.container, containerStyle]}>
         <TextInput style={[s.input, fieldStyle]} {...props} />
         {sideIcon && (

@@ -10,11 +10,11 @@ interface EmptyStateProps {
   icon?: () => ReactNode;
 }
 
-const EmptyState: FC<EmptyStateProps> = ({
+const EmptyState = ({
   title = "Tidak ada percakapan",
   subtitle = "Ayo mulai percakapan dengan teman baru",
   icon = () => <EmptyInboxColored width={120} height={120} />,
-}) => {
+}: EmptyStateProps) => {
   const s = styles();
   return (
     <View style={s.container}>

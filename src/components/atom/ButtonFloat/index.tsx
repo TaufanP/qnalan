@@ -1,17 +1,15 @@
-import { CompositeNavigationProp } from "@react-navigation/core";
-import React, { FC, PropsWithChildren } from "react";
+import React, { PropsWithChildren } from "react";
 import Button from "../Button";
 import styles from "./styles";
 
 interface ButtonFloatProps {
-  navigation?: CompositeNavigationProp<any, any>;
   onPress: any;
 }
 
-const ButtonFloat: FC<PropsWithChildren<ButtonFloatProps>> = ({
+const ButtonFloat = ({
   children,
   onPress,
-}) => {
+}: PropsWithChildren<ButtonFloatProps>) => {
   const s = styles();
   return (
     <Button style={s.container} onPress={onPress}>

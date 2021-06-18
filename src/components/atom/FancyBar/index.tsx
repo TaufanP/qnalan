@@ -1,7 +1,7 @@
-import React, { FC, memo, useEffect } from "react";
+import React, { memo, useCallback, useEffect } from "react";
 import { Animated } from "react-native";
 import { FancyTypes } from "../../../config/types";
-import { fancyStates as fan, spacing as sp } from "../../../constants";
+import { fancyStates as fan } from "../../../constants";
 import Button from "../Button";
 import TextItem from "../TextItem";
 import styles from "./styles";
@@ -13,33 +13,41 @@ interface FancyBarProps {
   setFancyBarState?: any;
 }
 
-const FancyBar: FC<FancyBarProps> = ({
+const duration = 200;
+
+const FancyBar = ({
   fancyBarState = defaultState,
   setFancyBarState,
-}) => {
+}: FancyBarProps) => {
+  const { visible, msg, type: state } = fancyBarState;
+
   const bottomContainer = new Animated.Value(0);
+
+  const s: { [key: string]: any } = styles({
+    bottomContainer,
+    state,
+  });
+
   const onCalled = () => {
-    if (fancyBarState.visible) {
+    if (visible) {
       Animated.sequence([
         Animated.timing(bottomContainer, {
           toValue: -74,
-          duration: 200,
+          duration,
           useNativeDriver: true,
         }),
         Animated.timing(bottomContainer, {
           delay: 2400,
           toValue: 0,
-          duration: 200,
+          duration,
           useNativeDriver: true,
         }),
       ]).start(() => setFancyBarState(defaultState));
       return;
     }
   };
-  const s: { [key: string]: any } = styles({
-    bottomContainer,
-    state: fancyBarState.type,
-  });
+
+  const commandPress = useCallback(() => setFancyBarState(false), []);
 
   useEffect(() => {
     onCalled();
@@ -47,13 +55,10 @@ const FancyBar: FC<FancyBarProps> = ({
 
   return (
     <Animated.View style={s.container}>
-      <TextItem type="defaultWhite" style={{ paddingLeft: sp.sm }}>
-        {fancyBarState.msg}
+      <TextItem type="defaultWhite" style={s.msgText}>
+        {msg}
       </TextItem>
-      <Button
-        style={{ width: 50, marginLeft: 8 }}
-        onPress={() => setFancyBarState(false)}
-      >
+      <Button style={s.button} onPress={commandPress}>
         <TextItem type="bold14White">OK</TextItem>
       </Button>
     </Animated.View>

@@ -1,5 +1,9 @@
 import { Dimensions, StyleSheet } from "react-native";
-import { colorsPalette as cp, fancyStates as fan } from "../../../constants";
+import {
+  colorsPalette as cp,
+  fancyStates as fan,
+  spacing as sp,
+} from "../../../constants";
 
 const { width } = Dimensions.get("screen");
 const { fancyType } = fan;
@@ -11,6 +15,8 @@ interface StyleProps {
 
 const styles = ({ bottomContainer, state }: StyleProps) =>
   StyleSheet.create({
+    button: { width: 50, marginLeft: 8 },
+
     container: {
       width: width - 32,
       left: 16,
@@ -29,6 +35,8 @@ const styles = ({ bottomContainer, state }: StyleProps) =>
       alignItems: "center",
       flexDirection: "row",
     },
+
+    msgText: { paddingLeft: sp.sm },
   });
 
 export default styles;

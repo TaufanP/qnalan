@@ -4,14 +4,16 @@ interface StyleProps {
   color?: string;
 }
 
+const size = 6;
+
 const styles = ({ color }: StyleProps) =>
   StyleSheet.create({
     button: {
-      width: 6,
-      height: 6,
+      width: size,
+      height: size,
       backgroundColor: color,
-      borderRadius: 6,
-      marginRight: 6,
+      borderRadius: size,
+      marginRight: size,
     },
     container: {
       flexDirection: "row",

@@ -1,10 +1,12 @@
 import { StyleSheet } from "react-native";
 
+const size = 54;
+
 const styles = () =>
   StyleSheet.create({
     container: {
-      height: 54,
-      width: 54,
+      height: size,
+      width: size,
       justifyContent: "center",
       alignItems: "center",
     },

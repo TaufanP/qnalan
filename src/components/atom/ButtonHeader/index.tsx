@@ -8,11 +8,11 @@ interface ButtonHeaderProps {
   style?: ViewStyle;
 }
 
-const ButtonHeader: FC<PropsWithChildren<ButtonHeaderProps>> = ({
+const ButtonHeader = ({
   children,
   onPress,
   style,
-}) => {
+}: PropsWithChildren<ButtonHeaderProps>) => {
   const s = styles();
   return (
     <Button style={[s.container, style]} onPress={onPress}>

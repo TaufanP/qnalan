@@ -1,4 +1,4 @@
-import React, { FC, useEffect } from "react";
+import React, { useEffect } from "react";
 import { Animated, Text } from "react-native";
 import styles from "./styles";
 
@@ -6,23 +6,27 @@ interface WarningIconProps {
   isStart?: boolean;
 }
 
-const WarningIcon: FC<WarningIconProps> = ({ isStart = false }) => {
+const WarningIcon = ({ isStart = false }: WarningIconProps) => {
+  const s = styles();
   const scale = new Animated.Value(1);
+
   const scalling = (toValue: number) =>
     Animated.timing(scale, {
       toValue,
       duration: 100,
       useNativeDriver: true,
     });
+
   const animate = () => {
     Animated.loop(Animated.sequence([scalling(1.2), scalling(1)]), {
       iterations: 2,
     }).start();
   };
+
   useEffect(() => {
     animate();
   }, [isStart]);
-  const s = styles();
+
   return (
     <Animated.View style={[s.container, { transform: [{ scale }] }]}>
       <Text style={s.excla}>!</Text>

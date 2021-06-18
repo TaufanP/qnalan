@@ -33,7 +33,7 @@ const Home: FC<HomeProps> = ({ navigation }) => {
   }, []);
 
   return (
-    <AppCanvas homeBg>
+    <AppCanvas>
       <SettingIcon
         style={{
           position: "absolute",

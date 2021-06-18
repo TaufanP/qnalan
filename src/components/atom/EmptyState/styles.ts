@@ -1,18 +1,21 @@
-import { StyleSheet } from "react-native";
+import { StyleSheet, ViewStyle } from "react-native";
 import { spacing as sp } from "../../../constants";
 
-const styles = () =>
-  StyleSheet.create({
+const styles = () => {
+  const centering: ViewStyle = {
+    justifyContent: "center",
+    alignItems: "center",
+  };
+
+  return StyleSheet.create({
     iconCont: {
       marginBottom: sp.sm,
-      justifyContent: "center",
-      alignItems: "center",
+      ...centering,
     },
     container: {
       flex: 1,
-      justifyContent: "center",
-      alignItems: "center",
+      ...centering,
     },
   });
-
+};
 export default styles;

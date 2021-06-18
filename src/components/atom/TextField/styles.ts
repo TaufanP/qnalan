@@ -2,8 +2,8 @@ import { StyleSheet } from "react-native";
 import { colorsPalette as cp, spacing as sp } from "../../../constants";
 
 interface StyleProps {
-  sideIcon?: boolean;
   isError?: boolean | string;
+  sideIcon?: boolean;
   withPadding?: boolean;
 }
 
