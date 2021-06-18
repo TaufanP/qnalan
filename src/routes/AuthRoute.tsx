@@ -10,20 +10,21 @@ import DrawerRoute from "./DrawerRoute";
 const Stack = createStackNavigator();
 
 const AuthRoute = () => {
+  const screenOptions = ({ route, navigation }: any) => ({
+    headerShown: false,
+    // gestureEnabled: true,
+    cardOverlayEnabled: true,
+    headerStatusBarHeight:
+      navigation.dangerouslyGetState().routes.indexOf(route) > 0
+        ? 0
+        : undefined,
+    ...TransitionPresets.SlideFromRightIOS,
+  });
   return (
     <Stack.Navigator
       initialRouteName={p.Auth}
       headerMode="none"
-      screenOptions={({ route, navigation }) => ({
-        headerShown: false,
-        gestureEnabled: true,
-        cardOverlayEnabled: true,
-        headerStatusBarHeight:
-          navigation.dangerouslyGetState().routes.indexOf(route) > 0
-            ? 0
-            : undefined,
-        ...TransitionPresets.SlideFromRightIOS,
-      })}
+      screenOptions={screenOptions}
       mode="card"
     >
       <Stack.Screen name={p.Auth} component={Auth} />
