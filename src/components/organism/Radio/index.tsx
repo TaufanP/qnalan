@@ -14,11 +14,11 @@ interface RadioProps {
   selected?: any;
 }
 
-const Radio: FC<RadioProps> = ({
+const Radio = ({
   data,
-  onPress = (e: any) => console.log(e),
+  onPress = () => console.log("Radio"),
   selected = null,
-}) => {
+}: RadioProps) => {
   const s = styles();
   return (
     <View style={s.container}>

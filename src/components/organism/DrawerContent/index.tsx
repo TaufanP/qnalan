@@ -5,14 +5,13 @@ import {
   DrawerDescriptorMap,
   DrawerNavigationHelpers,
 } from "@react-navigation/drawer/lib/typescript/src/types";
-import React, { FC } from "react";
+import React from "react";
 import { Linking, View } from "react-native";
 import { useDispatch } from "react-redux";
 import { Export, Power } from "../../../../assets";
 import {
   colorsPalette as cp,
   pages as p,
-  spacing as sp,
   strings as str,
 } from "../../../constants";
 import { loggingOut } from "../../../redux/actions";
@@ -26,7 +25,7 @@ interface DrawerContentProps {
   descriptors: DrawerDescriptorMap;
 }
 
-const DrawerContent: FC<DrawerContentProps> = (props) => {
+const DrawerContent = (props: DrawerContentProps) => {
   const dispatch = useDispatch();
   const s = styles();
 
@@ -46,30 +45,20 @@ const DrawerContent: FC<DrawerContentProps> = (props) => {
   };
 
   return (
-    <DrawerContentScrollView {...props} style={{ paddingHorizontal: sp.sm }}>
+    <DrawerContentScrollView {...props} style={s.drawerContentStyle}>
       <ProfileDrawer navigation={props.navigation} />
       <Button
         onPress={() => Linking.openURL("http://sbhumanbank.com/account")}
         style={s.buttonContainer}
       >
-        <View style={{ flexDirection: "row", alignItems: "center" }}>
-          <Export
-            width={14}
-            height={14}
-            fill={cp.white4}
-            style={{ marginRight: sp.m }}
-          />
+        <View style={s.iconCont}>
+          <Export width={14} height={14} fill={cp.white4} style={s.iconStyle} />
           <TextItem>{str.provider}</TextItem>
         </View>
       </Button>
       <Button onPress={logoutPress} style={s.buttonContainer}>
-        <View style={{ flexDirection: "row", alignItems: "center" }}>
-          <Power
-            width={14}
-            height={14}
-            fill={cp.red1}
-            style={{ marginRight: sp.m }}
-          />
+        <View style={s.iconCont}>
+          <Power width={14} height={14} fill={cp.red1} style={s.iconStyle} />
           <TextItem type="normal14Red1">{str.logout}</TextItem>
         </View>
       </Button>

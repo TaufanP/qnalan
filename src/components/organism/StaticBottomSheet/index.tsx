@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useRef } from "react";
+import React, { FC, useCallback, useEffect, useRef } from "react";
 import {
   Alert,
   Animated,
@@ -18,21 +18,28 @@ const { alert } = Alert;
 
 const iconWidth = 168;
 
-const StaticBottomSheet: FC<StaticBottomSheetProps> = ({
+const animator = (anim: Animated.Value, toValue: number, duration: number) =>
+  Animated.timing(anim, {
+    toValue,
+    useNativeDriver: false,
+    duration,
+  });
+
+const StaticBottomSheet = ({
+  onPress = () => alert("tets"),
   onPressLeft = () => alert("tets"),
   onPressRight = () => alert("tets"),
-  onPress = () => alert("tets"),
-  visible = false,
-  leftLabel = "KAMERA",
-  rightLabel = "GALERI",
+  setVisible = () => alert("test"),
+  action = false,
+  customComp,
+  mainIcon = <CameraColor width={iconWidth * 0.7} height={iconWidth * 0.7} />,
   mainLabel = "Continue",
   mainTitle = "Ambil gambarmu",
+  leftLabel = "KAMERA",
+  rightLabel = "GALERI",
   subTitle = "Kamu bisa menggunakan kamera ataupun galeri.",
-  action = false,
-  setVisible = (e: boolean) => alert("test"),
-  mainIcon = <CameraColor width={iconWidth * 0.7} height={iconWidth * 0.7} />,
-  customComp,
-}) => {
+  visible = false,
+}: StaticBottomSheetProps) => {
   const s = styles();
 
   const fadeAnim = useRef(new Animated.Value(height)).current;
@@ -40,33 +47,19 @@ const StaticBottomSheet: FC<StaticBottomSheetProps> = ({
 
   const fadeIn = () => {
     Animated.sequence([
-      Animated.timing(fadeAnim, {
-        toValue: 0,
-        useNativeDriver: false,
-        duration: 400,
-      }),
-      Animated.timing(opacity, {
-        toValue: 1,
-        useNativeDriver: false,
-        duration: 200,
-      }),
+      animator(fadeAnim, 0, 400),
+      animator(opacity, 1, 200),
     ]).start();
   };
 
   const fadeOut = () => {
     Animated.sequence([
-      Animated.timing(opacity, {
-        toValue: 0,
-        useNativeDriver: false,
-        duration: 100,
-      }),
-      Animated.timing(fadeAnim, {
-        toValue: height,
-        useNativeDriver: false,
-        duration: 400,
-      }),
+      animator(opacity, 0, 100),
+      animator(fadeAnim, height, 400),
     ]).start();
   };
+
+  const overlayPress = useCallback(() => setVisible(false), []);
 
   useEffect(() => {
     if (visible) {
@@ -82,7 +75,7 @@ const StaticBottomSheet: FC<StaticBottomSheetProps> = ({
     >
       <Animated.View style={[s.blackBackground, { opacity }]}>
         <TouchableOpacity
-          onPress={() => setVisible(false)}
+          onPress={overlayPress}
           activeOpacity={1}
           style={s.touchArea}
         />

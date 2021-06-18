@@ -1,4 +1,4 @@
-import React, { FC } from "react";
+import React from "react";
 import { View, ViewStyle } from "react-native";
 import { ToggleButton } from "../../molecule";
 import styles from "./styles";
@@ -9,18 +9,18 @@ interface CheckBoxValue {
 }
 
 interface CheckBoxesProps {
+  containerStyle?: ViewStyle;
   data: CheckBoxValue[];
   onPress?: any;
   selected?: number[];
-  containerStyle?: ViewStyle;
 }
 
-const ToggleButtons: FC<CheckBoxesProps> = ({
-  data,
-  onPress = (e: any) => console.log(e),
-  selected = [],
+const ToggleButtons = ({
   containerStyle,
-}) => {
+  data,
+  onPress = () => console.log("ToggleButtons"),
+  selected = [],
+}: CheckBoxesProps) => {
   const s = styles();
   return (
     <View style={[s.container, containerStyle]}>
