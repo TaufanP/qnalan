@@ -64,8 +64,6 @@ const ContactList: FC<ContactListProps> = ({ navigation }) => {
   const [hobby, setHobby] = useState<number[]>([]);
   const [count, setCount] = useState<number>(0);
 
-  const [filterCat, setFilterCat] = useState<FilterCatProps[]>(filterDataValue);
-
   const isMounted = useRef(true);
   const scrollRef = useRef<any>(null);
   const ageRef = useRef({ min: 15, max: 40 });
@@ -122,7 +120,8 @@ const ContactList: FC<ContactListProps> = ({ navigation }) => {
     const dataArray = Object.entries(data.val());
     const finalUsers = dataArray
       .filter((user: any) => user[0] !== sessionReducer.uid)
-      .map((item: any) => ({ uid: item[0], ...item[1] }));
+      .map((item: any) => ({ uid: item[0], ...item[1] }))
+      .sort((a: any, b: any) => (a.displayName > b.displayName ? 1 : -1));
     if (isMounted.current) {
       setUsers(finalUsers);
       setFilterUsers(finalUsers);

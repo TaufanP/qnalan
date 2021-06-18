@@ -49,13 +49,18 @@ const Auth = ({ navigation }: AuthProps) => {
       const data = isLogin
         ? await auth().signInWithEmailAndPassword(email, password)
         : await auth().createUserWithEmailAndPassword(email, password);
-      setIsLoading(false);
       setEmail("");
       setPassword("");
       if (data?.user) {
+        const date = new Date();
+        const timestamp = date.getTime().toString();
+        const randomGuest = timestamp.substring(
+          timestamp.length - 4,
+          timestamp.length - 1
+        );
         if (!isLogin && data?.additionalUserInfo?.isNewUser) {
           db.ref(`users/${data?.user?.uid}`).set({
-            displayName: data?.user?.displayName || "",
+            displayName: data?.user?.displayName || `Guest${randomGuest}`,
             photoURL: data?.user?.photoURL || "",
             messages: {},
             email: data?.user?.email,
@@ -65,7 +70,7 @@ const Auth = ({ navigation }: AuthProps) => {
         dispatch(
           loggingIn({
             uid,
-            displayName: displayName || "",
+            displayName: displayName || `Guest${randomGuest}`,
             email: email || "",
             photoURL: photoURL || "",
           })
@@ -73,7 +78,6 @@ const Auth = ({ navigation }: AuthProps) => {
         navigation.navigate(p.DrawerRoute);
         return;
       }
-      console.log("test");
       // CONDITION IF FALSE
       setFancyBarState({
         visible: true,
@@ -81,7 +85,6 @@ const Auth = ({ navigation }: AuthProps) => {
         msg: str.failedHappen,
       });
     } catch (error) {
-      setIsLoading(false);
       if (error.code == "auth/weak-password") {
         return setFormError((current) => [
           ...current,
@@ -110,16 +113,18 @@ const Auth = ({ navigation }: AuthProps) => {
         ]);
       }
       console.log(`AuthScren, firebaseLogin(),${error}`);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const checkForm = () => {
+    setIsLoading(false);
     if (email == "") {
       setFormError((current) => [
         ...current,
         { param: "email", msg: str.fillEmail, value: email },
       ]);
-      setIsLoading(false);
       return;
     }
     if (password == "") {
@@ -127,7 +132,6 @@ const Auth = ({ navigation }: AuthProps) => {
         ...current,
         { param: "password", msg: str.fillPassword, value: password },
       ]);
-      setIsLoading(false);
       return;
     }
     firebaseLogin();
@@ -146,7 +150,6 @@ const Auth = ({ navigation }: AuthProps) => {
     const index = formError.findIndex(
       (error: FieldErrorProps) => error.param == field
     );
-
     if (index == -1) return false;
 
     return formError[index].msg;
@@ -206,7 +209,6 @@ const Auth = ({ navigation }: AuthProps) => {
             {isLogin ? str.login : str.register}
           </TextItem>
         </Button>
-        {/* <Button onPress={test} disabled={isLoading}> */}
         <Button onPress={changeAuth} disabled={isLoading}>
           <TextItem type="normal12Main">
             {isLogin ? str.notHaveAcc : str.haveAcc}

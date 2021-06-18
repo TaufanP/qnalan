@@ -3,7 +3,7 @@ import {
   RouteProp,
   useRoute,
 } from "@react-navigation/core";
-import React, { FC, useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { BackHandler, Image, View } from "react-native";
 import { GiftedChat, IMessage, Send, User } from "react-native-gifted-chat";
 import { useSelector } from "react-redux";
@@ -25,12 +25,15 @@ interface RoomChatProps {
   navigation: CompositeNavigationProp<any, any>;
 }
 
-const RoomChat: FC<RoomChatProps> = ({ navigation }) => {
+const RoomChat = ({ navigation }: RoomChatProps) => {
   const { sessionReducer } = useSelector((state: AppState) => state);
+
   const route = useRoute<RouteProp<StackParamsList, "ROOM_CHAT_SCREEN">>();
   const { messageId, partnerId, roomId } = route.params;
+
   const [partner, setPartner] = useState<UsersProps>();
   const [messages, setMessages] = useState<IMessage[]>([]);
+
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isTyping, setIsTyping] = useState<boolean>(false);
 
@@ -38,11 +41,78 @@ const RoomChat: FC<RoomChatProps> = ({ navigation }) => {
 
   const isMounted = useRef(true);
 
+  const findPartner = async () => {
+    const dataUser = await db.ref(`${n.users}/${partnerId}`).once("value");
+    if (isMounted.current) setPartner(dataUser.val());
+  };
+
+  const onValueChange = async () => {
+    setIsLoading(true);
+    const data = await db
+      .ref(`${n.messages}/${messageId}`)
+      .orderByChild("createdAt")
+      .once("value");
+    if (data.val() == null && isMounted.current) {
+      setIsLoading(false);
+      return;
+    }
+    const messagesArray = Object.values(data.val()).map((chat: any) => ({
+      _id: chat.createdAt,
+      ...chat,
+    }));
+    const sortedMsg = messagesArray.sort((a, b) =>
+      a.createdAt > b.createdAt ? -1 : b.createdAt > a.createdAt ? 1 : 0
+    );
+    if (isMounted.current) {
+      setMessages(sortedMsg);
+      setIsLoading(false);
+    }
+  };
+
+  const renderSend = (props: any) => {
+    return (
+      <Send {...props}>
+        <View
+          style={{
+            paddingHorizontal: spacing.sm,
+            height: "100%",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <SendIcon width={24} height={24} fill={cp.main} />
+        </View>
+      </Send>
+    );
+  };
+
   const typing = (text: string) => {
     db.ref(
       `${n.room_chats}/${roomId}/${n.participants}/${sessionReducer.uid}`
     ).update({ isTyping: text.length > 0 });
   };
+
+  const header = useCallback(
+    () => (
+      <DefaultHeader
+        title={partner?.displayName || partner?.email || "Username"}
+        centerComponent={() => (
+          <View style={{ flex: 1, justifyContent: "center" }}>
+            <TextItem type="header">
+              {partner?.displayName || partner?.email || "Username"}
+            </TextItem>
+            {isTyping && <TextItem type="normal12White">{str.typing}</TextItem>}
+          </View>
+        )}
+        rightComponent={() => (
+          <VideoCall fill={cp.white} width={32} height={32} />
+        )}
+        onPressRight={() => navigation.navigate(p.VideoCall)}
+        onPress={() => navigation.goBack()}
+      />
+    ),
+    [partner, isTyping]
+  );
 
   const onSend = useCallback((messageGift: IMessage[]) => {
     db.ref(
@@ -72,35 +142,6 @@ const RoomChat: FC<RoomChatProps> = ({ navigation }) => {
       </View>
     );
   }, [partner]);
-
-  const findPartner = async () => {
-    const dataUser = await db.ref(`${n.users}/${partnerId}`).once("value");
-    const user = dataUser.val();
-    if (isMounted.current) setPartner(user);
-  };
-
-  const onValueChange = async () => {
-    setIsLoading(true);
-    const data = await db
-      .ref(`${n.messages}/${messageId}`)
-      .orderByChild("createdAt")
-      .once("value");
-    if (data.val() == null && isMounted.current) {
-      setIsLoading(false);
-      return;
-    }
-    const messagesArray = Object.values(data.val()).map((chat: any) => ({
-      _id: chat.createdAt,
-      ...chat,
-    }));
-    const sortedMsg = messagesArray.sort((a, b) =>
-      a.createdAt > b.createdAt ? -1 : b.createdAt > a.createdAt ? 1 : 0
-    );
-    if (isMounted.current) {
-      setMessages(sortedMsg);
-      setIsLoading(false);
-    }
-  };
 
   useEffect(() => {
     findPartner();
@@ -141,52 +182,12 @@ const RoomChat: FC<RoomChatProps> = ({ navigation }) => {
         `${n.room_chats}/${roomId}/${n.participants}/${partnerId}/${n.isTyping}`
       )
       .on("value", (snapshot) => {
-        const result = snapshot.val();
-        if (isMounted.current) setIsTyping(result);
+        if (isMounted.current) setIsTyping(snapshot.val());
       });
 
     return () =>
       db.ref(`${n.messages}/${messageId}`).off("value", onValueChange);
   }, []);
-
-  const renderSend = (props: any) => {
-    return (
-      <Send {...props}>
-        <View
-          style={{
-            paddingHorizontal: spacing.sm,
-            height: "100%",
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
-          <SendIcon width={24} height={24} fill={cp.main} />
-        </View>
-      </Send>
-    );
-  };
-
-  const header = useCallback(
-    () => (
-      <DefaultHeader
-        title={partner?.displayName || partner?.email || "Username"}
-        centerComponent={() => (
-          <View style={{ flex: 1, justifyContent: "center" }}>
-            <TextItem type="header">
-              {partner?.displayName || partner?.email || "Username"}
-            </TextItem>
-            {isTyping && <TextItem type="normal12White">{str.typing}</TextItem>}
-          </View>
-        )}
-        rightComponent={() => (
-          <VideoCall fill={cp.white} width={32} height={32} />
-        )}
-        onPressRight={() => navigation.navigate(p.VideoCall)}
-        onPress={() => navigation.goBack()}
-      />
-    ),
-    [partner, isTyping]
-  );
 
   useEffect(() => {
     const backAction = () => {
@@ -211,7 +212,7 @@ const RoomChat: FC<RoomChatProps> = ({ navigation }) => {
         renderAvatar={renderAvatar}
         renderSend={renderSend}
         placeholder="Ketik pesan"
-        onInputTextChanged={(e) => typing(e)}
+        onInputTextChanged={typing}
       />
     </AppCanvas>
   );

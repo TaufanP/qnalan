@@ -1,6 +1,6 @@
 import auth from "@react-native-firebase/auth";
 import { CompositeNavigationProp } from "@react-navigation/core";
-import React, { FC, useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { FlatList, View } from "react-native";
 import SplashScreen from "react-native-splash-screen";
 import { useDispatch, useSelector } from "react-redux";
@@ -27,7 +27,7 @@ interface RoomListProps {
   navigation: CompositeNavigationProp<any, any>;
 }
 
-const RoomList: FC<RoomListProps> = ({ navigation }) => {
+const RoomList = ({ navigation }: RoomListProps) => {
   const dispatch = useDispatch();
   const { sessionReducer } = useSelector((state: AppState) => state);
 
@@ -35,6 +35,13 @@ const RoomList: FC<RoomListProps> = ({ navigation }) => {
   const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
 
   const isMounted = useRef(true);
+
+  const buttonPress = useCallback(() => navigation.navigate(p.ContactList), []);
+
+  const header = useCallback(
+    () => <HomeHeader onPress={() => navigation.toggleDrawer()} />,
+    []
+  );
 
   const onPress = useCallback(
     (item: RoomChatParams) =>
@@ -45,22 +52,6 @@ const RoomList: FC<RoomListProps> = ({ navigation }) => {
       }),
     []
   );
-
-  const buttonPress = useCallback(() => navigation.navigate(p.ContactList), []);
-
-  const onAuthStateChanged = (user: any) => {
-    if (user !== null) {
-      SplashScreen.hide();
-      return;
-    }
-    dispatch(loggingOut());
-    navigation.reset({
-      index: 0,
-      routes: [{ name: p.Auth }],
-    });
-  };
-
-  const keyExtractor = (item: RoomChatProps) => `${item.roomId}`;
 
   const renderItem = useCallback(
     ({ item }: { item: RoomChatProps }) => (
@@ -91,25 +82,33 @@ const RoomList: FC<RoomListProps> = ({ navigation }) => {
         }
       );
     } catch (error) {
-      console.log(error);
+      console.log(`RoomList, getUsers(), ${error.message}`);
     }
   };
 
-  const refreshing = async () => {
+  const keyExtractor = (item: RoomChatProps) => `${item.roomId}`;
+
+  const onAuthStateChanged = (user: any) => {
+    if (user !== null) {
+      SplashScreen.hide();
+      return;
+    }
+    dispatch(loggingOut());
+    navigation.reset({
+      index: 0,
+      routes: [{ name: p.Auth }],
+    });
+  };
+
+  const refreshing = () => {
     setIsRefreshing(true);
-    await getUsers();
-    setIsRefreshing(false);
+    getUsers().finally(() => setIsRefreshing(false));
   };
 
   const ListEmptyComponent = () => (
     <View style={{ height: heightPercent(60) }}>
       <EmptyState />
     </View>
-  );
-
-  const header = useCallback(
-    () => <HomeHeader onPress={() => navigation.toggleDrawer()} />,
-    []
   );
 
   useEffect(() => {
@@ -128,7 +127,7 @@ const RoomList: FC<RoomListProps> = ({ navigation }) => {
     <AppCanvas header={header}>
       <FlatList
         data={users}
-        onRefresh={() => refreshing()}
+        onRefresh={refreshing}
         refreshing={isRefreshing}
         renderItem={renderItem}
         keyExtractor={keyExtractor}

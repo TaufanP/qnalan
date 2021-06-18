@@ -9,6 +9,12 @@ import { colorsPalette as cp, spacing as sp } from "../../constants";
 import AppState from "../../redux";
 import styles from "./styles";
 
+const androidCameraPermissionOptions = {
+  title: "Permission to use camera",
+  message: "We need your permission to use your camera",
+  buttonPositive: "Ok",
+  buttonNegative: "Cancel",
+};
 interface VideoCallProps {
   navigation: CompositeNavigationProp<any, any>;
 }
@@ -30,12 +36,7 @@ const VideoCall: FC<VideoCallProps> = ({ navigation }) => {
         style={s.cameraCont}
         type={RNCamera.Constants.Type[isFront ? "front" : "back"]}
         flashMode={RNCamera.Constants.FlashMode.on}
-        androidCameraPermissionOptions={{
-          title: "Permission to use camera",
-          message: "We need your permission to use your camera",
-          buttonPositive: "Ok",
-          buttonNegative: "Cancel",
-        }}
+        androidCameraPermissionOptions={androidCameraPermissionOptions}
       />
       <ButtonHeader onPress={() => navigation.goBack()} style={s.backCont}>
         <ArrowBack width={16} height={16} fill={cp.white} />
