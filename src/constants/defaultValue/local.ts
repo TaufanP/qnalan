@@ -67,17 +67,17 @@ const majorValue = [
 ].sort((a, b) => (a > b ? 1 : b > a ? -1 : 0));
 
 const StaticBottomSheetValue: StaticBottomSheetProps = {
+  onPress: () => console.log("test"),
   onPressLeft: () => console.log("test"),
   onPressRight: () => console.log("test"),
-  onPress: () => console.log("test"),
-  visible: false,
+  setVisible: () => console.log("test"),
   action: true,
   leftLabel: "leftLabel",
-  rightLabel: "rightLabel",
   mainLabel: "mainLabel",
   mainTitle: "mainTitle",
+  rightLabel: "rightLabel",
   subTitle: "subTitle",
-  setVisible: () => console.log("test"),
+  visible: false,
   // mainIcon: ()=,
 };
 

@@ -1,13 +1,13 @@
 const fancyType = {
+  failed: "failed",
   success: "success",
   warning: "warning",
-  failed: "failed",
 };
 
 const defaultState = {
-  visible: false,
-  type: fancyType.success,
   msg: "Put your message here",
+  type: fancyType.success,
+  visible: false,
 };
 
 export default { defaultState, fancyType };
