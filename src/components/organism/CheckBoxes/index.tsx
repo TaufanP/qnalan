@@ -26,7 +26,6 @@ const CheckBoxes: FC<CheckBoxesProps> = ({
         <CheckBox
           key={check.value}
           label={check.label}
-          value={true}
           onPress={() => onPress(check.value)}
           isSelected={selected.findIndex((id) => id == check.value) !== -1}
         />

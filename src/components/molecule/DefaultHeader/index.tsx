@@ -1,24 +1,25 @@
-import React, { FC } from "react";
+import React, { ReactNode } from "react";
 import { View } from "react-native";
 import { ArrowBack } from "../../../../assets";
 import { ButtonHeader, TextItem } from "../../atom";
 import styles from "./styles";
 
 interface DefaultHeaderProps {
-  title: string;
   onPress?: any;
   onPressRight?: any;
-  rightComponent?: () => JSX.Element;
+  title: string;
+
   centerComponent?: () => JSX.Element;
+  rightComponent?: () => ReactNode;
 }
 
-const DefaultHeader: FC<DefaultHeaderProps> = ({
-  title = "User name",
-  onPress,
-  rightComponent = () => <></>,
+const DefaultHeader = ({
   centerComponent,
+  onPress,
+  title = "User name",
   onPressRight,
-}) => {
+  rightComponent = () => <></>,
+}: DefaultHeaderProps) => {
   const s = styles();
   const CenterComp =
     centerComponent !== undefined

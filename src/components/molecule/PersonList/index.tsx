@@ -1,30 +1,27 @@
-import React, { FC, memo } from "react";
-import { Image, StyleSheet, View } from "react-native";
+import React, { memo } from "react";
+import { Image, View } from "react-native";
 import { PlaceholderUser } from "../../../../assets";
-import {
-  colorsPalette as cp,
-  spacing as sp,
-  strings as str,
-} from "../../../constants";
+import { strings as str } from "../../../constants";
 import { Button, TextItem } from "../../atom";
+import styles from "./styles";
 
 interface PersonListProps {
-  uri?: string;
-  title?: string;
+  onPress?: any;
   subtitle?: string;
   time?: string;
-  onPress?: any;
+  title?: string;
   type?: string;
+  uri?: string;
 }
 
-const PersonList: FC<PersonListProps> = ({
+const PersonList = ({
   onPress,
-  uri,
-  title,
-  time,
   subtitle,
+  time,
+  title,
   type,
-}) => {
+  uri,
+}: PersonListProps) => {
   const source = uri ? { uri } : PlaceholderUser;
   const s = styles();
   return (
@@ -56,28 +53,5 @@ const PersonList: FC<PersonListProps> = ({
     </Button>
   );
 };
-
-const styles = () =>
-  StyleSheet.create({
-    titleCont: { flexDirection: "row", justifyContent: "space-between" },
-    photo: { width: "100%", height: "100%" },
-    photoCont: {
-      width: 48,
-      height: 48,
-      borderRadius: 48,
-      borderColor: cp.white2,
-      borderWidth: 1,
-      marginRight: sp.sm,
-      alignItems: "center",
-      justifyContent: "center",
-      overflow: "hidden",
-    },
-    container: {
-      flexDirection: "row",
-      marginBottom: sp.sm,
-      alignItems: "center",
-      paddingHorizontal: sp.sm,
-    },
-  });
 
 export default memo(PersonList);

@@ -1,18 +1,14 @@
-import React, { FC } from "react";
+import React from "react";
 import { Button, TextItem } from "../../atom";
 import styles from "./styles";
 
 interface ToggleButtonProps {
-  onPress?: any;
-  label: string;
   isSelected: boolean;
+  label: string;
+  onPress?: any;
 }
 
-const ToggleButton: FC<ToggleButtonProps> = ({
-  onPress,
-  label,
-  isSelected,
-}) => {
+const ToggleButton = ({ isSelected, label, onPress }: ToggleButtonProps) => {
   const s = styles({ isSelected });
   return (
     <Button style={s.childCont} onPress={onPress}>

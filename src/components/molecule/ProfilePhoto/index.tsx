@@ -1,4 +1,4 @@
-import React, { FC, PropsWithChildren } from "react";
+import React from "react";
 import { Image, View } from "react-native";
 import { User } from "../../../../assets";
 import { widthPercent } from "../../../config";
@@ -11,10 +11,7 @@ interface ProfilePhotoProps {
   uri?: string;
 }
 
-const ProfilePhoto: FC<PropsWithChildren<ProfilePhotoProps>> = ({
-  onPress,
-  uri,
-}) => {
+const ProfilePhoto = ({ onPress, uri }: ProfilePhotoProps) => {
   const s = styles();
   return (
     <Button onPress={onPress} style={{ alignItems: "center" }}>

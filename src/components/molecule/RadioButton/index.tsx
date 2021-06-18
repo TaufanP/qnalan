@@ -1,15 +1,15 @@
-import React, { FC } from "react";
+import React from "react";
 import { View } from "react-native";
 import { Button, TextItem } from "../../atom";
 import styles from "./styles";
 
 interface RadioButtonProps {
-  onPress?: any;
-  label: string;
   isSelected: boolean;
+  label: string;
+  onPress?: any;
 }
 
-const RadioButton: FC<RadioButtonProps> = ({ onPress, label, isSelected }) => {
+const RadioButton = ({ onPress, label, isSelected }: RadioButtonProps) => {
   const s = styles();
   return (
     <Button style={s.childCont} onPress={onPress}>

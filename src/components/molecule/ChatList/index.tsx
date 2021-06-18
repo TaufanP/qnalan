@@ -1,6 +1,5 @@
 import moment from "moment";
 import React, {
-  FC,
   memo,
   useCallback,
   useEffect,
@@ -16,12 +15,12 @@ import { RoomDetailValue, UsersValue } from "../../../constants/defaultValue";
 import PersonList from "../PersonList";
 
 interface ChatListProps {
-  roomId: string;
-  partnerId: string;
   onPress: any;
+  partnerId: string;
+  roomId: string;
 }
 
-const ChatList: FC<ChatListProps> = ({ roomId, onPress, partnerId }) => {
+const ChatList = ({ roomId, onPress, partnerId }: ChatListProps) => {
   const [detail, setDetail] = useState<UsersProps>(UsersValue);
   const [room, setRoom] = useState<RoomDetailProps>(RoomDetailValue);
 

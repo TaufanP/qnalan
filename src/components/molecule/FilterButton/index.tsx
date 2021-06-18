@@ -4,14 +4,13 @@ import { Button, TextItem } from "../../atom";
 import styles from "./styles";
 
 interface FilterButtonProps {
-  label?: string;
   count?: number;
+  label?: string;
   onPress?: any;
 }
 
-const FilterButton: FC<FilterButtonProps> = ({ label, count, onPress }) => {
-  const isCounting = count !== undefined && count > 0;
-  const s = styles({ isCounting });
+const FilterButton = ({ label, count, onPress }: FilterButtonProps) => {
+  const s = styles();
   return (
     <Button style={s.container} onPress={onPress}>
       {count !== 0 && (

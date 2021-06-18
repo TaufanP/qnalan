@@ -1,7 +1,7 @@
 import { StyleSheet } from "react-native";
 import { colorsPalette as cp, spacing as sp } from "../../../constants";
 
-const styles = ({ isCounting }: { isCounting: boolean }) =>
+const styles = () =>
   StyleSheet.create({
     countText: { fontSize: 11, color: cp.white, top: -1, left: -1 },
     counterCont: {

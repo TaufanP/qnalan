@@ -4,6 +4,12 @@ import { colorsPalette as cp } from "../../../constants";
 const styles = () =>
   StyleSheet.create({
     // COLOR
+    normal14Text1Italic: {
+      fontWeight: "normal",
+      fontSize: 14,
+      color: cp.text1,
+      fontStyle: "italic",
+    },
     defaultWhite: { color: cp.white },
     defaultMain: { color: cp.main },
 

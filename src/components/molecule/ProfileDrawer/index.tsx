@@ -1,5 +1,5 @@
 import { DrawerNavigationHelpers } from "@react-navigation/drawer/lib/typescript/src/types";
-import React, { FC } from "react";
+import React from "react";
 import { Image, View } from "react-native";
 import { useSelector } from "react-redux";
 import { PlaceholderUser } from "../../../../assets";
@@ -12,7 +12,7 @@ interface ProfileDrawerProps {
   navigation: DrawerNavigationHelpers;
 }
 
-const ProfileDrawer: FC<ProfileDrawerProps> = ({ navigation }) => {
+const ProfileDrawer = ({ navigation }: ProfileDrawerProps) => {
   const {
     sessionReducer: { displayName, email, photoURL },
   } = useSelector((state: AppState) => state);

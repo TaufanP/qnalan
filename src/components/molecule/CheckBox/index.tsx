@@ -1,16 +1,15 @@
-import React, { FC } from "react";
+import React from "react";
 import { View } from "react-native";
 import { Button, TextItem } from "../../atom";
 import styles from "./styles";
 
 interface CheckBoxProps {
-  value: boolean;
+  isSelected?: boolean;
   label: string;
   onPress?: any;
-  isSelected?: boolean;
 }
 
-const CheckBox: FC<CheckBoxProps> = ({ value, label, onPress, isSelected }) => {
+const CheckBox = ({ label, onPress, isSelected }: CheckBoxProps) => {
   const s = styles();
   return (
     <Button onPress={onPress} style={s.container}>
