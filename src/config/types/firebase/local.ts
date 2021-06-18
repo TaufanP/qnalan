@@ -1,30 +1,31 @@
 import { ReactNode } from "react";
 
 interface FilterDataProps {
-  label: string;
   count: number;
+  label: string;
   value: number;
 }
 interface RoomChatParams {
-  partnerId: string;
   messageId: string;
+  partnerId: string;
   roomId: string;
 }
 
 interface StaticBottomSheetProps {
-  onPressLeft?: any;
-  onPressRight?: any;
-  onPress?: any;
-  visible: boolean;
   action?: boolean;
   leftLabel?: string;
-  rightLabel?: string;
+  mainIcon?: ReactNode;
   mainLabel?: string;
   mainTitle?: string;
+  onPress?: any;
+  onPressLeft?: any;
+  onPressRight?: any;
   subTitle?: string;
-  setVisible?: Function;
-  mainIcon?: ReactNode;
+  rightLabel?: string;
+  visible: boolean;
+
   customComp?: () => JSX.Element;
+  setVisible?: Function;
 }
 
 export type { RoomChatParams, StaticBottomSheetProps, FilterDataProps };

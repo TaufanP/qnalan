@@ -1,6 +1,6 @@
 interface FieldErrorProps {
-  param: string;
   msg: string;
+  param: string;
   value?: any;
 }
 

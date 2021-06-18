@@ -7,8 +7,8 @@ interface ParticipantProps {
 }
 
 interface LastMessageProps {
-  text: string;
   createdAt: string | number;
+  text: string;
 }
 
 interface RoomDetailProps {

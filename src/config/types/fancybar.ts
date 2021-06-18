@@ -1,7 +1,7 @@
 interface FancyTypes {
-  visible: boolean;
-  type: string;
   msg: string;
+  type: string;
+  visible: boolean;
 }
 
 export type { FancyTypes };

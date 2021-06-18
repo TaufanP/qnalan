@@ -4,8 +4,8 @@ interface RoomChatsPropsKey {
 
 interface HobbyProps {
   id: number;
-  label: string;
   isSelected: boolean;
+  label: string;
 }
 interface UsersProps {
   batch: string;
