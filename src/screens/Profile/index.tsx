@@ -12,7 +12,6 @@ import {
   launchCamera,
   launchImageLibrary,
 } from "react-native-image-picker";
-import ImageResizer from "react-native-image-resizer";
 import { useDispatch, useSelector } from "react-redux";
 import {
   AppCanvas,
@@ -24,7 +23,7 @@ import {
   TextItem,
   ToggleButtons,
 } from "../../components";
-import { db, requestCameraPermission, widthPercent } from "../../config";
+import { db, requestCameraPermission } from "../../config";
 import {
   FancyTypes,
   FieldErrorProps,
@@ -32,9 +31,9 @@ import {
   UsersProps,
 } from "../../config/types";
 import {
-  colorsPalette as cp,
   fancyStates as fan,
   node as n,
+  spacing,
   strings as str,
 } from "../../constants";
 import {
@@ -45,6 +44,7 @@ import {
 } from "../../constants/defaultValue/local";
 import AppState from "../../redux";
 import { updateProfile } from "../../redux/actions";
+import { imageResizer, pickerGenerator } from "./helper";
 import styles from "./styles";
 interface ProfileProps {
   navigation: CompositeNavigationProp<any, any>;
@@ -99,43 +99,49 @@ const Profile: FC<ProfileProps> = ({ navigation }) => {
     setVisible(true);
   };
 
+  const fancySuccess = () =>
+    setFancyBarState({
+      visible: true,
+      type: fancyType.success,
+      msg: str.successProfile,
+    });
+
+  const fancyFail = () =>
+    setFancyBarState({
+      visible: true,
+      type: fancyType.failed,
+      msg: str.failedHappen,
+    });
+
+  const imageCallbackThen = (resized: any) => {
+    if (resized.size > 2000000) {
+      setFancyBarState({
+        visible: true,
+        type: fancyType.failed,
+        msg: "Foto profil tidak melebihi 2MB",
+      });
+      return;
+    }
+    setImageData({
+      uri: resized.uri || "",
+      fileSize: resized.size || 0,
+    });
+  };
+
+  const imageCallbackCatch = (err: any) => {
+    console.log(`Profile, imageCallback(), ${err.message}`);
+    setFancyBarState({
+      visible: true,
+      type: fancyType.failed,
+      msg: "Gagal mengambil foto profil",
+    });
+  };
+
   const imageCallback = (response: ImagePickerResponse) => {
     setVisible(false);
     if (response.didCancel) return;
     const image = response.assets[0];
-    ImageResizer.createResizedImage(
-      image.uri || "",
-      900,
-      900,
-      "PNG",
-      100,
-      0,
-      undefined,
-      undefined
-    )
-      .then((resized) => {
-        if (resized.size > 2000000) {
-          setFancyBarState({
-            visible: true,
-            type: fancyType.failed,
-            msg: "Foto profil tidak melebihi 2MB",
-          });
-          return;
-        }
-        setImageData({
-          uri: resized.uri || "",
-          fileSize: resized.size || 0,
-        });
-      })
-      .catch((err) => {
-        console.log(`Profile, imageCallback(), ${err}`);
-        setFancyBarState({
-          visible: true,
-          type: fancyType.failed,
-          msg: "Gagal mengambil foto profil",
-        });
-        return;
-      });
+    imageResizer(image.uri || "", imageCallbackThen, imageCallbackCatch);
   };
 
   const onImagePicking = async (isCamera: boolean = false) => {
@@ -169,20 +175,6 @@ const Profile: FC<ProfileProps> = ({ navigation }) => {
     db.ref(`${n.users}/${uid}`).update(profileData);
   };
 
-  const fancySuccess = () =>
-    setFancyBarState({
-      visible: true,
-      type: fancyType.success,
-      msg: str.successProfile,
-    });
-
-  const fancyFail = () =>
-    setFancyBarState({
-      visible: true,
-      type: fancyType.failed,
-      msg: str.failedHappen,
-    });
-
   const submit = async () => {
     setIsLoading(true);
     try {
@@ -214,36 +206,29 @@ const Profile: FC<ProfileProps> = ({ navigation }) => {
   };
 
   const checkForm = () => {
-    if (displayName.length == 0)
-      return setFormError((current) => [
+    const errorCondition = displayName.length == 0 || displayName.length < 6;
+    if (errorCondition) {
+      const emptyUsername = displayName.length == 0 ? str.usernameEmpty : "";
+      const lessUsername = displayName.length < 6 ? str.usernameSixChar : "";
+      setFormError((current) => [
         ...current,
         {
-          msg: "Username tidak boleh kosong",
+          msg: emptyUsername || lessUsername,
           param: "displayName",
           value: displayName,
         },
       ]);
-    if (displayName.length < 6)
-      return setFormError((current) => [
-        ...current,
-        {
-          msg: "Username minimal 6 karakter",
-          param: "displayName",
-          value: displayName,
-        },
-      ]);
+      return;
+    }
     submit();
   };
 
   const testError = (field: string) => {
     if (!formError) return false;
-
     const index = formError.findIndex(
       (error: FieldErrorProps) => error.param == field
     );
-
     if (index == -1) return false;
-
     return formError[index].msg;
   };
 
@@ -311,85 +296,49 @@ const Profile: FC<ProfileProps> = ({ navigation }) => {
     />
   );
 
-  const pickerGenerator = (
-    array: any[],
-    setter: any,
-    selected: number,
-    fontSize: number
-  ) => (
-    <Picker
-      style={{ width: widthPercent(80), height: 180 }}
-      lineColor="#000000" //to set top and bottom line color (Without gradients)
-      lineGradientColorFrom="#000000" //to set top and bottom starting gradient line color
-      lineGradientColorTo="#000000" //to set top and bottom ending gradient
-      selectedValue={selected}
-      itemStyle={{ color: cp.text1, fontSize }}
-      onValueChange={(index) => setter(array[index])}
-    >
-      {array.map((value, i) => (
-        <PickerItem label={value} value={i} key={i} />
-      ))}
-    </Picker>
-  );
+  const customCompBatch = () =>
+    pickerGenerator(
+      batchValue.map((item) => item.label),
+      setBatch,
+      batchValue.findIndex((item) => item.label == batch),
+      24
+    );
+
+  const staticPress = () => {
+    setVisible(false);
+    setTimeout(() => {
+      setStaticType("picture");
+    }, 800);
+  };
+
+  const customCompMajor = () =>
+    pickerGenerator(
+      majorValue,
+      setMajor,
+      majorValue.findIndex((item) => item == major),
+      16
+    );
+
+  const staticPattern = {
+    action: true,
+    onPress: staticPress,
+    setVisible: staticPress,
+    visible,
+  };
 
   const statics: { [key: string]: StaticBottomSheetProps } = {
     batch: {
-      action: true,
-      customComp: () =>
-        pickerGenerator(
-          batchValue.map((item) => item.label),
-          setBatch,
-          batchValue.findIndex((item) => item.label == batch),
-          24
-        ),
-      onPress: () => {
-        setVisible(false);
-        setTimeout(() => {
-          setStaticType("picture");
-        }, 800);
-      },
-      setVisible: () => {
-        setVisible(false);
-        setTimeout(() => {
-          setStaticType("picture");
-        }, 800);
-      },
-      visible,
+      customComp: customCompBatch,
+      ...staticPattern,
     },
     dob: {
-      action: true,
       customComp: customCompDob,
+      ...staticPattern,
       onPress: dobSheetPress,
-      setVisible: () => {
-        setVisible(false);
-        setTimeout(() => {
-          setStaticType("picture");
-        }, 800);
-      },
-      visible,
     },
     major: {
-      action: true,
-      customComp: () =>
-        pickerGenerator(
-          majorValue,
-          setMajor,
-          majorValue.findIndex((item) => item == major),
-          16
-        ),
-      onPress: () => {
-        setVisible(false);
-        setTimeout(() => {
-          setStaticType("picture");
-        }, 800);
-      },
-      setVisible: () => {
-        setVisible(false);
-        setTimeout(() => {
-          setStaticType("picture");
-        }, 800);
-      },
-      visible,
+      customComp: customCompMajor,
+      ...staticPattern,
     },
     picture: {
       onPressLeft: () => onImagePicking(true),
@@ -436,6 +385,23 @@ const Profile: FC<ProfileProps> = ({ navigation }) => {
     return () => backHandler.remove();
   });
 
+  const onChangeUsername = (e: string) => setDisplayName(e);
+  const onChangeBio = (e: string) => setBio(e);
+  const onPressDob = useCallback(() => {
+    setStaticType("dob");
+    setVisible(true);
+  }, []);
+  const onPressBatch = useCallback(() => {
+    setStaticType("batch");
+    setVisible(true);
+  }, []);
+  const onPressMajor = useCallback(() => {
+    setStaticType("major");
+    setTimeout(() => {
+      setVisible(true);
+    }, 200);
+  }, []);
+
   return (
     <AppCanvas
       {...{
@@ -454,8 +420,9 @@ const Profile: FC<ProfileProps> = ({ navigation }) => {
         <TextItem type="normal14Main">Nama Pengguna</TextItem>
         <TextField
           placeholder={str.username}
+          mainStyle={{ marginBottom: spacing.sm }}
           containerStyle={s.field}
-          onChangeText={(e) => setDisplayName(e)}
+          onChangeText={onChangeUsername}
           warningText={testError("displayName")}
           isError={testError("displayName")}
           defaultValue={displayName}
@@ -465,42 +432,23 @@ const Profile: FC<ProfileProps> = ({ navigation }) => {
         <TextItem type="normal14Main">Bio</TextItem>
         <TextField
           placeholder={str.bio}
+          mainStyle={{ marginBottom: spacing.sm }}
           containerStyle={s.field}
-          onChangeText={(e) => setBio(e)}
+          onChangeText={onChangeBio}
           defaultValue={bio}
           maxLength={50}
           withPadding={false}
         />
         <TextItem type="normal14Main">Tanggal Lahir</TextItem>
-        <Button
-          style={[s.field, s.customTextField]}
-          onPress={() => {
-            setStaticType("dob");
-            setVisible(true);
-          }}
-        >
+        <Button style={[s.field, s.customTextField]} onPress={onPressDob}>
           <TextItem>{dob}</TextItem>
         </Button>
         <TextItem type="normal14Main">Angkatan</TextItem>
-        <Button
-          style={[s.field, s.customTextField]}
-          onPress={() => {
-            setStaticType("batch");
-            setVisible(true);
-          }}
-        >
+        <Button style={[s.field, s.customTextField]} onPress={onPressBatch}>
           <TextItem>{batch}</TextItem>
         </Button>
         <TextItem type="normal14Main">Jurusan</TextItem>
-        <Button
-          style={[s.field, s.customTextField]}
-          onPress={() => {
-            setStaticType("major");
-            setTimeout(() => {
-              setVisible(true);
-            }, 200);
-          }}
-        >
+        <Button style={[s.field, s.customTextField]} onPress={onPressMajor}>
           <TextItem>{major}</TextItem>
         </Button>
         <TextItem type="normal14Main">Jenis Kelamin</TextItem>

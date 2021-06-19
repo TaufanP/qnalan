@@ -2,6 +2,7 @@ import { CompositeNavigationProp } from "@react-navigation/core";
 import React from "react";
 import {
   Animated,
+  StyleProp,
   TextInput,
   TextInputProps,
   TextStyle,
@@ -14,7 +15,7 @@ import WarningIcon from "../WarningIcon";
 import styles from "./styles";
 
 interface TextFieldProps {
-  containerStyle?: ViewStyle;
+  containerStyle?: StyleProp<ViewStyle>;
   fieldStyle?: TextStyle;
   isError?: boolean | string;
   isStart?: boolean;

@@ -9,6 +9,7 @@ const styles = () =>
       paddingLeft: sp.ss,
       borderLeftWidth: 2,
       borderLeftColor: "transparent",
+      marginBottom: sp.sm,
     },
     scroll: {
       // justifyContent: "center",
@@ -29,7 +30,6 @@ const styles = () =>
       backgroundColor: "transparent",
       borderBottomWidth: 2,
       borderBottomColor: cp.blue1,
-      marginBottom: sp.sm,
     },
   });
 

@@ -31,6 +31,8 @@ const strings = {
 
   typing: "mengetik pesan ...",
 
+  usernameSixChar: "Username minimal 6 karakter",
+  usernameEmpty: "Username tidak boleh kosong",
   username: "username",
 };
 
