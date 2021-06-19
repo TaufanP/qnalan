@@ -1,5 +1,4 @@
 import { CompositeNavigationProp } from "@react-navigation/core";
-import moment from "moment";
 import React, { FC, useCallback, useEffect, useRef, useState } from "react";
 import { Animated, FlatList, View } from "react-native";
 import ScrollBottomSheet from "react-native-scroll-bottom-sheet";
@@ -27,24 +26,29 @@ import {
   Thumb,
 } from "../../components/organism/ContactSlider";
 import { db, heightPercent } from "../../config";
-import { FilterDataProps, RoomChatProps, UsersProps } from "../../config/types";
-import { node as n, pages as p, spacing as sp } from "../../constants";
+import { RoomChatProps, UsersProps } from "../../config/types";
+import { node as n, pages as p } from "../../constants";
 import {
   batchValue,
-  filterDataValue,
   genderValue,
   HobbiesValue,
   majorValue,
 } from "../../constants/defaultValue/local";
 import AppState from "../../redux";
+import {
+  ageSelection,
+  batchSelection,
+  counterSetter,
+  genderSelection,
+  hobbySelection,
+  majorSelection,
+} from "./helper";
 import styles from "./styles";
+
+const snapPoints = ["20%", heightPercent(110)];
 
 interface ContactListProps {
   navigation: CompositeNavigationProp<any, any>;
-}
-
-interface FilterCatProps extends FilterDataProps {
-  onPress?: any;
 }
 
 const ContactList: FC<ContactListProps> = ({ navigation }) => {
@@ -132,101 +136,38 @@ const ContactList: FC<ContactListProps> = ({ navigation }) => {
     scrollRef.current.snapTo(index);
   };
 
-  const counterSettter = () => {
-    const ageLength =
-      ageRef.current.min == 15 && ageRef.current.max == 40 ? 0 : 1;
-    const genderLength = gender.length == 0 ? 0 : 1;
-    const batchLength = batch.length == 0 ? 0 : 1;
-    const majorLength = major.length == 0 ? 0 : 1;
-    const hobbyLength = hobby.length == 0 ? 0 : 1;
-    setCount(
-      ageLength + genderLength + batchLength + majorLength + hobbyLength
-    );
-  };
-
   const filterSet = () => {
     snapTo(1);
+    const { min: ageMin, max: ageMax } = ageRef.current;
     setTimeout(() => {
       setAge(ageRef.current);
-      counterSettter();
+      setCount(counterSetter(ageMin, ageMax, gender, batch, major, hobby));
       filtering({ ...ageRef.current });
     }, 100);
   };
 
   const filtering = ({ min, max }: { min: number; max: number }) => {
-    const ageFilter = users.filter((user) => {
-      if (user.dob == undefined) return true;
-      const [day, month, year] = user.dob.split("/");
-      const userAge = moment().diff([year, month, day], "years");
-      return min < userAge && userAge < max;
-    });
+    const ageFilter = ageSelection(users, min, max);
     if (ageFilter.length == 0) {
       setFilterUsers([]);
       return;
     }
-    const genderFilter =
-      gender.length == 0
-        ? ageFilter
-        : ageFilter.filter((user) => {
-            if (user.gender == undefined || user.gender == 0) return false;
-            return (
-              gender.findIndex((knownGender) => knownGender == user.gender) !==
-              -1
-            );
-          });
+    const genderFilter = genderSelection(gender, ageFilter);
     if (genderFilter.length == 0) {
       setFilterUsers([]);
       return;
     }
-    const batchFilter =
-      batch.length == 0
-        ? genderFilter
-        : genderFilter.filter((user) => {
-            if (user.batch == undefined) return false;
-            const userBatch =
-              batchValue[
-                batchValue.findIndex(
-                  (knownBatch) => knownBatch.label == user.batch
-                )
-              ];
-            return (
-              batch.findIndex((knownBatch) => knownBatch == userBatch.value) !==
-              -1
-            );
-          });
+    const batchFilter = batchSelection(batch, genderFilter);
     if (batchFilter.length == 0) {
       setFilterUsers([]);
       return;
     }
-    const majorFilter =
-      major.length == 0
-        ? batchFilter
-        : batchFilter.filter((user) => {
-            if (user.major == undefined) return false;
-            const userMajor = majorValue.findIndex(
-              (knownMajor) => knownMajor == user.major
-            );
-            return (
-              major.findIndex((knownMajor) => knownMajor == userMajor) !== -1
-            );
-          });
+    const majorFilter = majorSelection(major, batchFilter);
     if (majorFilter.length == 0) {
       setFilterUsers([]);
       return;
     }
-    const hobbyFilter =
-      hobby.length == 0
-        ? majorFilter
-        : majorFilter.filter((user) => {
-            if (user.hobbies == undefined) return false;
-            const userHobbies = user.hobbies
-              .filter((currentHobby) => currentHobby.isSelected)
-              .map((currHobby) => currHobby.id);
-            const isExist = userHobbies.filter((userHobby) =>
-              hobby.includes(userHobby)
-            );
-            return isExist.length !== 0;
-          });
+    const hobbyFilter = hobbySelection(hobby, majorFilter);
     setFilterUsers(hobbyFilter);
   };
 
@@ -277,6 +218,7 @@ const ContactList: FC<ContactListProps> = ({ navigation }) => {
       }),
     [gender]
   );
+
   const GenderToggler = useCallback(
     () => (
       <>
@@ -304,6 +246,7 @@ const ContactList: FC<ContactListProps> = ({ navigation }) => {
       }),
     [batch]
   );
+
   const BatchToggler = useCallback(
     () => (
       <>
@@ -331,6 +274,7 @@ const ContactList: FC<ContactListProps> = ({ navigation }) => {
       }),
     [major]
   );
+
   const MajorToggler = useCallback(
     () => (
       <>
@@ -360,6 +304,7 @@ const ContactList: FC<ContactListProps> = ({ navigation }) => {
       }),
     [hobby]
   );
+
   const HobbyToggler = useCallback(
     () => (
       <>
@@ -439,6 +384,7 @@ const ContactList: FC<ContactListProps> = ({ navigation }) => {
     ),
     []
   );
+
   return (
     <AppCanvas header={header}>
       {users.length !== 0 && (
@@ -450,17 +396,11 @@ const ContactList: FC<ContactListProps> = ({ navigation }) => {
           />
         </View>
       )}
-      {/* <Button
-        style={{ backgroundColor: "red", width: 40, height: 40 }}
-        onPress={()=>filtering({...ageRef.current})}
-      >
-        <TextItem>TEST</TextItem>
-      </Button> */}
       <FlatList
         data={filterUsers}
         renderItem={renderItem}
         keyExtractor={keyExtractor}
-        contentContainerStyle={{ marginTop: sp.sm }}
+        contentContainerStyle={s.contentContainerStyle}
         ListEmptyComponent={ListEmptyComponent}
       />
       {isSheet && <Animated.View style={s.overlayCont} />}
@@ -468,7 +408,7 @@ const ContactList: FC<ContactListProps> = ({ navigation }) => {
         ref={scrollRef}
         showsHorizontalScrollIndicator={false}
         componentType="ScrollView"
-        snapPoints={["20%", heightPercent(110)]}
+        snapPoints={snapPoints}
         initialSnapIndex={1}
         renderHandle={renderHandle}
         contentContainerStyle={s.scrollContentContainerStyle}

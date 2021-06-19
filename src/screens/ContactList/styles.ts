@@ -4,6 +4,7 @@ import { colorsPalette as cp, spacing as sp } from "../../constants";
 
 const styles = () =>
   StyleSheet.create({
+    contentContainerStyle: { marginTop: sp.sm },
     scrollContainerStyle: {
       backgroundColor: cp.white,
       borderRadius: 20,
