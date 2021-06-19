@@ -135,8 +135,8 @@ android {
         applicationId "com.sbhumanbank"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 8
-        versionName "0.8"
+        versionCode 9
+        versionName "0.9"
         missingDimensionStrategy 'react-native-camera', 'general'
     }
     splits {
