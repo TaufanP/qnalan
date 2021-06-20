@@ -1,6 +1,6 @@
 <!-- HEADER -->
 <p align="center">
-  <img src="https://user-images.githubusercontent.com/33638021/118342328-0e2ef600-b54d-11eb-8d4c-68059d7c01aa.png" alt="Masanda" width="104">
+  <img src="https://user-images.githubusercontent.com/33638021/122659751-15c56880-d1a5-11eb-97de-6dcfcaffee04.png" alt="Masanda" width="104">
   <h1 align="center">Qnalan</h1>
 </p>
 
@@ -65,7 +65,7 @@ yarn install
 
 <!-- DOWNLOAD -->
 ## Download <a name="download"></a>
-Get the android released version [here](http://bit.ly/MasandaApp).
+Get the android released version [here](http://bit.ly/QnalanApp).
 
 <!-- LICENSE -->
 ## License <a name="license"></a>
