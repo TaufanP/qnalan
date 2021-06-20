@@ -39,12 +39,12 @@ Campus activities are disrupted by the presence of the recent pandemic. In order
 * **Relevant Search** allow you to narrow your search based on your desired criteria.
 
 <!-- DEMO AND PREVIEW -->
-<!-- ## Demo and Preview <a name="demo-preview"></a>
-### Search and Sort & Search Item with Barcode
-<img src="https://user-images.githubusercontent.com/33638021/118388159-e757e900-b64c-11eb-81cc-d82e7b54af1b.gif" alt="Masanda Search Sort Preview" height="600"> &nbsp;&nbsp; <img src="https://user-images.githubusercontent.com/33638021/118388432-a234b680-b64e-11eb-965f-a615299cfa21.gif" alt="Masanda Search Scanned Barcode Preview" height="600">
+## Demo and Preview <a name="demo-preview"></a>
+### Chat with Friends
+<img src="https://user-images.githubusercontent.com/33638021/122661888-149e3680-d1b9-11eb-92c8-7669d315f25b.gif" alt="Qnalan Chatting" height="600">
 
-### Add New Item with Autopick Barcode & Add New Item with Barcode Scanned
-<img src="https://user-images.githubusercontent.com/33638021/118388530-51718d80-b64f-11eb-9ba5-d620c44e50eb.gif" alt="Masanda Add New Item with Autopick Barcode" height="600"> &nbsp;&nbsp; <img src="https://user-images.githubusercontent.com/33638021/118391153-0b232b00-b65d-11eb-8ad9-9d586f06bdeb.gif" alt="Masanda  Add New Item with Barcode Scanned" height="600"> -->
+### Search for Friends
+<img src="https://user-images.githubusercontent.com/33638021/122661893-19fb8100-d1b9-11eb-8017-22648f6e66bf.gif" alt="Qnalan search friends" height="600">
 
 <!-- GETTING STARTED -->
 ## Getting Started <a name="getting-started"></a>
