@@ -1,6 +1,6 @@
 <!-- HEADER -->
 <p align="center">
-  <img src="https://user-images.githubusercontent.com/33638021/122659751-15c56880-d1a5-11eb-97de-6dcfcaffee04.png" alt="Masanda" width="104">
+  <img src="https://user-images.githubusercontent.com/33638021/122659751-15c56880-d1a5-11eb-97de-6dcfcaffee04.png" alt="Qnalan" width="104">
   <h1 align="center">Qnalan</h1>
 </p>
 
@@ -53,7 +53,7 @@ Campus activities are disrupted by the presence of the recent pandemic. In order
 * [Yarn](https://classic.yarnpkg.com/en/docs/getting-started)
 
 ### Installation <a name="installation"></a>
-Clone this [repo](https://github.com/TaufanP/masanda) then open the directory with your terminal
+Clone this [repo](https://github.com/TaufanP/qnalan) then open the directory with your terminal
 ```
 cd qnalan
 ```
@@ -69,7 +69,7 @@ Get the android released version [here](http://bit.ly/QnalanApp).
 
 <!-- LICENSE -->
 ## License <a name="license"></a>
-Qnalan is released under [GNU General Public License V3](https://github.com/TaufanP/masanda/blob/main/LICENSE).
+Qnalan is released under [GNU General Public License V3](https://github.com/TaufanP/qnalan/blob/main/LICENSE).
 
 <!-- CONTACT -->
 ## Contact <a name="contact"></a>
