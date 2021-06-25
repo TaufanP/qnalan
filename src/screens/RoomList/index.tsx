@@ -22,6 +22,7 @@ import {
 } from "../../constants";
 import AppState from "../../redux";
 import { loggingOut } from "../../redux/actions";
+import messaging from "@react-native-firebase/messaging";
 
 interface RoomListProps {
   navigation: CompositeNavigationProp<any, any>;
@@ -111,13 +112,30 @@ const RoomList = ({ navigation }: RoomListProps) => {
     </View>
   );
 
+  const saveToken = async () => {
+    const data = await messaging().getToken();
+    console.log(data);
+  };
+
   useEffect(() => {
     const subscriber = auth().onAuthStateChanged(onAuthStateChanged);
     return subscriber; // unsubscribe on unmount
   }, []);
 
+  async function requestUserPermission() {
+    // const authorizationStatus = await messaging().hasPermission();
+    // if (authorizationStatus) {
+    //   console.log("Permission status:", authorizationStatus);
+    // }
+    messaging()
+      .hasPermission()
+      .then((e) => console.log(e));
+  }
+
   useEffect(() => {
     getUsers();
+    requestUserPermission();
+    // saveToken();
     return () => {
       isMounted.current = false;
     };

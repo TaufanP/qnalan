@@ -20,6 +20,7 @@ import {
 } from "../../constants";
 import StackParamsList from "../../constants/screenParams";
 import AppState from "../../redux";
+import { notify } from "../../services";
 
 interface RoomChatProps {
   navigation: CompositeNavigationProp<any, any>;
@@ -114,7 +115,7 @@ const RoomChat = ({ navigation }: RoomChatProps) => {
     [partner, isTyping]
   );
 
-  const onSend = useCallback((messageGift: IMessage[]) => {
+  const onSend = useCallback(async (messageGift: IMessage[]) => {
     db.ref(
       `${n.room_chats}/${roomId}/${n.participants}/${sessionReducer.uid}`
     ).update({ isTyping: false });
@@ -124,6 +125,7 @@ const RoomChat = ({ navigation }: RoomChatProps) => {
       text: messageGift[0].text,
       createdAt,
     });
+    await notify({ message: messageGift[0].text });
     db.ref(`${n.messages}/${messageId}/${messageGift[0]._id}`).update({
       ...finalMsg,
       createdAt,
