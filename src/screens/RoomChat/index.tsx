@@ -5,7 +5,14 @@ import {
 } from "@react-navigation/core";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { BackHandler, Image, View } from "react-native";
-import { GiftedChat, IMessage, Send, User } from "react-native-gifted-chat";
+import {
+  GiftedChat,
+  IMessage,
+  Send,
+  User,
+  InputToolbar,
+  Composer,
+} from "react-native-gifted-chat";
 import { useSelector } from "react-redux";
 import { PlaceholderUser, Send as SendIcon, VideoCall } from "../../../assets";
 import { AppCanvas, DefaultHeader, TextItem } from "../../components";
@@ -145,6 +152,26 @@ const RoomChat = ({ navigation }: RoomChatProps) => {
     );
   }, [partner]);
 
+  const renderInputToolbar = (props: any) => (
+    <InputToolbar
+      {...props}
+      containerStyle={{
+        backgroundColor: "#fff",
+      }}
+    />
+  );
+  const renderComposer = (props: any) => (
+    <Composer
+      {...props}
+      textInputStyle={{
+        color: "#222B45",
+        backgroundColor: "#EDF1F7",
+        borderRadius: 400,
+        paddingHorizontal: 12,
+      }}
+    />
+  );
+
   useEffect(() => {
     findPartner();
     onValueChange();
@@ -215,6 +242,9 @@ const RoomChat = ({ navigation }: RoomChatProps) => {
         renderSend={renderSend}
         placeholder="Ketik pesan"
         onInputTextChanged={typing}
+        renderInputToolbar={renderInputToolbar}
+        renderComposer={renderComposer}
+        alwaysShowSend
       />
     </AppCanvas>
   );
