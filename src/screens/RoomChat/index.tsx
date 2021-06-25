@@ -28,12 +28,14 @@ import {
 import StackParamsList from "../../constants/screenParams";
 import AppState from "../../redux";
 import { notify } from "../../services";
+import styles from "./styles";
 
 interface RoomChatProps {
   navigation: CompositeNavigationProp<any, any>;
 }
 
 const RoomChat = ({ navigation }: RoomChatProps) => {
+  const s = styles();
   const { sessionReducer } = useSelector((state: AppState) => state);
 
   const route = useRoute<RouteProp<StackParamsList, "ROOM_CHAT_SCREEN">>();
@@ -80,14 +82,7 @@ const RoomChat = ({ navigation }: RoomChatProps) => {
   const renderSend = (props: any) => {
     return (
       <Send {...props}>
-        <View
-          style={{
-            paddingHorizontal: spacing.sm,
-            height: "100%",
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
+        <View style={s.renderSendStyle}>
           <SendIcon width={24} height={24} fill={cp.main} />
         </View>
       </Send>
@@ -105,7 +100,7 @@ const RoomChat = ({ navigation }: RoomChatProps) => {
       <DefaultHeader
         title={partner?.displayName || partner?.email || "Username"}
         centerComponent={() => (
-          <View style={{ flex: 1, justifyContent: "center" }}>
+          <View style={s.headerStyle}>
             <TextItem type="header">
               {partner?.displayName || partner?.email || "Username"}
             </TextItem>
@@ -132,7 +127,12 @@ const RoomChat = ({ navigation }: RoomChatProps) => {
       text: messageGift[0].text,
       createdAt,
     });
-    await notify({ message: messageGift[0].text });
+    if (partner?.token)
+      await notify({
+        body: messageGift[0].text,
+        title: partner?.displayName || "",
+        to: partner?.token,
+      });
     db.ref(`${n.messages}/${messageId}/${messageGift[0]._id}`).update({
       ...finalMsg,
       createdAt,
@@ -144,32 +144,17 @@ const RoomChat = ({ navigation }: RoomChatProps) => {
       ? { uri: partner?.photoURL }
       : PlaceholderUser;
     return (
-      <View
-        style={{ width: 32, height: 32, borderRadius: 32, overflow: "hidden" }}
-      >
-        <Image source={source} style={{ width: "100%", height: "100%" }} />
+      <View style={s.renderAvatarStyle}>
+        <Image source={source} style={s.avatarImage} />
       </View>
     );
   }, [partner]);
 
   const renderInputToolbar = (props: any) => (
-    <InputToolbar
-      {...props}
-      containerStyle={{
-        backgroundColor: "#fff",
-      }}
-    />
+    <InputToolbar {...props} containerStyle={s.renderInputStyle} />
   );
   const renderComposer = (props: any) => (
-    <Composer
-      {...props}
-      textInputStyle={{
-        color: "#222B45",
-        backgroundColor: "#EDF1F7",
-        borderRadius: 400,
-        paddingHorizontal: 12,
-      }}
-    />
+    <Composer {...props} textInputStyle={s.renderComposerStyle} />
   );
 
   useEffect(() => {
