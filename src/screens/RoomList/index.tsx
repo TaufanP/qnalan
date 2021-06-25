@@ -30,7 +30,9 @@ interface RoomListProps {
 
 const RoomList = ({ navigation }: RoomListProps) => {
   const dispatch = useDispatch();
-  const { sessionReducer } = useSelector((state: AppState) => state);
+  const {
+    sessionReducer: { uid },
+  } = useSelector((state: AppState) => state);
 
   const [users, setUsers] = useState<RoomChatProps[]>([]);
   const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
@@ -67,23 +69,35 @@ const RoomList = ({ navigation }: RoomListProps) => {
 
   const getUsers = async () => {
     try {
-      db.ref(`${n.users}/${sessionReducer.uid}/${n.roomChats}`).on(
-        "value",
-        (snapshot) => {
-          if (!isMounted.current) {
-            return;
-          }
-          setUsers([]);
-          if (snapshot.val() == null) {
-            setUsers([]);
-            return;
-          }
-          const usersData: RoomChatProps[] = Object.values(snapshot.val());
-          setUsers(usersData);
+      db.ref(`${n.users}/${uid}/${n.roomChats}`).on("value", (snapshot) => {
+        if (!isMounted.current) {
+          return;
         }
-      );
+        setUsers([]);
+        if (snapshot.val() == null) {
+          setUsers([]);
+          return;
+        }
+        const usersData: RoomChatProps[] = Object.values(snapshot.val());
+        setUsers(usersData);
+      });
     } catch (error) {
       console.log(`RoomList, getUsers(), ${error.message}`);
+    }
+  };
+
+  const saveToken = async () => {
+    const token = await messaging().getToken();
+    if (uid) db.ref(`${n.users}/${uid}`).update({ token });
+  };
+
+  const getProfile = async () => {
+    try {
+      const raw = await db.ref(`${n.users}/${uid}`).once("value");
+      const data = raw.val();
+      if (!data.hasOwnProperty("token")) saveToken();
+    } catch (error) {
+      console.log(`RoomList, getProfile(), ${error.message}`);
     }
   };
 
@@ -112,30 +126,15 @@ const RoomList = ({ navigation }: RoomListProps) => {
     </View>
   );
 
-  const saveToken = async () => {
-    const data = await messaging().getToken();
-    console.log(data);
-  };
-
   useEffect(() => {
     const subscriber = auth().onAuthStateChanged(onAuthStateChanged);
     return subscriber; // unsubscribe on unmount
   }, []);
 
-  async function requestUserPermission() {
-    // const authorizationStatus = await messaging().hasPermission();
-    // if (authorizationStatus) {
-    //   console.log("Permission status:", authorizationStatus);
-    // }
-    messaging()
-      .hasPermission()
-      .then((e) => console.log(e));
-  }
-
   useEffect(() => {
     getUsers();
-    requestUserPermission();
-    // saveToken();
+    getProfile();
+
     return () => {
       isMounted.current = false;
     };

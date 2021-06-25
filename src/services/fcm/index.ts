@@ -1,15 +1,25 @@
-const sendNotif = async ({ message }: { message: string }) => {
-  const test = {
-    to: "fK4bYSXMSDSIRgDw3t5kWd:APA91bE074gJwho-CPR0EiikNopmTUh5pRNxv8Pxg2ELa8wxMMBhqZKZ1_QvJXPWZ-K1TPpIjrQC0TZMX_d55VhX-pblp9DBlu3NuddLU1U6xc5MIrthntfM-Ia5v9w9150V6itMAbE3",
+import { keys } from "../../config";
+
+const sendNotif = async ({
+  title,
+  body,
+  to,
+}: {
+  title: string;
+  body: string;
+  to: string;
+}) => {
+  const payload = {
+    to,
     notification: {
-      body: "The first message from the React Native and Firebase",
-      title: message,
+      body,
+      title,
       content_available: true,
       priority: "high",
     },
     data: {
-      body: "The first message from the React Native and Firebase",
-      title: "React Native Firebase",
+      body,
+      title,
       content_available: true,
       priority: "high",
     },
@@ -18,9 +28,9 @@ const sendNotif = async ({ message }: { message: string }) => {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `key=`,
+      Authorization: `key=${keys.googleApi}`,
     },
-    body: JSON.stringify(test),
+    body: JSON.stringify(payload),
   });
 };
 
