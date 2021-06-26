@@ -61,7 +61,7 @@ Install all the packages
 ```
 yarn install
 ```
-Create .env file on project root, containing one variable:
+Create .env file on project root, containing one variable:<br/>
 SERVER_KEY is your server key for Cloud Messaging. On your firebase console, go to project settings then Cloud Messaging tab.
 ```
 GOOGLE_API=SERVER_KEY
