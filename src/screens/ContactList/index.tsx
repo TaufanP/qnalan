@@ -28,6 +28,7 @@ import {
 import { db, heightPercent } from "../../config";
 import { RoomChatProps, UsersProps } from "../../config/types";
 import { node as n, pages as p } from "../../constants";
+import { RoomDetailValue } from "../../constants/defaultValue";
 import {
   batchValue,
   genderValue,
@@ -105,12 +106,9 @@ const ContactList: FC<ContactListProps> = ({ navigation }) => {
     const roomId = db.ref(n.room_chats).push().key;
     const messageId = db.ref(n.messages).push().key;
     const createdAt = new Date().getTime();
+
     await db.ref(`${n.room_chats}/${roomId}`).set({
-      lastMessage: { text: "", createdAt: "" },
-      participants: {
-        [sessionReducer.uid]: { isTyping: false },
-        [partnerId]: { isTyping: false },
-      },
+      ...RoomDetailValue,
       messageId,
     });
     db.ref(

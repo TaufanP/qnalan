@@ -4,8 +4,8 @@ const RoomDetailValue: RoomDetailProps = {
   lastMessage: { createdAt: "", text: "" },
   messageId: "",
   participants: {
-    firstUserUid: { isTyping: false },
-    secondUserUid: { isTyping: false },
+    firstUserUid: { isTyping: false, isRead: true },
+    secondUserUid: { isTyping: false, isRead: true },
   },
 };
 
