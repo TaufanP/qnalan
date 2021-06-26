@@ -2,6 +2,7 @@ import { NavigationContainer } from "@react-navigation/native";
 import React, { FC } from "react";
 import { LogBox } from "react-native";
 import { useSelector } from "react-redux";
+import { linking } from "./config";
 import AppState from "./redux";
 import { AuthRoute, MainRoute } from "./routes";
 
@@ -13,7 +14,7 @@ const Root: FC = () => {
   LogBox.ignoreLogs(["Reanimated 2", "getNode()"]);
 
   return (
-    <NavigationContainer>
+    <NavigationContainer linking={linking}>
       {uid == "" ? <AuthRoute /> : <MainRoute />}
     </NavigationContainer>
   );
