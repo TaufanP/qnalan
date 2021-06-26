@@ -19,3 +19,7 @@ declare module "*.ttf" {
   const value: any;
   export = value;
 }
+
+declare module "@env" {
+  export const GOOGLE_API: string;
+}

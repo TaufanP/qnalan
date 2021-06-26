@@ -1,9 +1,10 @@
-const colorsPalette = {
+const colorsPalette: { [key: string]: string } = {
   main: "#48A1D9",
   secondary: "#FFDEDE",
   blue1: "#48A1D9",
   blue2: "#5B8FF0",
   blue3: "#4380F0",
+  blue4: "#449CDA",
   red1: "#DB3C36",
   white: "#FFFFFF",
   white0: "#f4f4f4",

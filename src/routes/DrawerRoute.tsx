@@ -1,28 +1,28 @@
-import { createDrawerNavigator } from "@react-navigation/drawer";
+import {
+  createDrawerNavigator,
+  DrawerContentComponentProps,
+} from "@react-navigation/drawer";
 import React from "react";
 import { DrawerContent } from "../components";
 import { pages as p } from "../constants";
-import {
-  HomeScreen,
-  ProfileScreen,
-  AuthScreen,
-  RoomListScreen,
-} from "../screens";
+import { Auth, Profile, RoomList } from "../screens";
 
 const Drawer = createDrawerNavigator();
 
 const DrawerRoute = () => {
+  const drawerContent = (props: DrawerContentComponentProps) => (
+    <DrawerContent {...props} />
+  );
   return (
     <Drawer.Navigator
-      drawerContent={(props) => <DrawerContent {...props} />}
-      initialRouteName={p.HomeScreen}
+      drawerContent={drawerContent}
+      initialRouteName={p.RoomList}
     >
-      <Drawer.Screen name={p.HomeScreen} component={HomeScreen} />
-      <Drawer.Screen name={p.RoomListScreen} component={RoomListScreen} />
-      <Drawer.Screen name={p.AuthScreen} component={AuthScreen} />
+      <Drawer.Screen name={p.RoomList} component={RoomList} />
+      <Drawer.Screen name={p.Auth} component={Auth} />
       <Drawer.Screen
-        name={p.ProfileScreen}
-        component={ProfileScreen}
+        name={p.Profile}
+        component={Profile}
         options={{ unmountOnBlur: true }}
       />
     </Drawer.Navigator>

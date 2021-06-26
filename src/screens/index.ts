@@ -1,17 +1,9 @@
-import AuthScreen from "./AuthScreen";
-import ContactListScreen from "./ContactListScreen";
-import HomeScreen from "./HomeScreen";
-import RoomChatScreen from "./RoomChatScreen";
-import RoomListScreen from "./RoomListScreen";
-import ProfileScreen from "./ProfileScreen";
-import VideoCallScreen from "./VideoCallScreen";
+import Auth from "./Auth";
+import ContactList from "./ContactList";
+import Home from "./Home";
+import Profile from "./Profile";
+import RoomChat from "./RoomChat";
+import RoomList from "./RoomList";
+import VideoCall from "./VideoCall";
 
-export {
-  AuthScreen,
-  ContactListScreen,
-  HomeScreen,
-  ProfileScreen,
-  RoomChatScreen,
-  RoomListScreen,
-  VideoCallScreen,
-};
+export { Auth, ContactList, Home, Profile, RoomChat, RoomList, VideoCall };

@@ -4,29 +4,30 @@ import {
 } from "@react-navigation/stack";
 import React from "react";
 import { pages as p } from "../constants";
-import { AuthScreen, HomeScreen } from "../screens";
+import { Auth } from "../screens";
 import DrawerRoute from "./DrawerRoute";
 
 const Stack = createStackNavigator();
 
 const AuthRoute = () => {
+  const screenOptions = ({ route, navigation }: any) => ({
+    headerShown: false,
+    // gestureEnabled: true,
+    cardOverlayEnabled: true,
+    headerStatusBarHeight:
+      navigation.dangerouslyGetState().routes.indexOf(route) > 0
+        ? 0
+        : undefined,
+    ...TransitionPresets.SlideFromRightIOS,
+  });
   return (
     <Stack.Navigator
-      initialRouteName={p.AuthScreen}
+      initialRouteName={p.Auth}
       headerMode="none"
-      screenOptions={({ route, navigation }) => ({
-        headerShown: false,
-        gestureEnabled: true,
-        cardOverlayEnabled: true,
-        headerStatusBarHeight:
-          navigation.dangerouslyGetState().routes.indexOf(route) > 0
-            ? 0
-            : undefined,
-        ...TransitionPresets.SlideFromRightIOS,
-      })}
+      screenOptions={screenOptions}
       mode="card"
     >
-      <Stack.Screen name={p.AuthScreen} component={AuthScreen} />
+      <Stack.Screen name={p.Auth} component={Auth} />
       <Stack.Screen name={p.DrawerRoute} component={DrawerRoute} />
     </Stack.Navigator>
   );

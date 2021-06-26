@@ -4,8 +4,8 @@ interface RoomChatsPropsKey {
 
 interface HobbyProps {
   id: number;
-  label: string;
   isSelected: boolean;
+  label: string;
 }
 interface UsersProps {
   batch: string;
@@ -19,11 +19,13 @@ interface UsersProps {
   photoURL: string;
   uid: string;
   roomChats?: RoomChatsPropsKey;
+  token?: string;
 }
 
 interface RoomChatProps {
   partnerId: string;
   roomId: string;
+  createdAt: string;
 }
 
 export type { UsersProps, RoomChatProps, HobbyProps };

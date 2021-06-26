@@ -1,5 +1,6 @@
 interface TypingProps {
   isTyping: boolean;
+  isRead: boolean;
 }
 
 interface ParticipantProps {
@@ -7,8 +8,8 @@ interface ParticipantProps {
 }
 
 interface LastMessageProps {
-  text: string;
   createdAt: string | number;
+  text: string;
 }
 
 interface RoomDetailProps {
