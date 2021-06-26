@@ -80,7 +80,11 @@ const ContactList: FC<ContactListProps> = ({ navigation }) => {
       addingChatRoom(partnerId);
       return;
     }
-    const chats: RoomChatProps[] = Object.values(chatList.val());
+    const chatsRaw = Object.entries(chatList.val());
+    const chats: RoomChatProps[] = chatsRaw.map((chat: any) => ({
+      ...chat[1],
+      partnerId: chat[0],
+    }));
     const isExist = chats.findIndex((chat) => chat.partnerId == partnerId);
     if (isExist !== -1) {
       const details = chats[isExist];
