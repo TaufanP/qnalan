@@ -25,6 +25,7 @@ interface UsersProps {
 interface RoomChatProps {
   partnerId: string;
   roomId: string;
+  createdAt: string;
 }
 
 export type { UsersProps, RoomChatProps, HobbyProps };

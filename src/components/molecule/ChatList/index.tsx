@@ -80,10 +80,11 @@ const ChatList = ({ roomId, onPress, partnerId }: ChatListProps) => {
     <PersonList
       {...{
         onPress: buttonOnPress,
-        title: detail.displayName || detail.email || "Username",
+        title: detail?.displayName || detail?.email || "Username",
         subtitle: lastMessage,
         time: finalTime,
-        uri: detail.photoURL,
+        uri: detail?.photoURL || "",
+        titleBold: false,
       }}
     />
   );

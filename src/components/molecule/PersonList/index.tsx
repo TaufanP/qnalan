@@ -12,6 +12,7 @@ interface PersonListProps {
   title?: string;
   type?: string;
   uri?: string;
+  titleBold?: boolean;
 }
 
 const PersonList = ({
@@ -21,6 +22,7 @@ const PersonList = ({
   title,
   type,
   uri,
+  titleBold = true,
 }: PersonListProps) => {
   const source = uri ? { uri } : PlaceholderUser;
   const s = styles();
@@ -31,7 +33,9 @@ const PersonList = ({
       </View>
       <View style={{ flex: 1 }}>
         <View style={s.titleCont}>
-          <TextItem style={{ fontWeight: "bold" }}>{title || "title"}</TextItem>
+          <TextItem style={{ fontWeight: titleBold ? "bold" : "normal" }}>
+            {title || "title"}
+          </TextItem>
           {time !== undefined && (
             <TextItem type="normal12Text3">
               {time == "none" ? "" : time}
@@ -40,10 +44,11 @@ const PersonList = ({
         </View>
         {subtitle !== undefined && (
           <TextItem
+            numberOfLines={2}
             type={
               type == "contact"
                 ? "normal12Text1"
-                : `normal14Text1${subtitle == str.typing ? "Italic" : ""}`
+                : `normal11Text1${subtitle == str.typing ? "Italic" : ""}`
             }
           >
             {subtitle || "Ayo mulai chat"}

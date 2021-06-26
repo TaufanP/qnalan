@@ -100,6 +100,7 @@ const ContactList: FC<ContactListProps> = ({ navigation }) => {
   const addingChatRoom = async (partnerId: string) => {
     const roomId = db.ref(n.room_chats).push().key;
     const messageId = db.ref(n.messages).push().key;
+    const createdAt = new Date().getTime();
     await db.ref(`${n.room_chats}/${roomId}`).set({
       lastMessage: { text: "", createdAt: "" },
       participants: {
@@ -108,13 +109,17 @@ const ContactList: FC<ContactListProps> = ({ navigation }) => {
       },
       messageId,
     });
-    db.ref(`${n.users}/${sessionReducer.uid}/${n.roomChats}`).push({
+    db.ref(
+      `${n.users}/${sessionReducer.uid}/${n.roomChats}/${partnerId}`
+    ).update({
       roomId,
-      partnerId,
+      createdAt,
     });
-    db.ref(`${n.users}/${partnerId}/${n.roomChats}`).push({
+    db.ref(
+      `${n.users}/${partnerId}/${n.roomChats}/${sessionReducer.uid}`
+    ).update({
       roomId,
-      partnerId: sessionReducer.uid,
+      createdAt,
     });
     navigation.replace(p.RoomChat, { partnerId, roomId, messageId });
   };

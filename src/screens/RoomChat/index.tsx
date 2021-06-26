@@ -132,6 +132,16 @@ const RoomChat = ({ navigation }: RoomChatProps) => {
         ...finalMsg,
         createdAt,
       });
+      db.ref(
+        `${n.users}/${sessionReducer.uid}/${n.roomChats}/${partnerId}`
+      ).update({
+        createdAt,
+      });
+      db.ref(
+        `${n.users}/${partnerId}/${n.roomChats}/${sessionReducer.uid}`
+      ).update({
+        createdAt,
+      });
       if (partner?.token)
         await notify({
           body: messageGift[0].text,

@@ -73,13 +73,19 @@ const RoomList = ({ navigation }: RoomListProps) => {
         if (!isMounted.current) {
           return;
         }
+        const usersRaw = snapshot.val();
         setUsers([]);
-        if (snapshot.val() == null) {
+        if (usersRaw == null) {
           setUsers([]);
           return;
         }
-        const usersData: RoomChatProps[] = Object.values(snapshot.val());
-        setUsers(usersData);
+        const prettifyUser: RoomChatProps[] = Object.entries(usersRaw).map(
+          (user: any) => ({ ...user[1], partnerId: user[0] })
+        );
+        const usersSort: RoomChatProps[] = prettifyUser.sort((a, b) =>
+          a.createdAt > b.createdAt ? 1 : -1
+        );
+        setUsers(usersSort);
       });
     } catch (error) {
       console.log(`RoomList, getUsers(), ${error.message}`);
@@ -132,12 +138,37 @@ const RoomList = ({ navigation }: RoomListProps) => {
   }, []);
 
   useEffect(() => {
-    getUsers();
     getProfile();
 
     return () => {
       isMounted.current = false;
     };
+  }, []);
+
+  useEffect(() => {
+    const onValueChange = db
+      .ref(`${n.users}/${uid}/${n.roomChats}`)
+      .on("value", (snapshot) => {
+        if (!isMounted.current) {
+          return;
+        }
+        const usersRaw = snapshot.val();
+        setUsers([]);
+        if (usersRaw == null) {
+          setUsers([]);
+          return;
+        }
+        const prettifyUser: RoomChatProps[] = Object.entries(usersRaw).map(
+          (user: any) => ({ ...user[1], partnerId: user[0] })
+        );
+        const usersSort: RoomChatProps[] = prettifyUser.sort((a, b) =>
+          a.createdAt > b.createdAt ? -1 : 1
+        );
+        setUsers(usersSort);
+      });
+
+    return () =>
+      db.ref(`${n.users}/${uid}/${n.roomChats}`).off("value", onValueChange);
   }, []);
 
   return (
