@@ -28,7 +28,9 @@ const PersonList = ({
 }: PersonListProps) => {
   const source = uri ? { uri } : PlaceholderUser;
   const s = styles();
-  const typingType = `normal11Text1${subtitle == str.typing ? "Italic" : ""}`;
+  const typingType = `${isRead ? "normal" : "bold"}11Text1${
+    subtitle == str.typing ? "Italic" : ""
+  }`;
   return (
     <Button style={s.container} onPress={onPress}>
       <View style={s.photoCont}>

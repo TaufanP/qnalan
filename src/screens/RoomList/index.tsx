@@ -67,26 +67,27 @@ const RoomList = ({ navigation }: RoomListProps) => {
     []
   );
 
+  const snapshotCallback = (snapshot: any) => {
+    if (!isMounted.current) {
+      return;
+    }
+    const usersRaw = snapshot.val();
+    if (usersRaw == null) {
+      setUsers([]);
+      return;
+    }
+    const prettifyUser: RoomChatProps[] = Object.entries(usersRaw).map(
+      (user: any) => ({ ...user[1], partnerId: user[0] })
+    );
+    const usersSort: RoomChatProps[] = prettifyUser.sort((a, b) =>
+      a.createdAt > b.createdAt ? -1 : 1
+    );
+    setUsers(usersSort);
+  };
+
   const getUsers = async () => {
     try {
-      db.ref(`${n.users}/${uid}/${n.roomChats}`).on("value", (snapshot) => {
-        if (!isMounted.current) {
-          return;
-        }
-        const usersRaw = snapshot.val();
-        setUsers([]);
-        if (usersRaw == null) {
-          setUsers([]);
-          return;
-        }
-        const prettifyUser: RoomChatProps[] = Object.entries(usersRaw).map(
-          (user: any) => ({ ...user[1], partnerId: user[0] })
-        );
-        const usersSort: RoomChatProps[] = prettifyUser.sort((a, b) =>
-          a.createdAt > b.createdAt ? 1 : -1
-        );
-        setUsers(usersSort);
-      });
+      db.ref(`${n.users}/${uid}/${n.roomChats}`).on("value", snapshotCallback);
     } catch (error) {
       console.log(`RoomList, getUsers(), ${error.message}`);
     }
@@ -148,24 +149,7 @@ const RoomList = ({ navigation }: RoomListProps) => {
   useEffect(() => {
     const onValueChange = db
       .ref(`${n.users}/${uid}/${n.roomChats}`)
-      .on("value", (snapshot) => {
-        if (!isMounted.current) {
-          return;
-        }
-        const usersRaw = snapshot.val();
-        setUsers([]);
-        if (usersRaw == null) {
-          setUsers([]);
-          return;
-        }
-        const prettifyUser: RoomChatProps[] = Object.entries(usersRaw).map(
-          (user: any) => ({ ...user[1], partnerId: user[0] })
-        );
-        const usersSort: RoomChatProps[] = prettifyUser.sort((a, b) =>
-          a.createdAt > b.createdAt ? -1 : 1
-        );
-        setUsers(usersSort);
-      });
+      .on("value", snapshotCallback);
 
     return () =>
       db.ref(`${n.users}/${uid}/${n.roomChats}`).off("value", onValueChange);
