@@ -61,11 +61,11 @@ Install all the packages
 ```
 yarn install
 ```
-Create .env file on project root, containing one variable:<br/>
-SERVER_KEY is your server key for Cloud Messaging. On your firebase console, go to project settings then Cloud Messaging tab.
+Create .env file on project root, containing one variable:
 ```
 GOOGLE_API=SERVER_KEY
 ```
+SERVER_KEY is your server key for Cloud Messaging. On your firebase console, go to project settings then Cloud Messaging tab.<br/>
 [Run](https://reactnative.dev/docs/running-on-device) the application on your device
 
 <!-- DOWNLOAD -->
