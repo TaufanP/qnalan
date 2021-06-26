@@ -117,27 +117,30 @@ const RoomChat = ({ navigation }: RoomChatProps) => {
     [partner, isTyping]
   );
 
-  const onSend = useCallback(async (messageGift: IMessage[]) => {
-    db.ref(
-      `${n.room_chats}/${roomId}/${n.participants}/${sessionReducer.uid}`
-    ).update({ isTyping: false });
-    const createdAt = new Date().getTime();
-    const { _id, ...finalMsg } = messageGift[0];
-    db.ref(`${n.room_chats}/${roomId}/${n.lastMessage}`).update({
-      text: messageGift[0].text,
-      createdAt,
-    });
-    if (partner?.token)
-      await notify({
-        body: messageGift[0].text,
-        title: partner?.displayName || "",
-        to: partner?.token,
+  const onSend = useCallback(
+    async (messageGift: IMessage[]) => {
+      db.ref(
+        `${n.room_chats}/${roomId}/${n.participants}/${sessionReducer.uid}`
+      ).update({ isTyping: false });
+      const createdAt = new Date().getTime();
+      const { _id, ...finalMsg } = messageGift[0];
+      db.ref(`${n.room_chats}/${roomId}/${n.lastMessage}`).update({
+        text: messageGift[0].text,
+        createdAt,
       });
-    db.ref(`${n.messages}/${messageId}/${messageGift[0]._id}`).update({
-      ...finalMsg,
-      createdAt,
-    });
-  }, []);
+      db.ref(`${n.messages}/${messageId}/${messageGift[0]._id}`).update({
+        ...finalMsg,
+        createdAt,
+      });
+      if (partner?.token)
+        await notify({
+          body: messageGift[0].text,
+          title: sessionReducer?.displayName || "",
+          to: partner?.token,
+        });
+    },
+    [partner]
+  );
 
   const renderAvatar = useCallback(() => {
     const source = partner?.photoURL
