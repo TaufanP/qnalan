@@ -53,6 +53,11 @@ const RoomChat = ({ navigation }: RoomChatProps) => {
 
   const findPartner = async () => {
     const dataUser = await db.ref(`${n.users}/${partnerId}`).once("value");
+    db.ref(
+      `${n.room_chats}/${roomId}/${n.participants}/${sessionReducer.uid}`
+    ).update({
+      isRead: true,
+    });
     if (isMounted.current) setPartner(dataUser.val());
   };
 
@@ -122,6 +127,9 @@ const RoomChat = ({ navigation }: RoomChatProps) => {
       db.ref(
         `${n.room_chats}/${roomId}/${n.participants}/${sessionReducer.uid}`
       ).update({ isTyping: false });
+      db.ref(`${n.room_chats}/${roomId}/${n.participants}/${partnerId}`).update(
+        { isRead: false }
+      );
       const createdAt = new Date().getTime();
       const { _id, ...finalMsg } = messageGift[0];
       db.ref(`${n.room_chats}/${roomId}/${n.lastMessage}`).update({
@@ -130,6 +138,16 @@ const RoomChat = ({ navigation }: RoomChatProps) => {
       });
       db.ref(`${n.messages}/${messageId}/${messageGift[0]._id}`).update({
         ...finalMsg,
+        createdAt,
+      });
+      db.ref(
+        `${n.users}/${sessionReducer.uid}/${n.roomChats}/${partnerId}`
+      ).update({
+        createdAt,
+      });
+      db.ref(
+        `${n.users}/${partnerId}/${n.roomChats}/${sessionReducer.uid}`
+      ).update({
         createdAt,
       });
       if (partner?.token)
@@ -209,6 +227,9 @@ const RoomChat = ({ navigation }: RoomChatProps) => {
   useEffect(() => {
     const backAction = () => {
       typing("");
+      db.ref(
+        `${n.room_chats}/${roomId}/${n.participants}/${sessionReducer.uid}`
+      ).update({ isRead: true });
       return false;
     };
 

@@ -1,5 +1,6 @@
 interface TypingProps {
   isTyping: boolean;
+  isRead: boolean;
 }
 
 interface ParticipantProps {

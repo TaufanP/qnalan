@@ -12,6 +12,8 @@ interface PersonListProps {
   title?: string;
   type?: string;
   uri?: string;
+  titleBold?: boolean;
+  isRead?: boolean;
 }
 
 const PersonList = ({
@@ -21,9 +23,14 @@ const PersonList = ({
   title,
   type,
   uri,
+  titleBold = true,
+  isRead = true,
 }: PersonListProps) => {
   const source = uri ? { uri } : PlaceholderUser;
   const s = styles();
+  const typingType = `${isRead ? "normal" : "bold"}11Text1${
+    subtitle == str.typing ? "Italic" : ""
+  }`;
   return (
     <Button style={s.container} onPress={onPress}>
       <View style={s.photoCont}>
@@ -31,7 +38,9 @@ const PersonList = ({
       </View>
       <View style={{ flex: 1 }}>
         <View style={s.titleCont}>
-          <TextItem style={{ fontWeight: "bold" }}>{title || "title"}</TextItem>
+          <TextItem style={{ fontWeight: titleBold ? "bold" : "normal" }}>
+            {title || "title"}
+          </TextItem>
           {time !== undefined && (
             <TextItem type="normal12Text3">
               {time == "none" ? "" : time}
@@ -40,11 +49,8 @@ const PersonList = ({
         </View>
         {subtitle !== undefined && (
           <TextItem
-            type={
-              type == "contact"
-                ? "normal12Text1"
-                : `normal14Text1${subtitle == str.typing ? "Italic" : ""}`
-            }
+            numberOfLines={2}
+            type={type == "contact" ? "normal12Text1" : typingType}
           >
             {subtitle || "Ayo mulai chat"}
           </TextItem>

@@ -7,12 +7,14 @@ import React, {
   useRef,
   useState,
 } from "react";
+import { useSelector } from "react-redux";
 import { db } from "../../../config";
 import { UsersProps } from "../../../config/types";
 import { RoomDetailProps } from "../../../config/types/firebase/roomDetail";
 import { strings as str } from "../../../constants";
 import { RoomDetailValue, UsersValue } from "../../../constants/defaultValue";
 import PersonList from "../PersonList";
+import AppState from "../../../redux";
 
 interface ChatListProps {
   onPress: any;
@@ -21,6 +23,9 @@ interface ChatListProps {
 }
 
 const ChatList = ({ roomId, onPress, partnerId }: ChatListProps) => {
+  const {
+    sessionReducer: { uid },
+  } = useSelector((state: AppState) => state);
   const [detail, setDetail] = useState<UsersProps>(UsersValue);
   const [room, setRoom] = useState<RoomDetailProps>(RoomDetailValue);
 
@@ -80,10 +85,15 @@ const ChatList = ({ roomId, onPress, partnerId }: ChatListProps) => {
     <PersonList
       {...{
         onPress: buttonOnPress,
-        title: detail.displayName || detail.email || "Username",
+        title: detail?.displayName || detail?.email || "Username",
         subtitle: lastMessage,
         time: finalTime,
-        uri: detail.photoURL,
+        uri: detail?.photoURL || "",
+        titleBold: false,
+        isRead:
+          room.participants[uid]?.isRead == undefined
+            ? true
+            : room.participants[uid].isRead,
       }}
     />
   );

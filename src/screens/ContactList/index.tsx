@@ -28,6 +28,7 @@ import {
 import { db, heightPercent } from "../../config";
 import { RoomChatProps, UsersProps } from "../../config/types";
 import { node as n, pages as p } from "../../constants";
+import { RoomDetailValue } from "../../constants/defaultValue";
 import {
   batchValue,
   genderValue,
@@ -80,7 +81,11 @@ const ContactList: FC<ContactListProps> = ({ navigation }) => {
       addingChatRoom(partnerId);
       return;
     }
-    const chats: RoomChatProps[] = Object.values(chatList.val());
+    const chatsRaw = Object.entries(chatList.val());
+    const chats: RoomChatProps[] = chatsRaw.map((chat: any) => ({
+      ...chat[1],
+      partnerId: chat[0],
+    }));
     const isExist = chats.findIndex((chat) => chat.partnerId == partnerId);
     if (isExist !== -1) {
       const details = chats[isExist];
@@ -100,21 +105,23 @@ const ContactList: FC<ContactListProps> = ({ navigation }) => {
   const addingChatRoom = async (partnerId: string) => {
     const roomId = db.ref(n.room_chats).push().key;
     const messageId = db.ref(n.messages).push().key;
+    const createdAt = new Date().getTime();
+
     await db.ref(`${n.room_chats}/${roomId}`).set({
-      lastMessage: { text: "", createdAt: "" },
-      participants: {
-        [sessionReducer.uid]: { isTyping: false },
-        [partnerId]: { isTyping: false },
-      },
+      ...RoomDetailValue,
       messageId,
     });
-    db.ref(`${n.users}/${sessionReducer.uid}/${n.roomChats}`).push({
+    db.ref(
+      `${n.users}/${sessionReducer.uid}/${n.roomChats}/${partnerId}`
+    ).update({
       roomId,
-      partnerId,
+      createdAt,
     });
-    db.ref(`${n.users}/${partnerId}/${n.roomChats}`).push({
+    db.ref(
+      `${n.users}/${partnerId}/${n.roomChats}/${sessionReducer.uid}`
+    ).update({
       roomId,
-      partnerId: sessionReducer.uid,
+      createdAt,
     });
     navigation.replace(p.RoomChat, { partnerId, roomId, messageId });
   };
