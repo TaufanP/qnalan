@@ -22,6 +22,7 @@ import {
 } from "../../constants";
 import AppState from "../../redux";
 import { loggingOut } from "../../redux/actions";
+import messaging from "@react-native-firebase/messaging";
 
 interface RoomListProps {
   navigation: CompositeNavigationProp<any, any>;
@@ -29,7 +30,9 @@ interface RoomListProps {
 
 const RoomList = ({ navigation }: RoomListProps) => {
   const dispatch = useDispatch();
-  const { sessionReducer } = useSelector((state: AppState) => state);
+  const {
+    sessionReducer: { uid },
+  } = useSelector((state: AppState) => state);
 
   const [users, setUsers] = useState<RoomChatProps[]>([]);
   const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
@@ -66,23 +69,35 @@ const RoomList = ({ navigation }: RoomListProps) => {
 
   const getUsers = async () => {
     try {
-      db.ref(`${n.users}/${sessionReducer.uid}/${n.roomChats}`).on(
-        "value",
-        (snapshot) => {
-          if (!isMounted.current) {
-            return;
-          }
-          setUsers([]);
-          if (snapshot.val() == null) {
-            setUsers([]);
-            return;
-          }
-          const usersData: RoomChatProps[] = Object.values(snapshot.val());
-          setUsers(usersData);
+      db.ref(`${n.users}/${uid}/${n.roomChats}`).on("value", (snapshot) => {
+        if (!isMounted.current) {
+          return;
         }
-      );
+        setUsers([]);
+        if (snapshot.val() == null) {
+          setUsers([]);
+          return;
+        }
+        const usersData: RoomChatProps[] = Object.values(snapshot.val());
+        setUsers(usersData);
+      });
     } catch (error) {
       console.log(`RoomList, getUsers(), ${error.message}`);
+    }
+  };
+
+  const saveToken = async () => {
+    const token = await messaging().getToken();
+    if (uid) db.ref(`${n.users}/${uid}`).update({ token });
+  };
+
+  const getProfile = async () => {
+    try {
+      const raw = await db.ref(`${n.users}/${uid}`).once("value");
+      const data = raw.val();
+      if (!data.hasOwnProperty("token")) saveToken();
+    } catch (error) {
+      console.log(`RoomList, getProfile(), ${error.message}`);
     }
   };
 
@@ -118,6 +133,8 @@ const RoomList = ({ navigation }: RoomListProps) => {
 
   useEffect(() => {
     getUsers();
+    getProfile();
+
     return () => {
       isMounted.current = false;
     };

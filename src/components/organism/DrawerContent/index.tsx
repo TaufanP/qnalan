@@ -7,17 +7,20 @@ import {
 } from "@react-navigation/drawer/lib/typescript/src/types";
 import React from "react";
 import { Linking, View } from "react-native";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Export, Power } from "../../../../assets";
+import { db } from "../../../config";
 import {
   colorsPalette as cp,
   pages as p,
   strings as str,
+  node as n,
 } from "../../../constants";
 import { loggingOut } from "../../../redux/actions";
 import { Button, TextItem } from "../../atom";
 import { ProfileDrawer } from "../../molecule";
 import styles from "./styles";
+import AppState from "../../../redux";
 
 interface DrawerContentProps {
   navigation: DrawerNavigationHelpers;
@@ -27,12 +30,16 @@ interface DrawerContentProps {
 
 const DrawerContent = (props: DrawerContentProps) => {
   const dispatch = useDispatch();
+  const {
+    sessionReducer: { uid },
+  } = useSelector((state: AppState) => state);
   const s = styles();
 
   const logoutPress = async () => {
     try {
       await auth().signOut();
       dispatch(loggingOut());
+      db.ref(`${n.users}/${uid}`).update({ token: null });
       props.navigation.closeDrawer();
       // @ts-ignore
       props.navigation.replace(p.Auth);

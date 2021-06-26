@@ -119,8 +119,8 @@ const Auth = ({ navigation }: AuthProps) => {
   };
 
   const checkForm = () => {
-    setIsLoading(false);
     if (email == "") {
+      setIsLoading(false);
       setFormError((current) => [
         ...current,
         { param: "email", msg: str.fillEmail, value: email },
@@ -128,6 +128,7 @@ const Auth = ({ navigation }: AuthProps) => {
       return;
     }
     if (password == "") {
+      setIsLoading(false);
       setFormError((current) => [
         ...current,
         { param: "password", msg: str.fillPassword, value: password },

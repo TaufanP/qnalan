@@ -19,6 +19,7 @@ interface UsersProps {
   photoURL: string;
   uid: string;
   roomChats?: RoomChatsPropsKey;
+  token?: string;
 }
 
 interface RoomChatProps {
