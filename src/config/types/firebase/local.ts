@@ -11,6 +11,13 @@ interface RoomChatParams {
   roomId: string;
 }
 
+interface RoomListParams {
+  screen: string;
+  data1?: string;
+  data2?: string;
+  data3?: string;
+}
+
 interface StaticBottomSheetProps {
   action?: boolean;
   leftLabel?: string;
@@ -28,4 +35,9 @@ interface StaticBottomSheetProps {
   setVisible?: Function;
 }
 
-export type { RoomChatParams, StaticBottomSheetProps, FilterDataProps };
+export type {
+  RoomChatParams,
+  StaticBottomSheetProps,
+  FilterDataProps,
+  RoomListParams,
+};

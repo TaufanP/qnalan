@@ -36,7 +36,9 @@ interface RoomChatProps {
 
 const RoomChat = ({ navigation }: RoomChatProps) => {
   const s = styles();
-  const { sessionReducer } = useSelector((state: AppState) => state);
+  const {
+    sessionReducer: { uid, displayName },
+  } = useSelector((state: AppState) => state);
 
   const route = useRoute<RouteProp<StackParamsList, "ROOM_CHAT_SCREEN">>();
   const { messageId, partnerId, roomId } = route.params;
@@ -47,15 +49,13 @@ const RoomChat = ({ navigation }: RoomChatProps) => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isTyping, setIsTyping] = useState<boolean>(false);
 
-  const user: User = { _id: sessionReducer.uid };
+  const user: User = { _id: uid };
 
   const isMounted = useRef(true);
 
   const findPartner = async () => {
     const dataUser = await db.ref(`${n.users}/${partnerId}`).once("value");
-    db.ref(
-      `${n.room_chats}/${roomId}/${n.participants}/${sessionReducer.uid}`
-    ).update({
+    db.ref(`${n.room_chats}/${roomId}/${n.participants}/${uid}`).update({
       isRead: true,
     });
     if (isMounted.current) setPartner(dataUser.val());
@@ -95,9 +95,9 @@ const RoomChat = ({ navigation }: RoomChatProps) => {
   };
 
   const typing = (text: string) => {
-    db.ref(
-      `${n.room_chats}/${roomId}/${n.participants}/${sessionReducer.uid}`
-    ).update({ isTyping: text.length > 0 });
+    db.ref(`${n.room_chats}/${roomId}/${n.participants}/${uid}`).update({
+      isTyping: text.length > 0,
+    });
   };
 
   const header = useCallback(
@@ -124,9 +124,9 @@ const RoomChat = ({ navigation }: RoomChatProps) => {
 
   const onSend = useCallback(
     async (messageGift: IMessage[]) => {
-      db.ref(
-        `${n.room_chats}/${roomId}/${n.participants}/${sessionReducer.uid}`
-      ).update({ isTyping: false });
+      db.ref(`${n.room_chats}/${roomId}/${n.participants}/${uid}`).update({
+        isTyping: false,
+      });
       db.ref(`${n.room_chats}/${roomId}/${n.participants}/${partnerId}`).update(
         { isRead: false }
       );
@@ -140,21 +140,18 @@ const RoomChat = ({ navigation }: RoomChatProps) => {
         ...finalMsg,
         createdAt,
       });
-      db.ref(
-        `${n.users}/${sessionReducer.uid}/${n.roomChats}/${partnerId}`
-      ).update({
+      db.ref(`${n.users}/${uid}/${n.roomChats}/${partnerId}`).update({
         createdAt,
       });
-      db.ref(
-        `${n.users}/${partnerId}/${n.roomChats}/${sessionReducer.uid}`
-      ).update({
+      db.ref(`${n.users}/${partnerId}/${n.roomChats}/${uid}`).update({
         createdAt,
       });
       if (partner?.token)
         await notify({
           body: messageGift[0].text,
-          title: sessionReducer?.displayName || "",
+          title: displayName || "",
           to: partner?.token,
+          linking: `room-chat/${uid}/${roomId}/${messageId}`,
         });
     },
     [partner]
@@ -227,9 +224,9 @@ const RoomChat = ({ navigation }: RoomChatProps) => {
   useEffect(() => {
     const backAction = () => {
       typing("");
-      db.ref(
-        `${n.room_chats}/${roomId}/${n.participants}/${sessionReducer.uid}`
-      ).update({ isRead: true });
+      db.ref(`${n.room_chats}/${roomId}/${n.participants}/${uid}`).update({
+        isRead: true,
+      });
       return false;
     };
 

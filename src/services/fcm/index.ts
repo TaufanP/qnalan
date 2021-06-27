@@ -1,13 +1,15 @@
 import { keys } from "../../config";
 
-const sendNotif = async ({
+const notify = async ({
   title,
   body,
   to,
+  linking,
 }: {
   title: string;
   body: string;
   to: string;
+  linking?: string;
 }) => {
   const payload = {
     to,
@@ -20,6 +22,7 @@ const sendNotif = async ({
     data: {
       body,
       title,
+      linking: `com.sbhumanbank://app/${linking || "room-list"}`,
       content_available: true,
       priority: "high",
     },
@@ -34,4 +37,4 @@ const sendNotif = async ({
   });
 };
 
-export default sendNotif;
+export default notify;
