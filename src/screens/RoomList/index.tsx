@@ -36,10 +36,15 @@ const RoomList = ({ navigation }: RoomListProps) => {
 
   const [users, setUsers] = useState<RoomChatProps[]>([]);
   const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
+  const [overlayVisible, setOverlayVisible] = useState<boolean>(false);
 
   const isMounted = useRef(true);
 
-  const buttonPress = useCallback(() => navigation.navigate(p.ContactList), []);
+  const buttonPress = useCallback(
+    () => setOverlayVisible((current) => !current),
+    [overlayVisible]
+  );
+  // const buttonPress = useCallback(() => navigation.navigate(p.ContactList), []);
 
   const header = useCallback(
     () => <HomeHeader onPress={() => navigation.toggleDrawer()} />,
@@ -156,7 +161,13 @@ const RoomList = ({ navigation }: RoomListProps) => {
   }, []);
 
   return (
-    <AppCanvas header={header}>
+    <AppCanvas
+      header={header}
+      overlayNotifState={{
+        visible: overlayVisible,
+        onClose: () => setOverlayVisible(false),
+      }}
+    >
       <FlatList
         data={users}
         onRefresh={refreshing}
