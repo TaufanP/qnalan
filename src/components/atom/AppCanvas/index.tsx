@@ -1,5 +1,11 @@
 import { CompositeNavigationProp } from "@react-navigation/core";
-import React, { PropsWithChildren, ReactNode, useEffect } from "react";
+import React, {
+  PropsWithChildren,
+  ReactNode,
+  useCallback,
+  useEffect,
+  useState,
+} from "react";
 import { StatusBar, View } from "react-native";
 import {
   FancyTypes,
@@ -34,16 +40,34 @@ const AppCanvas = ({
     onClose: () => console.log("overlayClosed"),
   },
 }: PropsWithChildren<AppCanvasProps>) => {
+  const [overlayState, setOverlayState] = useState<OverlayNotifTypes>({
+    visible: false,
+    onClose: () => console.log("overlayClosed"),
+  });
+  const [overlayNotifVisible, setOverlayNotifVisible] =
+    useState<boolean>(false);
   const s = styles();
 
+  const overlayNotifClose = useCallback(() => {
+    setOverlayNotifVisible(false);
+  }, [overlayNotifVisible]);
+
+  const onMessageHandler = (notif: any) => {
+    setOverlayNotifVisible(true);
+  };
+
   useEffect(() => {
-    messaging().onMessage((e) => console.log(e));
+    messaging().onMessage(onMessageHandler);
   }, []);
 
   return (
     <View style={s.container}>
       <StatusBar backgroundColor={cp.blue4} barStyle="light-content" />
-      {overlayNotifState?.visible && <OverlayNotif {...overlayNotifState} />}
+      {overlayNotifVisible && (
+        <OverlayNotif
+          {...{ visible: overlayNotifVisible, onClose: overlayNotifClose }}
+        />
+      )}
       {header && <AppHeader>{header()}</AppHeader>}
       {children}
       <FancyBar {...{ fancyBarState, setFancyBarState }} />
