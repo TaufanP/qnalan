@@ -1,15 +1,12 @@
-import { StyleSheet, ViewStyle } from "react-native";
-import { widthPercent, widthPercent as wp } from "../../../config/units";
+import { StyleSheet } from "react-native";
+import { widthPercent } from "../../../config/units";
 import { colorsPalette as cp, spacing as sp } from "../../../constants";
-
-const relativeWidth = wp(80);
-const fixedHeightRWRatio = relativeWidth * 0.1519;
 
 const styles = () =>
   StyleSheet.create({
     container: {
       width: widthPercent(100),
-      height: 72,
+      height: 56,
       position: "absolute",
       top: sp.l,
       alignItems: "center",
@@ -17,10 +14,12 @@ const styles = () =>
     },
     childCont: {
       width: "85%",
-      height: 64,
+      height: 56,
       backgroundColor: cp.white,
       borderRadius: 8,
       elevation: 4,
+      justifyContent: "center",
+      alignItems: "center",
     },
   });
 

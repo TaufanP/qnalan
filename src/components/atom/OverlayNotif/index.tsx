@@ -1,9 +1,14 @@
-import React, { useEffect, useRef } from "react";
-import { Animated, PanResponder, View } from "react-native";
+import React, { PropsWithChildren, useEffect, useRef } from "react";
+import { Animated, PanResponder } from "react-native";
 import { OverlayNotifTypes } from "../../../config/types";
+import Button from "../Button";
 import styles from "./styles";
 
-const OverlayNotif = ({ onClose, visible }: OverlayNotifTypes) => {
+const OverlayNotif = ({
+  onClose,
+  visible,
+  children,
+}: PropsWithChildren<OverlayNotifTypes>) => {
   const s = styles();
   const pan = new Animated.Value(-400);
 
@@ -71,7 +76,7 @@ const OverlayNotif = ({ onClose, visible }: OverlayNotifTypes) => {
       style={[s.container, { transform: [{ translateY: pan }] }]}
       {...panResponder.panHandlers}
     >
-      <View style={s.childCont}></View>
+      <Button style={s.childCont}>{children}</Button>
     </Animated.View>
   );
 };

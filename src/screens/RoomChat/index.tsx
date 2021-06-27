@@ -37,7 +37,7 @@ const RoomChat = ({ navigation }: RoomChatProps) => {
   const dispatch = useDispatch();
   const s = styles();
   const {
-    sessionReducer: { uid, displayName },
+    sessionReducer: { uid, displayName, photoURL },
   } = useSelector((state: AppState) => state);
 
   const route = useRoute<RouteProp<StackParamsList, "ROOM_CHAT_SCREEN">>();
@@ -151,7 +151,10 @@ const RoomChat = ({ navigation }: RoomChatProps) => {
           body: messageGift[0].text,
           title: displayName || "",
           to: partner?.token,
-          linking: `room-chat/${uid}/${roomId}/${messageId}`,
+          uri: photoURL || "",
+          partnerId: uid,
+          roomId,
+          messageId,
         });
     },
     [partner]

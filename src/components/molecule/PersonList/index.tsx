@@ -1,5 +1,5 @@
 import React, { memo } from "react";
-import { Image, View } from "react-native";
+import { Image, StyleProp, View, ViewStyle } from "react-native";
 import { PlaceholderUser } from "../../../../assets";
 import { strings as str } from "../../../constants";
 import { Button, TextItem } from "../../atom";
@@ -14,6 +14,8 @@ interface PersonListProps {
   uri?: string;
   titleBold?: boolean;
   isRead?: boolean;
+  style?: StyleProp<ViewStyle>;
+  imageSize?: number;
 }
 
 const PersonList = ({
@@ -25,14 +27,16 @@ const PersonList = ({
   uri,
   titleBold = true,
   isRead = true,
+  style,
+  imageSize = 48,
 }: PersonListProps) => {
   const source = uri ? { uri } : PlaceholderUser;
-  const s = styles();
+  const s = styles({ imageSize });
   const typingType = `${isRead ? "normal" : "bold"}11Text1${
     subtitle == str.typing ? "Italic" : ""
   }`;
   return (
-    <Button style={s.container} onPress={onPress}>
+    <Button style={[s.container, style]} onPress={onPress}>
       <View style={s.photoCont}>
         <Image source={source} style={s.photo} />
       </View>

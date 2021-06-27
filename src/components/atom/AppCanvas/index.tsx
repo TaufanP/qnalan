@@ -5,6 +5,7 @@ import React, {
   ReactNode,
   useCallback,
   useEffect,
+  useRef,
   useState,
 } from "react";
 import { StatusBar, View } from "react-native";
@@ -15,6 +16,7 @@ import AppHeader from "../AppHeader";
 import FancyBar from "../FancyBar";
 import OverlayNotif from "../OverlayNotif";
 import styles from "./styles";
+import PersonList from "../../molecule/PersonList";
 
 interface AppCanvasProps {
   fancyBarState?: FancyTypes;
@@ -26,6 +28,12 @@ interface AppCanvasProps {
   extraData?: string;
 }
 
+interface ChatNotifProps {
+  uri: string;
+  title: string;
+  subtitle: string;
+}
+
 const AppCanvas = ({
   children,
   fancyBarState,
@@ -35,13 +43,21 @@ const AppCanvas = ({
   currentScreen = "",
   extraData = "",
 }: PropsWithChildren<AppCanvasProps>) => {
+  const isMounted = useRef(true);
+
   const [overlayNotifVisible, setOverlayNotifVisible] =
     useState<boolean>(false);
+
+  const [chatNotif, setChatNotif] = useState<ChatNotifProps>({
+    uri: "",
+    title: "",
+    subtitle: "",
+  });
 
   const s = styles();
 
   const overlayNotifClose = useCallback(() => {
-    setOverlayNotifVisible(false);
+    if (isMounted.current) setOverlayNotifVisible(false);
   }, [overlayNotifVisible]);
 
   const onMessageHandler = (notif: any) => {
@@ -49,11 +65,23 @@ const AppCanvas = ({
       currentScreen == p.RoomChat
         ? !notif?.data?.linking?.includes(extraData)
         : true;
-    setOverlayNotifVisible(isNotifVisible);
+    const { body, title, uri, partnerId, roomId, messageId } = notif?.data;
+    if (isMounted.current) {
+      setChatNotif({
+        title: title || "",
+        uri: uri || "",
+        subtitle: body || "",
+      });
+      setOverlayNotifVisible(isNotifVisible);
+    }
   };
 
   useEffect(() => {
     messaging().onMessage(onMessageHandler);
+
+    return () => {
+      isMounted.current = false;
+    };
   }, []);
 
   return (
@@ -62,7 +90,17 @@ const AppCanvas = ({
       {overlayNotifVisible && (
         <OverlayNotif
           {...{ visible: overlayNotifVisible, onClose: overlayNotifClose }}
-        />
+        >
+          <PersonList
+            {...{
+              onPress: () => console.log("test"),
+              titleBold: false,
+              style: { marginBottom: 0 },
+              imageSize: 32,
+              ...chatNotif,
+            }}
+          />
+        </OverlayNotif>
       )}
       {header && <AppHeader>{header()}</AppHeader>}
       {children}

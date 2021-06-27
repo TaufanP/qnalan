@@ -4,12 +4,19 @@ const notify = async ({
   title,
   body,
   to,
-  linking,
+  uri,
+  partnerId,
+  roomId,
+  messageId,
 }: {
   title: string;
   body: string;
   to: string;
   linking?: string;
+  uri?: string;
+  partnerId: string;
+  roomId: string;
+  messageId: string;
 }) => {
   const payload = {
     to,
@@ -22,9 +29,13 @@ const notify = async ({
     data: {
       body,
       title,
-      linking: `com.sbhumanbank://app/${linking || "room-list"}`,
+      linking: `com.sbhumanbank://app/room-chat/${partnerId}/${roomId}/${messageId}`,
       content_available: true,
       priority: "high",
+      uri: uri || "",
+      partnerId,
+      roomId,
+      messageId,
     },
   };
   await fetch("https://fcm.googleapis.com/fcm/send", {
