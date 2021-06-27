@@ -6,14 +6,14 @@ import {
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { BackHandler, Image, View } from "react-native";
 import {
+  Composer,
   GiftedChat,
   IMessage,
+  InputToolbar,
   Send,
   User,
-  InputToolbar,
-  Composer,
 } from "react-native-gifted-chat";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { PlaceholderUser, Send as SendIcon, VideoCall } from "../../../assets";
 import { AppCanvas, DefaultHeader, TextItem } from "../../components";
 import { db } from "../../config";
@@ -22,7 +22,6 @@ import {
   colorsPalette as cp,
   node as n,
   pages as p,
-  spacing,
   strings as str,
 } from "../../constants";
 import StackParamsList from "../../constants/screenParams";
@@ -35,6 +34,7 @@ interface RoomChatProps {
 }
 
 const RoomChat = ({ navigation }: RoomChatProps) => {
+  const dispatch = useDispatch();
   const s = styles();
   const {
     sessionReducer: { uid, displayName },
@@ -239,7 +239,7 @@ const RoomChat = ({ navigation }: RoomChatProps) => {
   });
 
   return (
-    <AppCanvas header={header}>
+    <AppCanvas header={header} extraData={roomId} currentScreen={p.RoomChat}>
       <GiftedChat
         messages={messages}
         onSend={onSend}

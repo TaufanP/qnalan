@@ -1,3 +1,4 @@
+import messaging from "@react-native-firebase/messaging";
 import { CompositeNavigationProp } from "@react-navigation/core";
 import React, {
   PropsWithChildren,
@@ -7,26 +8,22 @@ import React, {
   useState,
 } from "react";
 import { StatusBar, View } from "react-native";
-import {
-  FancyTypes,
-  OverlayNotifTypes,
-  StaticBottomSheetProps,
-} from "../../../config/types";
-import { colorsPalette as cp } from "../../../constants";
+import { FancyTypes, StaticBottomSheetProps } from "../../../config/types";
+import { colorsPalette as cp, pages as p } from "../../../constants";
 import StaticBottomSheet from "../../organism/StaticBottomSheet";
 import AppHeader from "../AppHeader";
 import FancyBar from "../FancyBar";
 import OverlayNotif from "../OverlayNotif";
 import styles from "./styles";
-import messaging from "@react-native-firebase/messaging";
 
 interface AppCanvasProps {
-  overlayNotifState?: OverlayNotifTypes;
   fancyBarState?: FancyTypes;
   header?: () => ReactNode;
   navigation?: CompositeNavigationProp<any, any>;
   setFancyBarState?: any;
   staticBottomSheetState?: StaticBottomSheetProps;
+  currentScreen?: string;
+  extraData?: string;
 }
 
 const AppCanvas = ({
@@ -35,17 +32,12 @@ const AppCanvas = ({
   header,
   setFancyBarState,
   staticBottomSheetState,
-  overlayNotifState = {
-    visible: false,
-    onClose: () => console.log("overlayClosed"),
-  },
+  currentScreen = "",
+  extraData = "",
 }: PropsWithChildren<AppCanvasProps>) => {
-  const [overlayState, setOverlayState] = useState<OverlayNotifTypes>({
-    visible: false,
-    onClose: () => console.log("overlayClosed"),
-  });
   const [overlayNotifVisible, setOverlayNotifVisible] =
     useState<boolean>(false);
+
   const s = styles();
 
   const overlayNotifClose = useCallback(() => {
@@ -53,7 +45,11 @@ const AppCanvas = ({
   }, [overlayNotifVisible]);
 
   const onMessageHandler = (notif: any) => {
-    setOverlayNotifVisible(true);
+    const isNotifVisible: boolean =
+      currentScreen == p.RoomChat
+        ? !notif?.data?.linking?.includes(extraData)
+        : true;
+    setOverlayNotifVisible(isNotifVisible);
   };
 
   useEffect(() => {

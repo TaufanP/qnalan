@@ -1,0 +1,3 @@
+const SET_ACTIVE_ROOM = "SET_ACTIVE_ROOM";
+
+export { SET_ACTIVE_ROOM };
